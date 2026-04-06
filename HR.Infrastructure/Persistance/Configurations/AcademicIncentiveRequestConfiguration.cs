@@ -16,6 +16,7 @@ namespace HR.Infrastructure.Persistance.Configurations
             // المفتاح الأساسي
             builder.HasKey(a => a.Id);
 
+
             // القيود
             builder.Property(a => a.FilePath)
                    .IsRequired()
