@@ -1,0 +1,312 @@
+﻿@{
+    ViewData["Title"] = "إدارة السلف وشراء المدد";
+}
+
+<!-- Styles -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-hand-holding-usd text-success me-2"></i> السلف وشراء المدد</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">الاستقطاعات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. شريط الحالة المالية -->
+        <div class="row">
+            <div class="col-md-3 col-6">
+                <div class="info-box bg-white shadow-sm border-bottom border-success">
+                    <span class="info-box-icon bg-success"><i class="fas fa-money-bill-wave"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">إجمالي السلف المنصرفة</span>
+                        <span class="info-box-number">50,000 <small>جم</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="info-box bg-white shadow-sm border-bottom border-primary">
+                    <span class="info-box-icon bg-primary"><i class="fas fa-sync"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">القسط الشهري المحصل</span>
+                        <span class="info-box-number">4,200 <small>جم</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="info-box bg-white shadow-sm border-bottom border-danger">
+                    <span class="info-box-icon bg-danger"><i class="fas fa-chart-pie"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">الرصيد المتبقي (مديولية)</span>
+                        <span class="info-box-number text-danger">35,000 <small>جم</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. التبويبات (سلف - شراء مدد) -->
+        <div class="card card-primary card-tabs">
+            <div class="card-header p-0 pt-1">
+                <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tab-loan" data-bs-toggle="pill" href="#content-loan" role="tab">
+                            <i class="fas fa-receipt me-1"></i> السلف الشخصية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab-purchase" data-bs-toggle="pill" href="#content-purchase" role="tab">
+                            <i class="fas fa-shopping-basket me-1"></i> طلبات شراء المدد التأمينية
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+
+                    <!-- TAB 1: السلف -->
+                    <div class="tab-pane fade show active" id="content-loan" role="tabpanel">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loanModal">
+                                <i class="fas fa-plus me-1"></i> صرف سلفة جديدة
+                            </button>
+                        </div>
+
+                        <table id="tableLoans" class="table table-bordered table-striped text-center align-middle">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>الموظف</th>
+                                    <th>تاريخ الصرف</th>
+                                    <th>قيمة السلفة</th>
+                                    <th>عدد الأقساط</th>
+                                    <th>القسط الشهري</th>
+                                    <th>المتبقي</th>
+                                    <th>الحالة</th>
+                                    <th>تفاصيل</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
+                                    <td>01/01/2024</td>
+                                    <td class="text-bold text-success">10,000</td>
+                                    <td>10 شهور</td>
+                                    <td class="text-danger fw-bold">1,000</td>
+                                    <td>4,000</td>
+                                    <td><span class="badge bg-warning text-dark">سارية (يخصم)</span></td>
+                                    <td><button class="btn btn-sm btn-outline-info"><i class="fas fa-list-ol"></i> الأقساط</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td class="text-end fw-bold">بهجت ابراهيم</td>
+                                    <td>01/05/2024</td>
+                                    <td class="text-bold text-success">2,000</td>
+                                    <td>2 شهر</td>
+                                    <td class="text-danger fw-bold">1,000</td>
+                                    <td>0</td>
+                                    <td><span class="badge bg-success">خالصة</span></td>
+                                    <td><button class="btn btn-sm btn-outline-dark"><i class="fas fa-check"></i> مخالصة</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TAB 2: شراء المدد -->
+                    <div class="tab-pane fade" id="content-purchase" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-9">
+                                <div class="alert alert-light border border-info p-2">
+                                    <i class="fas fa-info-circle me-1"></i> يتم تسجيل المدد المشتراة لغرض المعاش، ويتم توريد الأقساط للتأمينات الاجتماعية شهرياً.
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#purchaseModal">
+                                    <i class="fas fa-cart-plus me-1"></i> طلب شراء مدة
+                                </button>
+                            </div>
+                        </div>
+
+                        <table id="tablePurchases" class="table table-bordered table-hover text-center align-middle">
+                            <thead class="bg-dark text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>الموظف</th>
+                                    <th>نوع الشراء</th>
+                                    <th>عدد السنوات</th>
+                                    <th>التكلفة (للتأمينات)</th>
+                                    <th>القسط الشهري</th>
+                                    <th>بداية الخصم</th>
+                                    <th>حالة الطلب</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
+                                    <td>شراء مدة تأمينية (سابقة)</td>
+                                    <td>3 سنوات</td>
+                                    <td>15,000 جم</td>
+                                    <td class="text-danger fw-bold">300 جم</td>
+                                    <td>01/07/2023</td>
+                                    <td><span class="badge bg-primary">معتمد وساري</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal 1: طلب سلفة (Loan) -->
+<div class="modal fade" id="loanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CreateLoan" method="post">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">طلب صرف سلفة مالية</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف المستفيد</label>
+                        <select class="form-select select2 select2-modal" style="width:100%">
+                            <option>بحث...</option>
+                            <option>محمد فؤاد ابراهيم</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">قيمة السلفة</label>
+                            <input type="number" class="form-control fw-bold text-success" id="loanAmount" onkeyup="calcInstallment()">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">تقسيط على (شهر)</label>
+                            <select class="form-select" id="loanMonths" onchange="calcInstallment()">
+                                <option value="1">دفعة واحدة</option>
+                                <option value="3">3 شهور</option>
+                                <option value="6">6 شهور</option>
+                                <option value="10">10 شهور</option>
+                                <option value="12">12 شهر (سنة)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border text-center p-2">
+                        قيمة القسط الشهري: <strong id="installmentVal" class="text-danger fs-5">0.00</strong> جنيه
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">يبدأ الخصم من راتب شهر</label>
+                        <input type="month" class="form-control" value="@DateTime.Now.ToString("yyyy-MM")">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">سبب السلفة</label>
+                        <input type="text" class="form-control" placeholder="ظروف طارئة / زواج / تعليم...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ واعتماد</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: شراء مدة (Service Purchase) -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">تسجيل شراء مدة خدمة/تأمين</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف</label>
+                        <select class="form-select select2 select2-modal" style="width:100%">
+                            <option>رانيا ابو النصر</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">الجهة التأمينية</label>
+                        <input type="text" class="form-control" value="الهيئة القومية للتأمينات والمعاشات" readonly>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">عدد السنوات المشتراة</label>
+                            <input type="number" class="form-control" placeholder="سنة">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">التكلفة الإجمالية (المقدرة)</label>
+                            <input type="number" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-danger">القسط الشهري للخصم</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" placeholder="المبلغ الذي سيخصم من الراتب">
+                            <span class="input-group-text text-danger">جم</span>
+                        </div>
+                        <small class="text-muted">يستمر الخصم حتى سداد كامل المبلغ للهيئة.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">صورة قرار الموافقة</label>
+                        <input type="file" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-info text-white">حفظ وجدولة الخصم</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            $('#tableLoans').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+            $('#tablePurchases').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+
+            $('.select2-modal').select2({ theme: 'bootstrap4', dropdownParent: $('.modal') });
+        });
+
+        // حاسبة الأقساط البسيطة
+        function calcInstallment() {
+            var amount = parseFloat(document.getElementById("loanAmount").value) || 0;
+            var months = parseInt(document.getElementById("loanMonths").value) || 1;
+
+            var inst = amount / months;
+            // تقريب لأقرب رقمين عشريين
+            document.getElementById("installmentVal").innerText = inst.toFixed(2);
+        }
+    </script>

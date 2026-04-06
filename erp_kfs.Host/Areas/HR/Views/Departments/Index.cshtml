@@ -1,0 +1,286 @@
+﻿@{
+    ViewData["Title"] = "الهيكل التنظيمي (ديوان عام المحافظة)";
+}
+
+<!-- CSS مخصص لرسم الشجرة (Tree View) -->
+<style>
+    .tree ul {
+        padding-top: 20px;
+        position: relative;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        -moz-transition: all 0.5s;
+    }
+
+    .tree li {
+        float: left;
+        text-align: center;
+        list-style-type: none;
+        position: relative;
+        padding: 20px 5px 0 5px;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        -moz-transition: all 0.5s;
+    }
+
+        .tree li::before, .tree li::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 50%;
+            border-top: 2px solid #ccc;
+            width: 50%;
+            height: 20px;
+        }
+
+        .tree li::after {
+            right: auto;
+            left: 50%;
+            border-left: 2px solid #ccc;
+        }
+
+        .tree li:only-child::after, .tree li:only-child::before {
+            display: none;
+        }
+
+        .tree li:only-child {
+            padding-top: 0;
+        }
+
+        .tree li:first-child::before, .tree li:last-child::after {
+            border: 0 none;
+        }
+
+        .tree li:last-child::before {
+            border-right: 2px solid #ccc;
+            border-radius: 0 5px 0 0;
+        }
+
+        .tree li:first-child::after {
+            border-radius: 5px 0 0 0;
+        }
+
+    .tree ul ul::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        border-left: 2px solid #ccc;
+        width: 0;
+        height: 20px;
+    }
+
+    .tree a {
+        border: 2px solid #ccc;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: #666;
+        font-family: arial, verdana, tahoma;
+        font-size: 14px;
+        display: inline-block;
+        border-radius: 5px;
+        transition: all 0.5s;
+        background: white;
+    }
+
+        .tree a:hover, .tree a:hover + ul li a {
+            background: #c8e4f8;
+            color: #000;
+            border: 2px solid #94a0b4;
+        }
+
+            .tree a:hover + ul li::after, .tree a:hover + ul li::before, .tree a:hover + ul::before, .tree a:hover + ul ul::before {
+                border-color: #94a0b4;
+            }
+
+    /* ألوان المستويات بناء على الصورة */
+    .lvl-1 {
+        background-color: #3498db !important;
+        color: white !important;
+        font-weight: bold;
+        font-size: 1.2rem !important;
+    }
+
+    .lvl-2 {
+        background-color: #85c1e9 !important;
+        color: black !important;
+        font-weight: bold;
+    }
+
+    .lvl-3 {
+        background-color: #fce4ec !important;
+        border-color: #e91e63 !important;
+        color: #880e4f !important;
+    }
+    /* إدارات عامة */
+    .lvl-4 {
+        background-color: white !important;
+        font-size: 0.8rem !important;
+    }
+</style>
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">الهيكل الإداري والتنظيمي</h1>
+            </div>
+            <div class="col-sm-6">
+                <button class="btn btn-primary float-sm-end" data-bs-toggle="modal" data-bs-target="#deptModal">
+                    <i class="fas fa-plus-circle me-1"></i> إضافة وحدة إدارية
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-outline card-info">
+            <div class="card-body">
+                <div class="table-responsive" style="overflow-x:auto;">
+                    <div class="tree text-center" style="min-width: 2500px;">
+                        <!-- عرض كبير عشان الشجرة تسيع -->
+                        <ul>
+                            <li>
+                                <a href="#" class="lvl-1">المحافظ</a>
+                                <ul>
+                                    <li>
+                                        <a href="#" class="lvl-2">نائب المحافظ</a>
+                                        <ul>
+                                            <li><a href="#" class="lvl-3">المكتب الفني</a></li>
+
+                                            <!-- فرع السكرتير العام (العمود الفقري للهيكل في الصورة) -->
+                                            <li>
+                                                <a href="#" class="lvl-2">السكرتير العام</a>
+                                                <ul>
+                                                    <!-- 1. الموارد البشرية -->
+                                                    <li>
+                                                        <a href="#" class="lvl-3">الإدارة العامة للموارد البشرية</a>
+                                                        <ul>
+                                                            <li><a href="#" class="lvl-4">التطوير المؤسسي</a></li>
+                                                            <li><a href="#" class="lvl-4">تنمية المواهب</a></li>
+                                                            <li><a href="#" class="lvl-4">الاستحقاقات والمزايا</a></li>
+                                                            <li><a href="#" class="lvl-4">عمليات الموارد</a></li>
+                                                        </ul>
+                                                    </li>
+
+                                                    <!-- 2. نظم المعلومات -->
+                                                    <li>
+                                                        <a href="#" class="lvl-3">نظم المعلومات والتحول الرقمي</a>
+                                                        <ul>
+                                                            <li><a href="#" class="lvl-4">البنية الأساسية</a></li>
+                                                            <li><a href="#" class="lvl-4">النظم والدعم الفني</a></li>
+                                                            <li><a href="#" class="lvl-4">الإحصاء والتقارير</a></li>
+                                                        </ul>
+                                                    </li>
+
+                                                    <!-- 3. الشئون المالية -->
+                                                    <li>
+                                                        <a href="#" class="lvl-3">الشئون المالية والإدارية</a>
+                                                        <ul>
+                                                            <li><a href="#" class="lvl-4">الشئون المالية</a></li>
+                                                            <li><a href="#" class="lvl-4">الشئون الإدارية</a></li>
+                                                            <li><a href="#" class="lvl-4">المركبات</a></li>
+                                                        </ul>
+                                                    </li>
+
+                                                    <!-- 4. الشئون القانونية -->
+                                                    <li>
+                                                        <a href="#" class="lvl-3">الشئون القانونية</a>
+                                                        <ul>
+                                                            <li><a href="#" class="lvl-4">التحقيقات</a></li>
+                                                            <li><a href="#" class="lvl-4">الفتاوى والعقود</a></li>
+                                                            <li><a href="#" class="lvl-4">القضايا</a></li>
+                                                        </ul>
+                                                    </li>
+
+                                                    <!-- 5. التخطيط والتنمية العمرانية -->
+                                                    <li>
+                                                        <a href="#" class="lvl-3">التخطيط والتنمية العمرانية</a>
+                                                        <ul>
+                                                            <li><a href="#" class="lvl-4">التخطيط العمراني</a></li>
+                                                            <li><a href="#" class="lvl-4">التنسيق الحضاري</a></li>
+                                                            <li><a href="#" class="lvl-4">العشوائيات</a></li>
+                                                        </ul>
+                                                    </li>
+
+                                                    <!-- 6. مركز استدامة (على الجنب في الصورة) -->
+                                                    <li>
+                                                        <a href="#" class="lvl-3 bg-gradient-success">مركز استدامة</a>
+                                                        <ul>
+                                                            <li><a href="#" class="lvl-4">التدريب والتطوير</a></li>
+                                                        </ul>
+                                                    </li>
+
+                                                </ul>
+                                            </li> <!-- نهاية السكرتير العام -->
+
+                                            <li><a href="#" class="lvl-2">السكرتير العام المساعد</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- جدول سريع للإدارة النصية -->
+        <div class="card mt-3 collapsed-card">
+            <div class="card-header bg-secondary">
+                <h3 class="card-title">إدارة الهيكل (عرض جدولي)</h3>
+                <div class="card-tools"><button class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i></button></div>
+            </div>
+            <div class="card-body p-0" style="display:none">
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>الاسم</th><th>التبعية</th><th>المدير الحالي</th><th>العدد</th></tr></thead>
+                    <tbody>
+                        <tr><td>الموارد البشرية</td><td>السكرتير العام</td><td>... </td><td>15</td></tr>
+                        <tr><td>نظم المعلومات</td><td>السكرتير العام</td><td>... </td><td>10</td></tr>
+                        <tr><td>الشئون القانونية</td><td>السكرتير العام</td><td>...</td><td>8</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: إضافة إدارة -->
+<div class="modal fade" id="deptModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">إضافة وحدة تنظيمية جديدة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-action="Save">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم الإدارة / القسم</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تتبع (المستوى الأعلى)</label>
+                        <select class="form-select">
+                            <option value="0">-- مستوى رئيسي --</option>
+                            <option value="1">مكتب المحافظ</option>
+                            <option value="2">السكرتير العام</option>
+                            <option value="3">الموارد البشرية</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">مدير الإدارة</label>
+                        <select class="form-select"><option>اختيار موظف...</option></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

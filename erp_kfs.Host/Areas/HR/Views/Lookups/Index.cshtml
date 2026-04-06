@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "أكواد النظام وثوابت البيانات (Lookups)";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-cogs text-secondary me-2"></i> تهيئة النظام والأكواد</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- القائمة الجانبية للتصنيفات -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header bg-navy text-white">
+                        <h3 class="card-title">التصنيفات</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="nav flex-column nav-pills p-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link active mb-1" id="v-pills-grades-tab" data-bs-toggle="pill" href="#v-pills-grades" role="tab">
+                                <i class="fas fa-star me-2"></i> الدرجات المالية
+                            </a>
+                            <a class="nav-link mb-1" id="v-pills-titles-tab" data-bs-toggle="pill" href="#v-pills-titles" role="tab">
+                                <i class="fas fa-id-badge me-2"></i> المسميات الوظيفية
+                            </a>
+                            <a class="nav-link mb-1" id="v-pills-contract-tab" data-bs-toggle="pill" href="#v-pills-contract" role="tab">
+                                <i class="fas fa-file-signature me-2"></i> أنواع التعيين/العقد
+                            </a>
+                            <a class="nav-link mb-1" id="v-pills-leave-tab" data-bs-toggle="pill" href="#v-pills-leave" role="tab">
+                                <i class="fas fa-umbrella-beach me-2"></i> أنواع الأجازات
+                            </a>
+                            <a class="nav-link mb-1" id="v-pills-pen-tab" data-bs-toggle="pill" href="#v-pills-pen" role="tab">
+                                <i class="fas fa-gavel me-2"></i> أنواع الجزاءات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- محتوى الجداول -->
+            <div class="col-md-9">
+                <div class="tab-content" id="v-pills-tabContent">
+
+                    <!-- 1. الدرجات المالية -->
+                    <div class="tab-pane fade show active" id="v-pills-grades" role="tabpanel">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">جدول الدرجات الوظيفية والمالية</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-xs btn-primary" onclick="addItem('Grade')"><i class="fas fa-plus"></i> إضافة درجة</button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-striped text-center">
+                                    <thead><tr><th>الاسم</th><th>الترتيب</th><th>ملاحظات</th><th>الحالة</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>الممتازة</td><td>1</td><td>رئيس قطاع</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>العالية</td><td>2</td><td>وكيل وزارة</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>مدير عام</td><td>3</td><td>-</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>الأولى (أ)</td><td>4</td><td>كبير باحثين</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>الثانية (أ/ب)</td><td>5</td><td>-</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. المسميات الوظيفية -->
+                    <div class="tab-pane fade" id="v-pills-titles" role="tabpanel">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">دليل الوظائف (Jobs)</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-xs btn-primary" onclick="addItem('Title')"><i class="fas fa-plus"></i> إضافة وظيفة</button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-striped text-center">
+                                    <thead><tr><th>المجموعة النوعية</th><th>المسمى الوظيفي</th><th>خيارات</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>تخصصية (هندسة)</td><td>مهندس معماري ثالث</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                        <tr><td>تخصصية (نظم)</td><td>أخصائي تشغيل حاسب</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                        <tr><td>كتابية</td><td>كاتب شئون عاملين</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                        <tr><td>حرفية</td><td>سائق درجة أولى</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. أنواع التعيين -->
+                    <div class="tab-pane fade" id="v-pills-contract" role="tabpanel">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header"><h3 class="card-title">أنواع العقود والتعيينات</h3></div>
+                            <div class="card-body p-0">
+                                <table class="table table-striped text-center">
+                                    <thead><tr><th>النوع</th><th>هل له معاش؟</th><th>تجديد سنوي؟</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>دائم (موازنة)</td><td><i class="fas fa-check text-success"></i></td><td><i class="fas fa-times text-secondary"></i></td></tr>
+                                        <tr><td>عقد شامل (صناديق)</td><td><i class="fas fa-check text-success"></i></td><td><i class="fas fa-check text-warning"></i></td></tr>
+                                        <tr><td>يومية (سركي)</td><td><i class="fas fa-times text-danger"></i></td><td><i class="fas fa-times text-secondary"></i></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal عام للإضافة -->
+<div class="modal fade" id="addLookupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">إضافة بيان جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الاسم عربي</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم إنجليزي (كود)</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" checked>
+                        <label class="form-check-label">نشط</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script>
+        function addItem(type) {
+            // يمكن هنا تغيير عنوان المودال حسب النوع
+            var myModal = new bootstrap.Modal(document.getElementById('addLookupModal'));
+            myModal.show();
+        }
+    </script>

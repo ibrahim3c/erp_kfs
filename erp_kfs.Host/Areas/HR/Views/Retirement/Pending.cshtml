@@ -1,0 +1,174 @@
+﻿@{
+    ViewData["Title"] = "الموظفون المحالون للمعاش (الموشكون على التقاعد)";
+}
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-hourglass-half text-warning me-2"></i> خطة الإحالة للمعاش</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">المعاشات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. فلتر السنة (Forecast) -->
+        <div class="card bg-gradient-navy">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <label class="mb-1 text-light">استعرض الخروج للمعاش لعام:</label>
+                        <select class="form-control form-control-sm font-weight-bold">
+                            <option selected>2024</option>
+                            <option>2025</option>
+                            <option>2026</option>
+                        </select>
+                    </div>
+                    <div class="col-md-9 text-light">
+                        <i class="fas fa-info-circle ms-2"></i> يعرض هذا التقرير أسماء الموظفين الذين سيتمون سن الستين خلال العام المحدد، للبدء في إجراءات تسوية مستحقاتهم وتجهيز البديل.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. جدول الموشكون على الخروج -->
+        <div class="card card-outline card-warning">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">قائمة الموظفين (سن 60) - العام الحالي</h3>
+                <div class="card-tools">
+                    <button class="btn btn-tool" title="تصدير" data-widget="chat-pane-toggle">
+                        <i class="fas fa-download"></i> تصدير للكشف
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table id="retirementTable" class="table table-hover table-striped text-center align-middle">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الموظف</th>
+                            <th>الوظيفة الحالية</th>
+                            <th>تاريخ الميلاد</th>
+                            <th>تاريخ الخروج (يتم الستين)</th>
+                            <th>المدة المتبقية</th>
+                            <th>حالة الملف</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: قريب جداً -->
+                        <tr class="bg-white border-left-danger" style="border-left: 5px solid #dc3545;">
+                            <td>1</td>
+                            <td class="text-end fw-bold">فاطمة عبدالفتاح الشرباني</td>
+                            <td>مدير عام التخطيط</td>
+                            <td>01/08/1964</td>
+                            <td class="text-danger fw-bold">01/08/2024</td>
+                            <td><span class="badge bg-danger p-2">أقل من شهر</span></td>
+                            <td>
+                                <span class="badge bg-warning text-dark">جاري تجهيز الملف</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#checklistModal">
+                                    <i class="fas fa-tasks me-1"></i> متابعة الإجراءات
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: أمامه بضعة أشهر -->
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold">موظف كبير أخصائيين</td>
+                            <td>مراجع مالي</td>
+                            <td>15/12/1964</td>
+                            <td class="text-primary fw-bold">15/12/2024</td>
+                            <td><span class="badge bg-info p-2">5 شهور</span></td>
+                            <td><span class="badge bg-secondary">لم يبدأ</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#checklistModal">
+                                    <i class="fas fa-tasks me-1"></i> بدء الملف
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: Checklist تجهيز ملف المعاش -->
+<div class="modal fade" id="checklistModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-file-export me-2"></i> استمارة تجهيز ملف المعاش</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    الموظف: <strong>فاطمة الشرباني</strong> <br>
+                    تاريخ الاحالة: <strong>01/08/2024</strong>
+                </div>
+
+                <h6 class="border-bottom pb-2">قائمة المستندات المطلوبة (Checklist):</h6>
+
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="c1" checked>
+                    <label class="form-check-label" for="c1">استمارة (103) ع.ح</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="c2">
+                    <label class="form-check-label" for="c2">إقرار الذمة المالية (نهاية الخدمة)</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="c3">
+                    <label class="form-check-label" for="c3">إخلاء الطرف من المخازن والعهدة</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="c4">
+                    <label class="form-check-label" for="c4">حساب مدة الخبرة السابقة (الضم)</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="c5">
+                    <label class="form-check-label" for="c5">بيان الأجور عن آخر 5 سنوات (الخمس علاوات)</label>
+                </div>
+
+                <hr />
+                <div class="form-group">
+                    <label>ملاحظات مسئول الملف</label>
+                    <textarea class="form-control" rows="2" placeholder="تم تسليم الملف للتأمينات بتاريخ..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">حفظ مؤقت</button>
+                <button type="button" class="btn btn-success"><i class="fas fa-check-double me-1"></i> تم التسليم وإنهاء الخدمة</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(function () {
+            $("#retirementTable").DataTable({
+                "lengthChange": false,
+                "autoWidth": false,
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
+            });
+        });
+    </script>

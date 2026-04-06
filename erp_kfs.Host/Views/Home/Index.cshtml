@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "الرئيسية";
+}
+
+<!-- Start Carousel -->
+<div id="main-slider" class="carousel slide carousel-fade slide-animation wow fadeIn d-none d-lg-block" data-wow-duration="8s" data-wow-offset="10" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <!-- تأكد أن الصور موجودة في wwwroot/image -->
+        <div class="carousel-item active"><img src="~/image/slide1.jpg" class="d-block w-100" alt="..."></div>
+        <div class="carousel-item"><img src="~/image/slide2.jpg" class="d-block w-100" alt="..."></div>
+        <div class="carousel-item"><img src="~/image/slide3.jpg" class="d-block w-100" alt="..."></div>
+    </div>
+    <a href="#" class="carousel-control-prev" data-bs-target="#main-slider" data-bs-slide="prev"><i class="fa-solid fa-circle-chevron-left fa-2x"></i></a>
+    <a href="#" class="carousel-control-next" type="button" data-bs-target="#main-slider" data-bs-slide="next"><i class="fa-solid fa-circle-chevron-right fa-2x"></i></a>
+</div>
+<!-- End Carousel -->
+<!-- Start Modules Grid -->
+<div class="sectors pb-5 pt-5">
+    <h2 class="main-title mx-auto mb-5 wow fadeInDown" data-wow-offset="10" data-wow-duration="2s">أقسام النظام (ERP Modules)</h2>
+    <div class="container">
+        <div class="row row-cols-1 row-cols-xl-4 row-cols-lg-3 row-cols-md-2 g-4 pb-5 wow fadeInUp" data-wow-delay="1s">
+
+            <!-- 1. الشئون الإدارية (HR) -->
+            <div class="col pb-2">
+                <!-- الرابط للموديول بالكامل -->
+                <a asp-area="HR" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/approved.png" class="rounded mx-auto d-block mt-4" alt="HR Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">الموارد البشرية </h5>
+                            <p class="text-muted small">الموظفين، الحضور، الرواتب</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 2. الشئون القانونية -->
+            <div class="col pb-2">
+                <a asp-area="Legal" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/social-justice.png" class="rounded mx-auto d-block mt-4" alt="Legal Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">الشئون القانونية</h5>
+                            <p class="text-muted small">التحقيقات، القضايا، العقود</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 3. المخازن -->
+            <div class="col pb-2">
+                <a asp-area="Inventory" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/material-management.png" class="rounded mx-auto d-block mt-4" alt="Store Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">المخازن والمشتريات</h5>
+                            <p class="text-muted small">الأصناف، الجرد، التوريد</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 4. الحسابات -->
+            <div class="col pb-2">
+                <a asp-area="Accounting" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/financial-statement.png" class="rounded mx-auto d-block mt-4" alt="Accounting Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">الحسابات والمالية</h5>
+                            <p class="text-muted small">الموازنة، القيود، التقارير</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 5. الحملة -->
+            <div class="col pb-2">
+                <a asp-area="Fleet" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/fleet-management.png" class="rounded mx-auto d-block mt-4" alt="Fleet Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">الحملة (Logistics)</h5>
+                            <p class="text-muted small">المركبات، السائقين، الوقود</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 6. المشاريع والتخطيط -->
+            <div class="col pb-2">
+                <a asp-area="Projects" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/project-management.png" class="rounded mx-auto d-block mt-4" alt="Project Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">التخطيط والمشاريع</h5>
+                            <p class="text-muted small">الخطة الاستثمارية، مؤشرات الأداء</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 7. مركز استدامة -->
+            <div class="col pb-2">
+                <a asp-area="Education" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <img src="~/image/sections/webinar.png" class="rounded mx-auto d-block mt-4" alt="Edu Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">مركز استدامة</h5>
+                            <p class="text-muted small">الكورسات، التدريب، المحتوى</p>
+                        </div>
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-outline-primary btn-sm rounded-pill">دخول النظام</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 8. الأدمن (لوحة التحكم) -->
+            <div class="col pb-2">
+                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm hover-effect border-primary">
+                        <img src="~/image/sections/admin-panel.png" class="rounded mx-auto d-block mt-4" alt="Admin Icon">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-primary">لوحة التحكم</h5>
+                            <p class="text-muted small">إدارة المستخدمين والصلاحيات</p>
+                        </div>
+                        
+                        <div class="card-footer mt-4 ">
+                            <span class="btn btn-primary btn-sm rounded-pill text-white w-50">Admin</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- End Modules -->

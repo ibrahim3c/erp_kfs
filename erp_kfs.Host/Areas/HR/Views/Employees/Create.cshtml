@@ -1,0 +1,332 @@
+﻿@{
+    ViewData["Title"] = "إضافة موظف جديد";
+}
+<!-- design -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">فتح ملف موظف جديد</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-action="Index">سجل الموظفين</a></li>
+                    <li class="breadcrumb-item active">إضافة جديد</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- بداية الفورم -->
+        <!-- Enctype is crucial for file uploads -->
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+            <div class="card card-primary card-outline card-tabs">
+                <div class="card-header p-0 pt-1 border-bottom-0">
+                    <ul class="nav nav-tabs" id="employeeTabs" role="tablist">
+                        <!-- التبويبات -->
+                        <li class="nav-item">
+                            <a class="nav-link active" id="personal-tab" data-bs-toggle="pill" href="#personal" role="tab" aria-controls="personal" aria-selected="true">
+                                <i class="fas fa-user mr-1"></i> البيانات الشخصية
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="job-tab" data-bs-toggle="pill" href="#job" role="tab" aria-controls="job" aria-selected="false">
+                                <i class="fas fa-briefcase mr-1"></i> الوظيفة والدرجة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="files-tab" data-bs-toggle="pill" href="#files" role="tab" aria-controls="files" aria-selected="false">
+                                <i class="fas fa-file-pdf mr-1"></i> مسوغات التعيين (E-File)
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="financial-tab" data-bs-toggle="pill" href="#financial" role="tab" aria-controls="financial" aria-selected="false">
+                                <i class="fas fa-money-bill-wave mr-1"></i> البيانات المالية
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content" id="employeeTabsContent">
+
+                        <!-- 1. تبويب البيانات الشخصية -->
+                        <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+                            <div class="row">
+                                <!-- الصورة الشخصية -->
+                                <div class="col-md-3 text-center mb-3">
+                                    <img id="imgPreview" src="~/image/icons/7.png" alt="Profile" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px;">
+                                    <div class="mt-3">
+                                        <label class="btn btn-sm btn-outline-primary">
+                                            رفع صورة شخصية <i class="fas fa-camera"></i>
+                                            <input type="file" name="ProfileImage" style="display: none;" onchange="previewImage(this)">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-md-4 form-group">
+                                            <label>الاسم الأول</label>
+                                            <input type="text" class="form-control" placeholder="مثال: محمد">
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <label>اسم الأب</label>
+                                            <input type="text" class="form-control" placeholder="أحمد">
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <label>اسم العائلة (اللقب)</label>
+                                            <input type="text" class="form-control" placeholder="المنشاوي">
+                                        </div>
+
+                                        <div class="col-md-6 form-group">
+                                            <label class="text-danger">* الرقم القومي (14 رقم)</label>
+                                            <input type="text" class="form-control" maxlength="14" placeholder="2990901xxxxxxx">
+                                            <small class="text-muted">سيتم استخراج تاريخ الميلاد والمحافظة تلقائياً</small>
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            <label>تاريخ الميلاد</label>
+                                            <input type="date" class="form-control">
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            <label>النوع</label>
+                                            <select class="form-control">
+                                                <option>ذكر</option>
+                                                <option>أنثى</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4 form-group">
+                                            <label>رقم الموبايل</label>
+                                            <input type="tel" class="form-control">
+                                        </div>
+                                        <div class="col-md-5 form-group">
+                                            <label>العنوان بالتفصيل</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+
+                                        <!-- إضافة هامة من الورق: ذوي الهمم -->
+                                        <div class="col-md-3 form-group bg-light rounded border p-2">
+                                            <label class="text-primary" style="font-size: 14px;">فئة خاصة (ذوي الهمم)</label>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="isDisabled" name="IsDisabled">
+                                                <label class="custom-control-label" for="isDisabled">نعم (الـ 5%)</label>
+                                            </div>
+                                            <small class="text-danger" style="font-size:11px">سيتم رفع رصيد الأجازات لـ 45 يوم</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. تبويب البيانات الوظيفية -->
+                        <div class="tab-pane fade" id="job" role="tabpanel" aria-labelledby="job-tab">
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    <label>الإدارة التابع لها</label>
+                                    <select class="form-control select2">
+                                        <option>-- اختر الإدارة --</option>
+                                        <option>الإدارة العامة لنظم المعلومات والتحول الرقمي</option>
+                                        <option>الإدارة العامة للتخطيط والتنمية العمرانية</option>
+                                        <option>الشئون الهندسية</option>
+                                        <option>الشئون المالية</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>المسمى الوظيفي</label>
+                                    <input type="text" class="form-control" placeholder="مثال: أخصائي تشغيل حاسب">
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>المؤهل الدراسي</label>
+                                    <input type="text" class="form-control" placeholder="مثال: بكالوريوس هندسة">
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label>الدرجة المالية الحالية</label>
+                                    <select class="form-control">
+                                        <option>الممتازة (رئيس قطاع)</option>
+                                        <option>العالية (وكيل وزارة)</option>
+                                        <option>مدير عام</option>
+                                        <option>الأولى</option>
+                                        <option>الثانية</option>
+                                        <option>الثالثة</option>
+                                        <option>الرابعة</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label>تاريخ التعيين الفعلي</label>
+                                    <input type="date" class="form-control">
+                                </div>
+
+                                <!-- إضافة هامة من الورق: تاريخ الدرجة للترقيات -->
+                                <div class="col-md-3 form-group">
+                                    <label class="text-primary">تاريخ الحصول على الدرجة</label>
+                                    <input type="date" class="form-control">
+                                    <small class="text-muted">هام لاحتساب أقدمية الترقية</small>
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label>نوع التعيين (الكادر)</label>
+                                    <select class="form-control">
+                                        <option>دائم (موازنة)</option>
+                                        <option>مكافأة شاملة (صناديق)</option>
+                                        <option>عقد مؤقت / فصل مستقل</option>
+                                        <option>منتدب</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. تبويب مسوغات التعيين (الأرشيف الإلكتروني) -->
+                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-file-pdf"></i> يفضل رفع الملفات بصيغة PDF لسهولة العرض والطباعة (نظام E-File).
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>صورة بطاقة الرقم القومي</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile1">
+                                            <label class="custom-file-label" for="customFile1">اختر الملف...</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>صورة المؤهل الدراسي</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile2">
+                                            <label class="custom-file-label" for="customFile2">اختر الملف...</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>شهادة الميلاد المميكنة</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile3">
+                                            <label class="custom-file-label" for="customFile3">اختر الملف...</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>الموقف من التجنيد / الخدمة العامة</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile4">
+                                            <label class="custom-file-label" for="customFile4">اختر الملف...</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>قرار التعيين / العقد</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile5">
+                                            <label class="custom-file-label" for="customFile5">اختر الملف...</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>صحيفة الحالة الجنائية (فيش)</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile6">
+                                            <label class="custom-file-label" for="customFile6">اختر الملف...</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. تبويب البيانات المالية -->
+                        <div class="tab-pane fade" id="financial" role="tabpanel" aria-labelledby="financial-tab">
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    <label>الأساسي في 2019 (بداية الربط)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="0.00">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">جم</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>إجمالي الاستحقاق (Gross)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="0.00">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">جم</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- هام جدا للمعاشات -->
+                                <div class="col-md-4 form-group">
+                                    <label>الرقم التأميني</label>
+                                    <input type="text" class="form-control">
+                                </div>
+
+                                <div class="col-md-6 form-group">
+                                    <label>اسم البنك</label>
+                                    <select class="form-control">
+                                        <option>البنك الأهلي المصري</option>
+                                        <option>بنك مصر</option>
+                                        <option>بنك القاهرة</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label>رقم الحساب / بطاقة الدفع (Meeza)</label>
+                                    <input type="text" class="form-control" placeholder="أرقام البطاقة...">
+                                </div>
+
+                                <div class="col-md-12 mt-2">
+                                    <div class="card bg-light border-info shadow-none">
+                                        <div class="card-body py-2">
+                                            <label class="mb-2 text-info"><i class="fas fa-hand-holding-heart"></i> اشتراكات الصناديق الخاصة:</label>
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary d-inline mr-4">
+                                                    <input type="checkbox" id="checkboxFund1">
+                                                    <label for="checkboxFund1">مشترك في صندوق الزمالة (خصم 1%)</label>
+                                                </div>
+                                                <div class="icheck-success d-inline">
+                                                    <input type="checkbox" id="checkboxFund2">
+                                                    <label for="checkboxFund2">مشترك في التكافل (رعاية طبية)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success float-left"><i class="fas fa-save ml-1"></i> حفظ وتفعيل الملف</button>
+                    <a asp-action="Index" class="btn btn-default"><i class="fas fa-times ml-1"></i> إلغاء</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+
+    <script>
+        // دالة لمعاينة الصورة قبل الرفع
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgPreview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // كود بسيط لتغيير اسم الملف عند اختياره في الانبوت
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>

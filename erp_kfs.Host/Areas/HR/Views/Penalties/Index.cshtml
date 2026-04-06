@@ -1,0 +1,228 @@
+﻿@{
+    ViewData["Title"] = "سجل الجزاءات والمخالفات التأديبية";
+}
+
+<!-- DataTables & Plugins -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-exclamation-triangle text-danger me-2"></i> سجل المخالفات والجزاءات</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">الجزاءات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. نموذج تسجيل جزاء (خصم / إنذار) -->
+        <div class="card card-outline card-danger collapsed-card">
+            <div class="card-header">
+                <h3 class="card-title text-danger text-bold">
+                    <i class="fas fa-file-signature me-1"></i> توقيع جزاء إداري جديد
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" style="display:none;">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <!-- بيانات المخالف -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">الموظف</label>
+                            <select class="form-select select2" style="width:100%">
+                                <option>بحث بالاسم...</option>
+                                <option>محمد فؤاد ابراهيم</option>
+                                <option>بهجت إبراهيم</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">نوع المخالفة</label>
+                            <select class="form-select">
+                                <option>تأخير وغياب</option>
+                                <option>سلوك غير لائق</option>
+                                <option>إهمال وتقصير</option>
+                                <option>مخالفة تعليمات إدارية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">تاريخ المخالفة</label>
+                            <input type="date" class="form-control">
+                        </div>
+
+                        <div class="col-12"><hr class="my-2" /></div>
+
+                        <!-- العقوبة -->
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label text-danger">نوع الجزاء (العقوبة)</label>
+                            <select class="form-select text-danger fw-bold" id="penaltyType" onchange="toggleDeduct()">
+                                <option value="Warning">إنذار / لفت نظر</option>
+                                <option value="Deduct" selected>خصم من الراتب (أيام)</option>
+                                <option value="Hold">وقف عن العمل</option>
+                                <option value="Postpone">تأجيل ترقية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3" id="daysDiv">
+                            <label class="form-label">عدد أيام الخصم</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control fw-bold border-danger" placeholder="0">
+                                <span class="input-group-text text-danger">يوم</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">شهر الخصم (التنفيذ)</label>
+                            <input type="month" class="form-control" value="@DateTime.Now.ToString("yyyy-MM")">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">مرجعية الجزاء (رقم القرار)</label>
+                            <input type="text" class="form-control" placeholder="قرار رقم... بتاريخ...">
+                        </div>
+
+                        <!-- أسباب تفصيلية -->
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">أسباب وحيثيات الجزاء</label>
+                            <textarea class="form-control" rows="2" placeholder="وذلك لأنه قام بـ...."></textarea>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">مرفق صورة القرار / التحقيق</label>
+                            <input type="file" class="form-control">
+                        </div>
+
+                        <div class="col-12 text-center mt-2">
+                            <button type="submit" class="btn btn-danger px-5"><i class="fas fa-gavel me-1"></i> اعتماد الجزاء</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. السجل (ارشيف الجزاءات) -->
+        <div class="card">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">أرشيف الجزاءات المسجلة</h3>
+                <div class="card-tools">
+                    <button class="btn btn-secondary btn-sm" title="فلتر بالموظف"><i class="fas fa-filter"></i></button>
+                    <button class="btn btn-secondary btn-sm" title="طباعة"><i class="fas fa-print"></i></button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table id="penaltyTable" class="table table-bordered table-striped text-center align-middle">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>تاريخ القرار</th>
+                            <th>الموظف</th>
+                            <th>نوع المخالفة</th>
+                            <th>الجزاء الموقع</th>
+                            <th>شهر التنفيذ</th>
+                            <th>رقم القرار</th>
+                            <th>الأثر</th>
+                            <th>خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- جزاء 1: خصم (مالي) -->
+                        <tr>
+                            <td>12/06/2024</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td>تأخير متكرر</td>
+                            <td><span class="badge bg-danger fs-6 p-2">خصم 3 أيام</span></td>
+                            <td>يونيو 2024</td>
+                            <td>105/ق</td>
+                            <td>
+                                <i class="fas fa-money-bill-wave text-warning me-1" title="خصم مالي"></i>
+                                <i class="fas fa-clock text-danger" title="تأخير ترقية"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" title="حذف (بعد قبول تظلم)"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- جزاء 2: إنذار (إداري) -->
+                        <tr>
+                            <td>05/01/2024</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td>مخالفة تعليمات</td>
+                            <td><span class="badge bg-warning text-dark fs-6 p-2">لفت نظر (إنذار)</span></td>
+                            <td>يناير 2024</td>
+                            <td>20/ق</td>
+                            <td>
+                                <i class="fas fa-file-contract text-secondary" title="ملف الموظف"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" title="تعديل"><i class="fas fa-pen"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- جزاء 3: وقف عن العمل -->
+                        <tr class="table-warning">
+                            <td>01/03/2024</td>
+                            <td class="text-end fw-bold">موظف قيد التحقيق</td>
+                            <td>تغيب بدون إذن</td>
+                            <td><span class="badge bg-dark fs-6 p-2">وقف عن العمل (شهر)</span></td>
+                            <td>مارس 2024</td>
+                            <td>55/ق</td>
+                            <td>
+                                <i class="fas fa-money-bill-slash text-danger" title="وقف نصف الراتب"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" title="التفاصيل"><i class="fas fa-eye"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <!-- Scripts -->
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            // تفعيل السليكت 2
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
+
+            // الجدول
+            $("#penaltyTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false
+            });
+        });
+
+        // دالة إظهار/إخفاء عدد الأيام حسب النوع
+        function toggleDeduct() {
+            var type = document.getElementById("penaltyType").value;
+            var div = document.getElementById("daysDiv");
+
+            if (type === "Deduct" || type === "Hold") {
+                div.style.visibility = "visible"; // إظهار خانة الأيام
+                div.style.opacity = "1";
+            } else {
+                div.style.visibility = "hidden";  // إخفاء في حالة الإنذار
+                div.style.opacity = "0";
+            }
+        }
+    </script>

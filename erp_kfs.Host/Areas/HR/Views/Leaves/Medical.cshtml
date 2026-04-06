@@ -1,0 +1,186 @@
+﻿@{
+    ViewData["Title"] = "الأجازات المرضية واللجان الطبية";
+}
+
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">الأجازات المرضية (قومسيون / مستشفيات)</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الأجازات</a></li>
+                    <li class="breadcrumb-item active">أجازات مرضية</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. نموذج تسجيل أجازة مرضية (قرار قومسيون) -->
+        <div class="card card-danger card-outline collapsed-card">
+            <div class="card-header">
+                <h3 class="card-title text-danger"><i class="fas fa-file-medical-alt me-2"></i> تسجيل قرار لجنة طبية / تقرير مستشفى</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <!-- بيانات الموظف -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">الموظف المريض</label>
+                            <select class="form-select select2">
+                                <option>بهجت إبراهيم</option>
+                                <option>رانيا أبو النصر</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">جهة التقرير الطبي</label>
+                            <select class="form-select">
+                                <option>اللجنة الطبية العامة (القومسيون)</option>
+                                <option>التأمين الصحي</option>
+                                <option>مستشفى حكومي (دخول طوارئ)</option>
+                                <option>عيادة خاصة (تحتاج اعتماد)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">رقم قرار اللجنة</label>
+                            <input type="text" class="form-control" placeholder="رقم وتاريخ...">
+                        </div>
+
+                        <!-- التواريخ -->
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ الكشف (البدء)</label>
+                            <input type="date" class="form-control" id="startMedicalDate" onchange="calcMedical()">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">حتى تاريخ</label>
+                            <input type="date" class="form-control" id="endMedicalDate" onchange="calcMedical()">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">عدد الأيام</label>
+                            <input type="text" class="form-control bg-light" id="medicalDays" readonly>
+                        </div>
+
+                        <!-- نوع الاستحقاق (هل تخصم من الراتب؟) -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">نسبة استحقاق الراتب</label>
+                            <select class="form-select text-danger fw-bold">
+                                <option value="100">أجر كامل (مرض عادي / عمليات)</option>
+                                <option value="100">أجر كامل (مرض مزمن)</option>
+                                <option value="75">75% من الأجر</option>
+                                <option value="0">بدون أجر (تجاوز المدة)</option>
+                            </select>
+                            <small class="text-muted">تحدد وفقاً لقرار اللجنة وقانون الخدمة المدنية.</small>
+                        </div>
+
+                        <!-- التشخيص (سري) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">التشخيص المبدئي</label>
+                            <input type="text" class="form-control" placeholder="مثال: إجراء عملية جراحية...">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">مرفق التقرير / صورة قرار اللجنة</label>
+                            <input type="file" class="form-control">
+                        </div>
+
+                        <div class="col-12 border-top pt-2">
+                            <button class="btn btn-danger"><i class="fas fa-save me-1"></i> حفظ وتسكين الأجازة</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. أرشيف الحالات المرضية -->
+        <div class="card">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">سجل الحالات المرضية السارية والمنتهية</h3>
+            </div>
+            <div class="card-body">
+                <table id="medicalTable" class="table table-bordered table-striped text-center">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الموظف</th>
+                            <th>التشخيص / السبب</th>
+                            <th>من تاريخ</th>
+                            <th>إلى تاريخ</th>
+                            <th>المدة</th>
+                            <th>نسبة الأجر</th>
+                            <th>المرفق</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: جارية -->
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end font-weight-bold">فاطمة الشرباني</td>
+                            <td>مرض مزمن (قرار 102)</td>
+                            <td>01/01/2024</td>
+                            <td>31/12/2026</td>
+                            <td><span class="badge bg-purple">3 سنوات</span></td>
+                            <td><span class="badge bg-success">100% (أجر كامل)</span></td>
+                            <td><i class="fas fa-file-medical text-danger"></i></td>
+                            <td><span class="badge bg-warning text-dark">سارية (مرض مزمن)</span></td>
+                        </tr>
+
+                        <!-- حالة 2: عملية جراحية -->
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end font-weight-bold">رانيا ابو النصر</td>
+                            <td>أجازة وضع (3 شهور)</td>
+                            <td>01/02/2024</td>
+                            <td>01/05/2024</td>
+                            <td><span class="badge bg-info text-dark">90 يوم</span></td>
+                            <td><span class="badge bg-success">100%</span></td>
+                            <td><i class="fas fa-baby-carriage text-info"></i></td>
+                            <td><span class="badge bg-secondary">منتهية</span></td>
+                        </tr>
+
+                        <!-- حالة 3: خصم من الراتب -->
+                        <tr>
+                            <td>3</td>
+                            <td class="text-end font-weight-bold">بهجت إبراهيم</td>
+                            <td>عملية رمد</td>
+                            <td>15/06/2024</td>
+                            <td>20/06/2024</td>
+                            <td>5 أيام</td>
+                            <td><span class="badge bg-success">100%</span></td>
+                            <td><i class="fas fa-paperclip text-secondary"></i></td>
+                            <td><span class="badge bg-primary">جديدة</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <script>
+        $(function () {
+             $("#medicalTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                 "autoWidth": false
+             });
+        });
+
+        // حساب عدد أيام المرضي
+        function calcMedical() {
+            var d1 = new Date(document.getElementById("startMedicalDate").value);
+            var d2 = new Date(document.getElementById("endMedicalDate").value);
+            if(d1 && d2){
+                var diff = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
+                document.getElementById("medicalDays").value = (diff + 1) + " يوم";
+            }
+        }
+    </script>

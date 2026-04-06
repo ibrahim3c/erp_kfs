@@ -1,0 +1,271 @@
+﻿@{
+    ViewData["Title"] = "سجل الموظفين العام";
+}
+
+<!-- رابط CSS الخاص بـ DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<!-- 1. قسم الفلتر والبحث المتقدم -->
+<div class="card card-outline card-primary collapsed-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-filter mr-1"></i> بحث متقدم وفلترة</h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body" style="display: none;">
+        <form>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label>الرقم القومي / الوظيفي</label>
+                    <input type="text" class="form-control" placeholder="أدخل الرقم...">
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>اسم الموظف</label>
+                    <input type="text" class="form-control" placeholder="بحث بالاسم...">
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>الإدارة / القسم</label>
+                    <select class="form-control select2">
+                        <option value="">-- الكل --</option>
+                        <option>الإدارة العامة لنظم المعلومات</option>
+                        <option>التخطيط العمراني</option>
+                        <option>الشئون الهندسية</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>الدرجة الوظيفية</label>
+                    <select class="form-control">
+                        <option value="">-- الكل --</option>
+                        <option>مدير عام</option>
+                        <option>الأولى</option>
+                        <option>الثانية</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>نوع التعيين</label>
+                    <select class="form-control">
+                        <option value="">-- الكل --</option>
+                        <option>دائم</option>
+                        <option>مؤقت / عقد</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label>حالة الموظف</label>
+                    <select class="form-control">
+                        <option value="1">على رأس العمل</option>
+                        <option value="2">إجازة بدون مرتب</option>
+                        <option value="3">منتهية خدمته</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12 text-left">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> بحث</button>
+                    <button type="reset" class="btn btn-default">إعادة تعيين</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. جدول البيانات (Data Table) -->
+<div class="card">
+    <div class="card-header border-0">
+        <h3 class="card-title text-bold text-dark">قاعدة بيانات العاملين</h3>
+        <div class="card-tools">
+            <a asp-action="Create" class="btn btn-success btn-sm">
+                <i class="fas fa-user-plus"></i> إضافة موظف جديد
+            </a>
+            <a href="#" class="btn btn-info btn-sm">
+                <i class="fas fa-file-excel"></i> استيراد (Excel)
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="employeesTable" class="table table-bordered table-striped table-hover text-center" style="width:100%">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th style="width: 2%">#</th>
+                        <th>كود</th>
+                        <th style="width: 20%">الاسم بالكامل</th>
+                        <th>الوظيفة / التخصص</th>
+                        <th>الدرجة</th>
+                        <th>الإدارة</th>
+                        <th>تاريخ التعيين</th>
+                        <th>نوع التعيين</th>
+                        <th>الحالة</th>
+                        <th style="width: 10%">خيارات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- مثال 1 -->
+                    <tr>
+                        <td>1</td>
+                        <td>1001</td>
+                        <td class="text-right font-weight-bold">فاطمة عبدالفتاح الشرباني</td>
+                        <td>مدير عام (أخصائي عمراني)</td>
+                        <td><span class="badge badge-warning">مدير عام</span></td>
+                        <td>التخطيط العمراني</td>
+                        <td>01-05-2002</td>
+                        <td>موازنة</td>
+                        <td><span class="badge badge-success">يعمل</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- التعديل هنا: data-bs-toggle -->
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- مثال 2 -->
+                    <tr>
+                        <td>2</td>
+                        <td>1002</td>
+                        <td class="text-right font-weight-bold">محمد فؤاد ابراهيم</td>
+                        <td>كبير اخصائيين</td>
+                        <td><span class="badge badge-primary">الأولى</span></td>
+                        <td>الشئون الهندسية</td>
+                        <td>12-01-2006</td>
+                        <td>موازنة</td>
+                        <td><span class="badge badge-success">يعمل</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- التعديل هنا: data-bs-toggle -->
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- مثال 3 (أجازة) -->
+                    <tr>
+                        <td>3</td>
+                        <td>1003</td>
+                        <td class="text-right font-weight-bold">بهجت ابراهيم محمد</td>
+                        <td>مهندس زراعي</td>
+                        <td><span class="badge badge-info">الثانية</span></td>
+                        <td>الحدائق والتشجير</td>
+                        <td>19-05-2002</td>
+                        <td>موازنة</td>
+                        <td><span class="badge badge-danger">أجازة</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- التعديل هنا: data-bs-toggle -->
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- مثال 4 -->
+                    <tr>
+                        <td>4</td>
+                        <td>1004</td>
+                        <td class="text-right font-weight-bold">رانيا ابو النصر عبد السلام</td>
+                        <td>باحث قانوني</td>
+                        <td><span class="badge badge-primary">الأولى</span></td>
+                        <td>الشئون القانونية</td>
+                        <td>01-07-2019</td>
+                        <td>موازنة</td>
+                        <td><span class="badge badge-success">يعمل</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- التعديل هنا: data-bs-toggle -->
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- مثال 5 (مؤقت) -->
+                    <tr>
+                        <td>5</td>
+                        <td>1005</td>
+                        <td class="text-right font-weight-bold">آمنة جمعة رزق</td>
+                        <td>كاتب سكرتارية</td>
+                        <td><span class="badge badge-secondary">الرابعة</span></td>
+                        <td>خدمة المواطنين</td>
+                        <td>04-09-2023</td>
+                        <td>مؤقت / فصل</td>
+                        <td><span class="badge badge-success">يعمل</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- التعديل هنا: data-bs-toggle -->
+                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

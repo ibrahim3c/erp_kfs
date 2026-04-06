@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "سجل القرارات الإدارية";
+}
+
+<!-- CSS Links -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">القرارات الإدارية (تعيين / تثبيت / ترقية)</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">سجل القرارات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. نموذج إضافة قرار جديد -->
+        <div class="card card-purple card-outline collapsed-card">
+            <div class="card-header">
+                <h3 class="card-title text-purple"><i class="fas fa-file-signature mr-2"></i> تسجيل قرار جديد</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" style="display:none;">
+                <form method="post">
+                    <div class="row">
+                        <!-- بيانات القرار الأساسية -->
+                        <div class="col-md-3 mb-3">
+                            <label>رقم القرار</label>
+                            <input type="text" class="form-control" placeholder="مثال: 546 لسنة 2024">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>تاريخ صدور القرار</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>تاريخ العمل به (السريان)</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>مصدر القرار (الجهة)</label>
+                            <select class="form-control">
+                                <option>المحافظة</option>
+                                <option>رئيس الهيئة / الجهاز</option>
+                                <option>وزارة المالية</option>
+                                <option>قرار تنفيذي داخلي</option>
+                            </select>
+                        </div>
+
+                        <!-- تفاصيل القرار -->
+                        <div class="col-md-4 mb-3">
+                            <label>نوع القرار</label>
+                            <select class="form-control" id="decisionType">
+                                <option value="1">تعيين جديد (مجموعة)</option>
+                                <option value="2">تثبيت عمالة مؤقتة</option>
+                                <option value="3">حركة ترقيات</option>
+                                <option value="4">تسوية مؤهل أعلى</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label>موضوع القرار (نص مختصر)</label>
+                            <input type="text" class="form-control" placeholder="بشأن تثبيت العاملين المتعاقدين بند 2/3 ...">
+                        </div>
+
+                        <!-- المرفق (PDF) -->
+                        <div class="col-md-6 mb-3">
+                            <label>صورة القرار (Scanner)</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="scanFile">
+                                <label class="custom-file-label">اختر ملف PDF...</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <!-- Select2 لإختيار موظفين متعددين -->
+                            <label>الموظفين المشمولين بالقرار (اختيار متعدد)</label>
+                            <select class="select2" multiple="multiple" data-placeholder="اختر الاسماء من هنا..." style="width: 100%;">
+                                <option>محمد فؤاد ابراهيم</option>
+                                <option>فاطمة عبدالفتاح الشرباني</option>
+                                <option>رانيا أبو النصر</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="text-left mt-3">
+                        <button class="btn btn-purple bg-purple text-white"><i class="fas fa-check"></i> حفظ وإصدار القرار</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. جدول القرارات الصادرة -->
+        <div class="card card-outline card-secondary">
+            <div class="card-header border-0">
+                <h3 class="card-title">أرشيف القرارات الصادرة</h3>
+                <div class="card-tools">
+                    <div class="input-group input-group-sm" style="width: 150px;">
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="بحث برقم القرار">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-striped text-center projects">
+                    <thead>
+                        <tr>
+                            <th>رقم القرار</th>
+                            <th class="text-left">الموضوع</th>
+                            <th>النوع</th>
+                            <th>التاريخ</th>
+                            <th>عدد الموظفين</th>
+                            <th>حالة التنفيذ</th>
+                            <th>المرفقات</th>
+                            <th>خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- قرار 1: تم التنفيذ -->
+                        <tr>
+                            <td class="font-weight-bold">128/2023</td>
+                            <td class="text-left">
+                                <a>تثبيت العمالة المؤقتة دفعة 2018</a>
+                                <br />
+                                <small>صادر من: إدارة الموارد البشرية</small>
+                            </td>
+                            <td><span class="badge badge-primary">تثبيت</span></td>
+                            <td>01/01/2024</td>
+                            <td>
+                                <div class="user-block">
+                                    <span class="badge badge-light border">15 موظف</span>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-success">تم التنفيذ</span></td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-file-pdf"></i> PDF</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-info btn-sm" href="#"><i class="fas fa-eye"></i></a>
+                                <a class="btn btn-warning btn-sm" href="#"><i class="fas fa-pen"></i></a>
+                            </td>
+                        </tr>
+
+                        <!-- قرار 2: جديد لم ينفذ -->
+                        <tr>
+                            <td class="font-weight-bold">54/2024</td>
+                            <td class="text-left">
+                                <a>ترقية العاملين للدرجة الأولى (أ)</a>
+                                <br />
+                                <small>صادر من: الجهاز المركزي</small>
+                            </td>
+                            <td><span class="badge badge-info">ترقية</span></td>
+                            <td>01/07/2024</td>
+                            <td>
+                                <span class="badge badge-light border">142 موظف</span>
+                            </td>
+                            <td><span class="badge badge-warning">جاري التنفيذ</span></td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-file-pdf"></i> PDF</a>
+                            </td>
+                            <td>
+                                <!-- زرار لتنفيذ القرار وتحديث ملفات الموظفين -->
+                                <a class="btn btn-success btn-sm" href="#" title="تطبيق القرار على الموظفين"><i class="fas fa-play"></i> تطبيق</a>
+                                <a class="btn btn-info btn-sm" href="#"><i class="fas fa-eye"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Select2 Script -->
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            // تفعيل قائمة الاختيار المتعدد (Select2)
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            })
+
+             // كود تجميلي لرفع الملفات
+            $(".custom-file-input").on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        });
+    </script>

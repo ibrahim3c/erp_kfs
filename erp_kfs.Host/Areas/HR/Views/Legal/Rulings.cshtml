@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "تنفيذ الأحكام القضائية النهائية";
+}
+
+<!-- CSS Links -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-balance-scale text-primary me-2"></i> متابعة الأحكام والصيغ التنفيذية
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">الأحكام</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- تنبيه بالأحكام الجديدة -->
+        <div class="callout callout-danger">
+            <h5 class="text-danger"><i class="fas fa-bell me-1"></i> تنبيه هام:</h5>
+            <p>يوجد عدد <b>(2)</b> حكم قضائي جديد (وارد من الشئون القانونية) لم يتم تنفيذه بعد. التأخير في التنفيذ يعرض المسئول للمسائلة (عزل وحبس - مادة 123).</p>
+        </div>
+
+        <div class="card card-outline card-primary">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">سجل الأحكام الواجبة النفاذ</h3>
+                <div class="card-tools">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <input type="text" class="form-control float-right" placeholder="بحث برقم الدعوى / اسم الموظف">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped text-center align-middle">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>رقم الدعوى</th>
+                            <th>السنة</th>
+                            <th>المدعي (الموظف)</th>
+                            <th class="text-start">منطوق الحكم (ملخص)</th>
+                            <th>نوع التنفيذ</th>
+                            <th>المرفق (الصيغة)</th>
+                            <th>الموقف التنفيذي</th>
+                            <th>خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <!-- حالة 1: لم تنفذ (خطر) -->
+                        <tr class="bg-white border-left-danger" style="border-left: 5px solid #dc3545;">
+                            <td>5642</td>
+                            <td>68 ق</td>
+                            <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
+                            <td class="text-start">
+                                قبول الدعوى شكلاً، وإلغاء القرار الإداري رقم 50 فيما تضمنه من تخطي المذكور في الترقية...
+                            </td>
+                            <td><span class="badge bg-purple">تعديل ترقية</span></td>
+                            <td><a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-file-pdf"></i> PDF</a></td>
+                            <td><span class="badge bg-danger p-2">لم ينفذ</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="confirmExec('5642', 'ترقية بأثر رجعي')">
+                                    <i class="fas fa-play me-1"></i> تنفيذ الحكم
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: تم التنفيذ -->
+                        <tr>
+                            <td>1020</td>
+                            <td>70 ق</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td class="text-start">
+                                أحقية المدعية في صرف مقابل رصيد الأجازات الاعتيادية بواقع 400 يوم...
+                            </td>
+                            <td><span class="badge bg-success">صرف مالي</span></td>
+                            <td><a href="#" class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i></a></td>
+                            <td><span class="badge bg-success p-2">تم التنفيذ</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-default border" title="أرشيف المستندات"><i class="fas fa-box-open text-warning"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 3: تحت الإجراء -->
+                        <tr>
+                            <td>880</td>
+                            <td>2024</td>
+                            <td class="text-end fw-bold">موظف مفصول</td>
+                            <td class="text-start text-danger">
+                                وقف تنفيذ قرار إنهاء الخدمة وعودة المذكور للعمل مؤقتاً لحين الفصل في الموضوع...
+                            </td>
+                            <td><span class="badge bg-danger">عودة للعمل</span></td>
+                            <td><a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-file-image"></i> Scan</a></td>
+                            <td><span class="badge bg-warning text-dark">جاري استلام العمل</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-plus text-primary me-2"></i> تفعيل الملف</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-contract text-dark me-2"></i> قرار تنفيذي</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script>
+        // دالة تأكيد التنفيذ (محاكاة لإجراء رسمي)
+        function confirmExec(caseNo, actionType) {
+            Swal.fire({
+                title: 'تأكيد تنفيذ الحكم رقم ' + caseNo,
+                html: "الإجراء المطلوب: <b>" + actionType + "</b><br>سيتم إنشاء قرار تنفيذي وتعديل ملف الموظف فوراً.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم، نفذ وسجل القرار',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'تم التنفيذ!',
+                        'تم إصدار القرار التنفيذي وتعديل البيانات بنجاح.',
+                        'success'
+                    )
+                    // هنا المفروض نعمل Ajax Request للسيرفر
+                }
+            })
+        }
+    </script>

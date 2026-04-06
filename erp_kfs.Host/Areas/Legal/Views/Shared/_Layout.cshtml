@@ -1,0 +1,374 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - المنصة الرقمية</title>
+    <!-- 1. SEO Meta Tags -->
+    <meta name="description" content="المنصة الرقمية الموحدة لمحافظة كفر الشيخ - نظام ERP شامل لإدارة الموارد البشرية، المخازن، الشئون القانونية، والحملة">
+    <meta name="keywords" content="ERP, كفر الشيخ, موارد بشرية, مخازن, حكومة الكترونية, تحول رقمي">
+    <meta name="author" content="الإدارة العامة لنظم المعلومات والتحول الرقمي">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/css/bootstrap/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/css/all.min.css">
+    <!-- animate -->
+    <link rel="stylesheet" href="~/css/animate/animate.css">
+    <!-- Global Css Link -->
+    <link rel="stylesheet" href="~/css/global/main.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="css/global/adminlte.css">
+    <!-- dash-style -->
+    <link rel="stylesheet" href="css/global/dash-style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
+</head>
+<body style="margin:0;">
+    <!-- start top bar -->
+    <section class="top-bar bg-dark bg-light-radial">
+        <div class="container">
+            <div class="row pt-2 pb-2">
+                <div class="col time ">
+                    <div id="clock" class="BannerBarText text-light wow fadeInUp" data-wow-offset="10"></div>
+                </div>
+                <div class="col d-none d-lg-block text-start">
+                    <div class="links wow fadeInDown" data-wow-offset="10">
+                        <a class="Prayer" href="http://prayertimes3.today/egypt-eg/kafrsheikh-175.html" target="_blank"
+                           title="مواقيت الصلاة"><i class="fa-solid fa-mosque"></i></a>
+                        <a class="weather " href="http://ema.gov.eg/wp/bulletin-page" target="_blank"
+                           title="مواقيت الصلاة"><i class="fa-solid fa-cloud-sun-rain"></i></a>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <!-- end top bar -->
+    <!-- start header lg -->
+    <header class=" d-none d-lg-block">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-2 ">
+                    <div class="logo d-flex mx-auto">
+                        <img src="image/kfs-logo (2).png" alt="" class="mt-3 wow fadeInRight" data-wow-offset="10"
+                             data-wow-delay="1s">
+                        <div class="border m-2"></div>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="head text-center pt-1 mx-auto">
+                        <img class="wow fadeInDown" data-wow-duration="2s" src="image/kfs-word.png" alt="">
+                        <h4 class=" light-dark pt-1  wow fadeInUp" data-wow-duration="3s">
+                            الإدارة العامة لنظم
+                            المعلومات والتحول الرقمي
+                        </h4>
+                        <h5 class=" light-dark pt-1  wow flipInY " data-wow-duration="4s">المنصة الإحصائية</h5>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="logo d-flex mx-auto">
+                        <div class="border m-2"></div>
+                        <img src="image/eg-logo.png" alt="" class="mt-3 wow fadeInLeft" data-wow-offset="10"
+                             data-wow-delay="1s">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- end header lg -->
+    <!-- start header sm screen -->
+    <header class="d-lg-none">
+        <div class="container">
+            <div class="row">
+                <div class="col-3 pt-2 d-flex">
+                    <div class="logo d-block">
+                        <img src="image/kfs-logo (2).png" alt="" class="wow fadeInDown" data-wow-offset="10"
+                             data-wow-delay="1s">
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="head text-center pt-1">
+                        <img class="wow wow fadeInDown mb-1" data-wow-duration="2s" src="image/kfs-word.png" alt="">
+                        <h4 class=" light-dark wow fadeInUp mb-2" data-wow-duration="3s">
+                            الإدارة العامة لنظم
+                            المعلومات والتحول الرقمي
+                        </h4>
+                        <h5 class=" light-dark wow flipInY" data-wow-duration="4s">المنصة الإحصائية</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- end header sm screen -->
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white bg-dark">
+            <!-- right navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+                @*<li class="nav-item d-none d-sm-inline-block">
+                        <a href="index3.html" class="nav-link">الرئيسية</a>
+                    </li>*@
+            </ul>
+
+            <!-- left navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Navbar Search -->
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <div class="navbar-search-block">
+                        <form class="form-inline">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
+                                       aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-navbar" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4 bg-dark">
+            <!-- Brand Logo -->
+            <a href="index3.html" class="brand-link">
+                <img src="image/kfs-logo (2).png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                     style="opacity: .8">
+                <span class="brand-text font-weight-light">أسم القطاع</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="image/kfs-logo (2).png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block">Kfs</a>
+                    </div>
+                </div>
+
+                <!-- SidebarSearch Form -->
+                <div class="form-inline">
+                    <div class="input-group" data-widget="sidebar-search">
+                        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-sidebar">
+                                <i class="fas fa-search fa-fw"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar right Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <nav class="mt-2">
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                                <!-- 1. اللوحة الرئيسية -->
+                                <li class="nav-item">
+                                    <a asp-area="Legal" asp-controller="Home" asp-action="Index" class="nav-link active">
+                                        <i class="nav-icon fas fa-balance-scale"></i>
+                                        <p>لوحة الشئون القانونية</p>
+                                    </a>
+                                </li>
+
+                                <!-- 2. التحقيقات الإدارية (Internal Investigations) -->
+                                <li class="nav-item menu-open">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-gavel"></i>
+                                        <p>
+                                            التحقيقات الإدارية
+                                            <i class="fas fa-angle-left right"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <!-- شكاوى المحالين للتحقيق -->
+                                            <a asp-area="Legal" asp-controller="Investigations" asp-action="Create" class="nav-link text-warning">
+                                                <i class="fas fa-exclamation-circle nav-icon"></i>
+                                                <p>فتح تحقيق جديد</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-area="Legal" asp-controller="Investigations" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-clipboard-list nav-icon"></i>
+                                                <p>سجل التحقيقات الجارية</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <!-- استدعاء الموظف للتحقيق -->
+                                            <a asp-area="Legal" asp-controller="Summons" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-envelope-open-text nav-icon"></i>
+                                                <p>طلبات الاستدعاء</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <!-- القرارات: خصم، إنذار، فصل... -->
+                                            <a asp-area="Legal" asp-controller="Decisions" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-file-signature nav-icon"></i>
+                                                <p>قرارات الجزاءات</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- 3. القضايا والمحاكم (Litigation) -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-landmark"></i>
+                                        <p>
+                                            القضايا والمحاكم
+                                            <i class="fas fa-angle-left right"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <!-- القضايا المتداولة -->
+                                            <a asp-area="Legal" asp-controller="Cases" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-folder-open nav-icon"></i>
+                                                <p>سجل القضايا</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <!-- جلسات الشهر الحالي -->
+                                            <a asp-area="Legal" asp-controller="Hearings" asp-action="Calendar" class="nav-link text-info">
+                                                <i class="far fa-calendar-alt nav-icon"></i>
+                                                <p>أجندة الجلسات</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <!-- الأحكام النهائية -->
+                                            <a asp-area="Legal" asp-controller="Rulings" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-award nav-icon"></i>
+                                                <p>سجل الأحكام القضائية</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <!-- الصيغ التنفيذية -->
+                                            <a asp-area="Legal" asp-controller="Execution" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-check-double nav-icon"></i>
+                                                <p>تنفيذ الأحكام</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- 4. العقود والفتوى (Contracts & Opinions) -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-file-contract"></i>
+                                        <p>
+                                            العقود والرأي
+                                            <i class="fas fa-angle-left right"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a asp-area="Legal" asp-controller="Contracts" asp-action="Review" class="nav-link">
+                                                <i class="fas fa-search nav-icon"></i>
+                                                <p>مراجعة العقود</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-area="Legal" asp-controller="Consultations" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-book-reader nav-icon"></i>
+                                                <p>الفتوى والرأي القانوني</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-area="Legal" asp-controller="Archive" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-archive nav-icon"></i>
+                                                <p>أرشيف الوثائق القانونية</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- 5. الإعدادات القانونية -->
+                                <li class="nav-header">إعدادات قانونية</li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Legal" asp-controller="Settings" asp-action="Courts" class="nav-link">
+                                        <i class="fas fa-university nav-icon"></i>
+                                        <p>تعريف المحاكم والجهات</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Legal" asp-controller="Settings" asp-action="CaseTypes" class="nav-link">
+                                        <i class="fas fa-tags nav-icon"></i>
+                                        <p>أنواع القضايا</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="Legal" asp-controller="Lawyers" asp-action="Index" class="nav-link">
+                                        <i class="fas fa-briefcase nav-icon"></i>
+                                        <p>دليل المحامين والخبراء</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <!-- /  Sidebar right Menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Main Sidebar Container -->
+
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+        <!-- Start footer-->
+        <footer class="bg-dark bg-light-radial p-3 ">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col">
+                        <p class="copyright-text">
+                            حقوق الطبع والنشر <span> &copy; </span> الإدارة العامة لنظم المعلومات والتحول الرقمي
+
+                            <a class="nozom" href="#">إدارة النظم والتطبيقات</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end footer-->
+        <!-- jQuery -->
+        <script src="js/jquery/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+        <!-- Font Awesome  -->
+        <script src="js/all.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="js/global/adminlte.js"></script>
+        <!-- global js -->
+        <script src="js/global/main.js"></script>
+
+        <script src="js/animate/wow.min.js"></script>
+        <script>
+            new WOW().init();
+        </script>
+        <script>
+            $(function () {
+                $('.select2').select2()
+            });
+        </script>
+</body>
+</html>

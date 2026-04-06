@@ -1,0 +1,249 @@
+﻿@{
+    ViewData["Title"] = "تصفية الغياب والانقطاع";
+}
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- SweetAlert2 (للتنبيهات الجميلة) -->
+<link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">تسوية الغياب (المعلقات)</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">الغياب</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. تنبيهات قانونية وإحصائيات -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-danger bg-light border-danger text-danger">
+                    <h5><i class="icon fas fa-exclamation-triangle"></i> تنبيه هام - قانون الخدمة المدنية:</h5>
+                    <ul>
+                        <li>يتم إنذار الموظف بعد <b>5 أيام</b> غياب متصلة، ويفصل بعد <b>15 يوم</b> متصلة (بدون عذر).</li>
+                        <li>يتم إنذار الموظف بعد <b>10 أيام</b> غياب منفصلة، ويفصل بعد <b>30 يوم</b> منفصلة خلال السنة.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-6">
+                <div class="info-box bg-warning">
+                    <span class="info-box-icon"><i class="fas fa-question"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">غياب بدون تسوية</span>
+                        <span class="info-box-number">23 حالة</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="info-box bg-danger">
+                    <span class="info-box-icon"><i class="fas fa-user-times"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">تجاوز المدة القانونية</span>
+                        <span class="info-box-number">2 موظف</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. جدول حالات الغياب -->
+        <div class="card card-outline card-secondary">
+            <div class="card-header border-0">
+                <h3 class="card-title"><i class="fas fa-filter me-2"></i> سجل الموظفين المتغيبين هذا الشهر</h3>
+                <div class="card-tools">
+                    <button class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table id="absenceTable" class="table table-bordered table-striped table-hover text-center">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>اسم الموظف</th>
+                            <th>تواريخ الغياب</th>
+                            <th>عدد الأيام</th>
+                            <th>نوع الغياب</th>
+                            <th>رصيد اعتيادي</th>
+                            <th>الإجراء الحالي</th>
+                            <th>خيارات التسوية</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: غياب عادي -->
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td>12, 13, 14 يونيو</td>
+                            <td><span class="badge bg-purple" style="font-size:14px">3 أيام</span></td>
+                            <td>منقطع (متصل)</td>
+                            <td class="text-success fw-bold">18 يوم</td>
+                            <td><span class="badge bg-secondary">معلق</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openSettlementModal('رانيا أبو النصر', 3, 18)" title="تسوية الحالة">
+                                    <i class="fas fa-gavel"></i> اتخاذ قرار
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: تجاوز المدة (خطر) -->
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold text-danger">محمد فؤاد ابراهيم</td>
+                            <td>01/06 إلي 10/06</td>
+                            <td><span class="badge bg-danger" style="font-size:14px">10 أيام</span></td>
+                            <td>منقطع (متصل)</td>
+                            <td class="text-success fw-bold">5 أيام</td>
+                            <td><span class="badge bg-warning text-dark">يجب الإنذار</span></td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="alertLegalAction()" title="تحويل للشئون القانونية">
+                                    <i class="fas fa-balance-scale"></i> تحقيق قانوني
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 3: تمت التسوية -->
+                        <tr class="bg-light text-muted">
+                            <td>3</td>
+                            <td class="text-end">فاطمة الشرباني</td>
+                            <td>05/06</td>
+                            <td>1 يوم</td>
+                            <td>عارضة</td>
+                            <td>-</td>
+                            <td><span class="badge bg-success">تم الخصم من الرصيد</span></td>
+                            <td>
+                                <button class="btn btn-default btn-sm border" disabled><i class="fas fa-check"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: تسوية الغياب (اتخاذ القرار) -->
+<div class="modal fade" id="settlementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-tasks me-2"></i> قرار تسوية غياب</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-action="Settle">
+                <div class="modal-body">
+                    <!-- ملخص الحالة -->
+                    <div class="callout callout-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>الموظف:</strong> <span id="modalEmpName" class="text-primary">...</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>مدة الغياب:</strong> <span id="modalDays" class="text-danger fw-bold">...</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>الرصيد المتاح:</strong> <span id="modalBalance" class="text-success">...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="border-bottom pb-2 text-primary">الرجاء اختيار نوع التسوية:</h6>
+
+                    <!-- الخيار 1: الخصم من الرصيد -->
+                    <div class="form-check p-3 border rounded mb-2 bg-light">
+                        <input class="form-check-input" type="radio" name="ActionType" id="actionBalance" value="DeductBalance" checked>
+                        <label class="form-check-label fw-bold" for="actionBalance">
+                            خصم من رصيد الأجازات (اعتيادي)
+                        </label>
+                        <small class="d-block text-muted ps-4">يتم تحويل الأيام لـ أجازة اعتيادي ويخصم من الرصيد (شرط وجود رصيد).</small>
+                    </div>
+
+                    <!-- الخيار 2: عارضة (لو أقل من يومين) -->
+                    <div class="form-check p-3 border rounded mb-2">
+                        <input class="form-check-input" type="radio" name="ActionType" id="actionCasual" value="DeductCasual">
+                        <label class="form-check-label fw-bold" for="actionCasual">
+                            احتساب أجازة عارضة
+                        </label>
+                        <small class="d-block text-muted ps-4">يشترط عدم استنفاد رصيد العارضة (7 أيام).</small>
+                    </div>
+
+                    <!-- الخيار 3: الخصم المالي (الجزاء) -->
+                    <div class="form-check p-3 border rounded mb-2 border-danger">
+                        <input class="form-check-input" type="radio" name="ActionType" id="actionSalary" value="SalaryPenalty">
+                        <label class="form-check-label fw-bold text-danger" for="actionSalary">
+                            خصم من الراتب (غياب بدون أذن + جزاء)
+                        </label>
+                        <small class="d-block text-muted ps-4">سيتم خصم الأيام من "خانة الغياب" في شيت المرتب + إمكانية توقيع جزاء إضافي.</small>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label>ملاحظات القرار / سبب الرفض</label>
+                        <textarea class="form-control" rows="2" placeholder="اكتب مبررات القرار هنا..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check-double me-1"></i> اعتماد التسوية</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#absenceTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false,
+            });
+        });
+
+        // فتح المودال وتعبئة البيانات (Dynamic)
+        function openSettlementModal(name, days, balance) {
+            document.getElementById("modalEmpName").innerText = name;
+            document.getElementById("modalDays").innerText = days + " يوم";
+            document.getElementById("modalBalance").innerText = balance + " يوم";
+
+            var myModal = new bootstrap.Modal(document.getElementById('settlementModal'));
+            myModal.show();
+        }
+
+        // تنبيه التحويل للشئون القانونية
+        function alertLegalAction() {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم تحويل الموظف للشئون القانونية وإصدار خطاب إنذار بالفصل!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، تحويل للتحقيق',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'تم التحويل!',
+                        'تم إنشاء ملف في موديول الشئون القانونية بنجاح.',
+                        'success'
+                    )
+                }
+            })
+        }
+    </script>

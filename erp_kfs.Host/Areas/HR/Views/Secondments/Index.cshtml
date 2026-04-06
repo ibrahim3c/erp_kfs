@@ -1,0 +1,243 @@
+﻿@{
+    ViewData["Title"] = "الندب والإعارات (Secondments & Loans)";
+}
+
+<!-- DataTables & CSS -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-briefcase text-primary me-2"></i> سجل الندب والإعارات
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">الإعارات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. تنبيهات هامة (تجديدات مطلوبة) -->
+        <div class="callout callout-danger">
+            <h5><i class="fas fa-bell text-danger me-2"></i> تنبيهات تجديد الندب:</h5>
+            <p>يوجد عدد <b>(3)</b> موظفين تنتهي فترة ندبهم هذا الشهر، يرجى مراجعة الموافقة على التجديد أو إنهاء الندب.</p>
+        </div>
+
+        <!-- 2. أدوات التحكم والجدول -->
+        <div class="card card-outline card-primary">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">قائمة المنتدبين والمعارين حالياً</h3>
+                <div class="card-tools">
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newLoanModal">
+                        <i class="fas fa-plane-departure me-1"></i> تسجيل إعارة / ندب جديد
+                    </button>
+                    <button class="btn btn-secondary btn-sm">
+                        <i class="fas fa-print"></i> تقرير موقف
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table id="loanTable" class="table table-bordered table-striped table-hover text-center align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الموظف</th>
+                            <th>نوع الحركة</th>
+                            <th>الجهة الخارجية</th>
+                            <th>تاريخ البدء</th>
+                            <th>تاريخ الانتهاء</th>
+                            <th>سنوات الندب</th>
+                            <th>حالة الراتب</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: إعارة خارجية -->
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td><span class="badge bg-purple">إعارة خارجية (سفر)</span></td>
+                            <td>السعودية (جامعة الملك سعود)</td>
+                            <td>01/01/2023</td>
+                            <td class="text-danger fw-bold">31/12/2024</td>
+                            <td>السنة 2</td>
+                            <td><span class="badge bg-light text-dark border">بدون أجر</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-default btn-sm border" title="التفاصيل"><i class="fas fa-eye text-primary"></i></button>
+                                    <button class="btn btn-default btn-sm border" title="طلب تجديد"><i class="fas fa-sync-alt text-success"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: ندب داخلي -->
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td><span class="badge bg-info text-dark">ندب كلي</span></td>
+                            <td>الشهر العقاري</td>
+                            <td>01/07/2023</td>
+                            <td>30/06/2024</td>
+                            <td>السنة 1</td>
+                            <td><span class="badge bg-success">علينا (بالكامل)</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-default btn-sm border" title="التفاصيل"><i class="fas fa-eye text-primary"></i></button>
+                                    <button class="btn btn-default btn-sm border" title="طلب تجديد"><i class="fas fa-sync-alt text-success"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 3: ندب جزئي -->
+                        <tr>
+                            <td>3</td>
+                            <td class="text-end fw-bold">بهجت إبراهيم</td>
+                            <td><span class="badge bg-warning text-dark">ندب جزئي (يومين)</span></td>
+                            <td>مديرية الشباب والرياضة</td>
+                            <td>01/01/2024</td>
+                            <td>30/06/2024</td>
+                            <td>-</td>
+                            <td><span class="badge bg-success">علينا</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-default btn-sm border" title="إنهاء الندب"><i class="fas fa-stop-circle text-danger"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: تسجيل إعارة جديدة -->
+<div class="modal fade" id="newLoanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-file-contract me-2"></i> قرار ندب / إعارة جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- البيانات الأساسية -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الموظف</label>
+                            <select class="form-select select2 select2-modal" style="width:100%">
+                                <option>بحث بالاسم...</option>
+                                <option>محمد فؤاد ابراهيم</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">نوع الحركة</label>
+                            <select class="form-select" id="moveType" onchange="toggleLoanFields()">
+                                <option value="Internal">ندب داخلي (بين المصالح الحكومية)</option>
+                                <option value="External">إعارة خارجية (سفر / قطاع خاص)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الجهة المنتدب إليها</label>
+                            <input type="text" class="form-control" placeholder="اسم الوزارة / الشركة...">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ البدء</label>
+                            <input type="date" class="form-control" id="startDate" onchange="calcEndDate()">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ الانتهاء</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+
+                        <!-- خيارات مالية -->
+                        <div class="col-12"><hr class="my-2" /></div>
+                        <h6 class="text-primary mb-3">الترتيبات المالية:</h6>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">تحمل الراتب الأساسي</label>
+                            <select class="form-select">
+                                <option>جهتنا (جهة العمل الأصلية)</option>
+                                <option>الجهة المستعيرة (المنتدب إليها)</option>
+                                <option>بدون راتب (إعارة)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">الحوافز والمكافآت</label>
+                            <select class="form-select">
+                                <option>تتحملها الجهة المستعيرة</option>
+                                <option>تتحملها جهتنا</option>
+                            </select>
+                        </div>
+
+                        <!-- إخلاء الطرف -->
+                        <div class="col-md-4 mb-3" id="clearanceDiv">
+                            <label class="form-label text-danger">موقف العهد الشخصية</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">تم تسليم العهد (إخلاء طرف)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">مرفقات (موافقة السلطة المختصة / عقد الإعارة)</label>
+                            <input type="file" class="form-control" multiple>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> حفظ الحركة وتجميد الموظف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#loanTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false
+            });
+
+            $('.select2-modal').select2({
+                theme: 'bootstrap4',
+                dropdownParent: $('.modal')
+            });
+        });
+
+        // اقتراح تاريخ انتهاء تلقائي (سنة واحدة)
+        function calcEndDate() {
+            var startVal = document.getElementById("startDate").value;
+            if(startVal) {
+                var d = new Date(startVal);
+                d.setFullYear(d.getFullYear() + 1);
+                d.setDate(d.getDate() - 1); // قبلها بيوم
+                document.getElementById("endDate").value = d.toISOString().split('T')[0];
+            }
+        }
+
+        function toggleLoanFields() {
+            // يمكن إضافة منطق لإخفاء حقول الراتب عند الإعارة الخارجية لأنها دائماً "بدون أجر"
+        }
+    </script>

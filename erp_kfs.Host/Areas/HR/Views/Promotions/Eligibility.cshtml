@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "بحث استحقاق الترقيات والعلاوات";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-chart-line text-success me-2"></i> حركة الترقيات والعلاوات
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">بحث الاستحقاق</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. لوحة تحكم الشروط (معايير البحث) -->
+        <div class="card card-indigo">
+            <div class="card-header">
+                <h3 class="card-title">تحديد معايير الحركة (Cycle Criteria)</h3>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <!-- نوع الحركة -->
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label text-indigo">نوع الاستحقاق</label>
+                            <select class="form-select" id="cycleType" onchange="toggleCriteria()">
+                                <option value="Promotion">ترقية درجة وظيفية (Promotion)</option>
+                                <option value="Periodic">علاوة دورية سنوية (7%)</option>
+                                <option value="Incentive">علاوة تشجيعية (الـ 10% كفاءة)</option>
+                            </select>
+                        </div>
+
+                        <!-- التاريخ المرجعي -->
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ الاستحقاق (غالباً 1/7)</label>
+                            <input type="date" class="form-control" value="2024-07-01">
+                        </div>
+
+                        <!-- شروط التصفية -->
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">الحد الأدنى لتقرير الكفاءة</label>
+                            <select class="form-select">
+                                <option>ممتاز (90% فأكثر)</option>
+                                <option>كفء (80% فأكثر)</option>
+                                <option>فوق المتوسط</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">الموقف من الجزاءات</label>
+                            <select class="form-select">
+                                <option>عدم وجود جزاءات نهائياً</option>
+                                <option selected>لم يتخطى 10 أيام جزاء (آخر سنتين)</option>
+                                <option>الكل</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12"><hr /></div>
+
+                        <!-- الأزرار -->
+                        <div class="col-md-6 pt-2">
+                            <!-- معلومة ديناميكية -->
+                            <div class="alert alert-light border-indigo py-1 px-2 d-inline-block">
+                                <i class="fas fa-info-circle text-info"></i> عدد المستحقين المتوقع: <strong>42</strong> موظف
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2">إفراغ الشروط</button>
+                            <button type="button" class="btn btn-indigo bg-indigo"><i class="fas fa-search me-1"></i> عرض كشف المستحقين</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. جدول النتائج (كشف المرشحين) -->
+        <div class="card card-outline card-secondary">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">نتيجة البحث (المرشحين للترقية / العلاوة)</h3>
+                <div class="card-tools">
+                    <button class="btn btn-success btn-sm"><i class="fas fa-check-double"></i> اعتماد الكشف المختار</button>
+                    <button class="btn btn-default btn-sm"><i class="fas fa-print"></i> طباعة للعرض</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table id="promoTable" class="table table-bordered table-striped text-center">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th style="width: 5%">
+                                <div class="form-check d-inline">
+                                    <input class="form-check-input" type="checkbox" id="checkAll">
+                                </div>
+                            </th>
+                            <th>الموظف</th>
+                            <th>الدرجة الحالية</th>
+                            <th>تاريخ شغل الدرجة</th>
+                            <th>مدة البقاء (سنة)</th>
+                            <th>تقرير 2022</th>
+                            <th>تقرير 2023</th>
+                            <th>الإجراء المقترح</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- موظف مستحق (بالأقدمية) -->
+                        <tr>
+                            <td><div class="form-check"><input class="form-check-input row-check" type="checkbox" checked></div></td>
+                            <td class="text-end fw-bold">فاطمة عبدالفتاح الشرباني</td>
+                            <td><span class="badge bg-secondary">الثانية (ب)</span></td>
+                            <td>01/07/2020</td>
+                            <td><strong class="text-primary">4 سنوات</strong></td>
+                            <td><span class="badge bg-success">98% (ممتاز)</span></td>
+                            <td><span class="badge bg-success">97% (ممتاز)</span></td>
+                            <td>
+                                <span class="text-success fw-bold"><i class="fas fa-level-up-alt"></i> ترقية للأولى (ب)</span>
+                            </td>
+                            <td><span class="badge bg-success"><i class="fas fa-check"></i> مستوفي</span></td>
+                        </tr>
+
+                        <!-- موظف مستحق (تشجيعية) -->
+                        <tr>
+                            <td><div class="form-check"><input class="form-check-input row-check" type="checkbox"></div></td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td><span class="badge bg-secondary">الثالثة (أ)</span></td>
+                            <td>01/07/2022</td>
+                            <td>2 سنة</td>
+                            <td><span class="badge bg-success">95% (ممتاز)</span></td>
+                            <td><span class="badge bg-success">96% (ممتاز)</span></td>
+                            <td>
+                                <span class="text-info fw-bold"><i class="fas fa-plus-circle"></i> منح علاوة تشجيعية</span>
+                            </td>
+                            <td><span class="badge bg-info">مرشح (كفاءة)</span></td>
+                        </tr>
+
+                        <!-- موظف غير مستحق (مانع قانوني) -->
+                        <tr class="text-muted bg-light">
+                            <td><div class="form-check"><input class="form-check-input row-check" type="checkbox" disabled></div></td>
+                            <td class="text-end text-decoration-line-through">بهجت إبراهيم</td>
+                            <td>الثالثة (ب)</td>
+                            <td>01/07/2020</td>
+                            <td>4 سنوات</td>
+                            <td><span class="badge bg-warning text-dark">82% (كفء)</span></td>
+                            <td><span class="badge bg-warning text-dark">80% (كفء)</span></td>
+                            <td>-</td>
+                            <td class="text-danger small font-weight-bold">
+                                <i class="fas fa-times-circle"></i> مستبعد (تجاوز الجزاءات)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <script>
+        $(function () {
+            // تفعيل الـ DataTable
+            var table = $("#promoTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false,
+                "responsive": true,
+                "lengthChange": true,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    { extend: 'excel', text: 'تصدير الكشف (Excel)', className: 'btn-success btn-sm' },
+                    { extend: 'print', text: 'طباعة للعرض', className: 'btn-default btn-sm' }
+                ]
+            });
+
+            // كود اختيار الكل (Check All)
+            $("#checkAll").click(function(){
+                $('input.row-check:not(:disabled)').prop('checked', this.checked);
+            });
+        });
+
+        // تغيير الفلاتر حسب نوع الحركة (تفاعلي)
+        function toggleCriteria() {
+            var type = document.getElementById("cycleType").value;
+            // يمكنك هنا إظهار وإخفاء حقول معينة حسب النوع (ترقية vs علاوة)
+            if(type === 'Incentive') {
+                // إظهار تنبيه عن الـ 10%
+                alert("تنبيه: العلاوة التشجيعية تمنح لنسبة 10% فقط من الموظفين في الدرجة، ويشترط تقرير كفاءة (ممتاز) عن آخر عامين.");
+            }
+        }
+    </script>
