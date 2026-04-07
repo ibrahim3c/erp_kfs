@@ -3,15 +3,15 @@ namespace HR.Domain.Employees
 {
     public class EmployeeDecision : Entity
     {
-        public int EmployeeId { get; private set; }
-        public int DecisionId { get; private set; } // Foreign Key to Settings/Lookups
+        public Guid EmployeeId { get; private set; }
+        public Guid DecisionId { get; private set; } // Foreign Key to Settings/Lookups
         public string Description { get; private set; }
         public DateTime? ValidFrom { get; private set; }
         public bool IsActive { get; private set; }
 
         private EmployeeDecision() { }
 
-        public EmployeeDecision(int employeeId, int decisionId, string description, DateTime validFrom)
+        public EmployeeDecision(Guid employeeId, Guid decisionId, string description, DateTime validFrom)
         {
             EmployeeId = employeeId;
             DecisionId = decisionId;

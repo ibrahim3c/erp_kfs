@@ -1,10 +1,4 @@
 ﻿using Modules.Shared.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace HR.Domain.Organization
 {
     public class OrgUnitType : Entity // هيرث الـ Guid Id من هنا
@@ -18,16 +12,26 @@ namespace HR.Domain.Organization
         private readonly List<OrgUnit> _orgUnits = new();
         public IReadOnlyCollection<OrgUnit> OrgUnits => _orgUnits.AsReadOnly();
 
-        // 1. Parameterless Constructor for EF Core
         private OrgUnitType() { }
 
-        // 2. Public Constructor for Creation
-        public OrgUnitType(string code, string name, int levelOrder, bool canHaveChild)
+        private OrgUnitType(Guid id,string code, string name, int levelOrder, bool canHaveChild):base(id)
         {
             Code = code;
             Name = name;
             LevelOrder = levelOrder;
             CanHaveChild = canHaveChild;
+        }
+
+        public static Result<OrgUnitType> Create(string code, string name, int levelOrder, bool canHaveChild)
+        {
+            // Domain Validations
+            if (string.IsNullOrWhiteSpace(code))
+                throw new ArgumentException("Code is required.", nameof(code));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required.", nameof(name));
+            if (levelOrder < 0)
+                throw new ArgumentException("LevelOrder must be non-negative.", nameof(levelOrder));
+            return Result<OrgUnitType>.Success(new OrgUnitType(Guid.NewGuid(), code, name, levelOrder, canHaveChild));
         }
 
         // 3. Business Behaviors (Methods)

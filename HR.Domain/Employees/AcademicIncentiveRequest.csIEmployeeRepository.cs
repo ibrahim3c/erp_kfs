@@ -13,6 +13,16 @@ namespace HR.Domain.Employees
         public string Notes { get; private set; }
         public string FilePath { get; private set; }
 
+
+        //public DateTime CreatedAt { get; set; }
+        //public int? CreatedBy { get; set; }
+
+        //public DateTime? UpdatedAt { get; set; }
+        //public int? UpdatedBy { get; set; }
+
+        //public DateTime? DeletedAt { get; set; }
+        //public int? DeletedBy { get; set; }
+
         private AcademicIncentiveRequest() { }
 
         // Constructor for a new request

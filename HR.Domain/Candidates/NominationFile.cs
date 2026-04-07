@@ -14,7 +14,7 @@ namespace HR.Domain.Candidates
         private NominationFile() { }
 
         // 2. Internal constructor: Only Candidate can create a NominationFile
-        internal NominationFile(Guid candidateId, string filePath, string referenceNumber, DateTime? expectedEndDate = null)
+        private NominationFile(Guid id,Guid candidateId, string filePath, string referenceNumber, DateTime? expectedEndDate = null):base(id)
         {
             CandidateId = candidateId;
             FilePath = filePath;
@@ -22,6 +22,16 @@ namespace HR.Domain.Candidates
             ReceiveDate = DateTime.UtcNow;
             ExpectedEndDate = expectedEndDate;
             Status = NominationStatus.Received; // Initial State
+        }
+
+        public static Result< NominationFile> Create(Guid candidateId, string filePath, string referenceNumber, DateTime? expectedEndDate = null)
+        {
+            // You can add domain validations here before creating the NominationFile
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("File path is required.", nameof(filePath));
+            if (string.IsNullOrWhiteSpace(referenceNumber))
+                throw new ArgumentException("Reference number is required.", nameof(referenceNumber));
+            return Result<NominationFile>.Success(new NominationFile(Guid.NewGuid(), candidateId, filePath, referenceNumber, expectedEndDate));
         }
 
         // 3. Business Behaviors

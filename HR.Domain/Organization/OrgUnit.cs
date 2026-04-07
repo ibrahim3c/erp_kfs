@@ -17,7 +17,7 @@ namespace HR.Domain.Organization
 
         private OrgUnit() { } // For EF Core
 
-        public OrgUnit(string name, string code, Guid orgUnitTypeId, Guid? parentId, Guid? governorateId)
+        private OrgUnit(Guid id,string name, string code, Guid orgUnitTypeId, Guid? parentId, Guid? governorateId):base(id)
         {
             Name = name;
             Code = code;
@@ -25,6 +25,18 @@ namespace HR.Domain.Organization
             ParentId = parentId;
             GovernorateId = governorateId;
             IsActive = true; // Default behavior
+        }
+
+        public static Result<OrgUnit> Create(string name, string code, Guid orgUnitTypeId, Guid? parentId = null, Guid? governorateId = null)
+        {
+            // Domain Validations
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required.", nameof(name));
+            if (string.IsNullOrWhiteSpace(code))
+                throw new ArgumentException("Code is required.", nameof(code));
+            if (orgUnitTypeId == Guid.Empty)
+                throw new ArgumentException("OrgUnitTypeId is required.", nameof(orgUnitTypeId));
+            return Result<OrgUnit>.Success(new OrgUnit(Guid.NewGuid(), name, code, orgUnitTypeId, parentId, governorateId));
         }
 
         // Business Behaviors

@@ -13,6 +13,11 @@ namespace HR.Domain.Candidates
         public Guid VillageId { get; private set; }
         public bool IsActive { get; private set; }
 
+        //public int? CreatedBy { get; set; }
+        //public int? UpdatedBy { get; set; }
+
+        //public int? DeletedBy { get; set; }
+
         // Encapsulated Collection
         private readonly List<NominationFile> _nominationFiles = new();
         public IReadOnlyCollection<NominationFile> NominationFiles => _nominationFiles.AsReadOnly();
@@ -21,8 +26,8 @@ namespace HR.Domain.Candidates
         private Candidate() { }
 
         // 2. Public Constructor for Creation
-        public Candidate(string fullName, string nationalId, string phone, string email,
-                         Guid qualificationTypeId, Guid cityCenterId, Guid villageId)
+        private Candidate(Guid id,string fullName, string nationalId, string phone, string email,
+                         Guid qualificationTypeId, Guid cityCenterId, Guid villageId):base(id)
         {
             FullName = fullName;
             NationalId = nationalId;
@@ -33,6 +38,19 @@ namespace HR.Domain.Candidates
             VillageId = villageId;
             IsActive = true;
         }
+
+            public static Result<Candidate> Create(string fullName, string nationalId, string phone, string email,
+                                            Guid qualificationTypeId, Guid cityCenterId, Guid villageId)
+            {
+                // You can add domain validations here before creating the Candidate
+                if (string.IsNullOrWhiteSpace(fullName))
+                    throw new ArgumentException("Full Name is required.", nameof(fullName));
+    
+                if (string.IsNullOrWhiteSpace(nationalId))
+                    throw new ArgumentException("National ID is required.", nameof(nationalId));
+    
+                return Result<Candidate>.Success(new Candidate(Guid.NewGuid(),fullName, nationalId, phone, email, qualificationTypeId, cityCenterId, villageId));
+        }   
 
         // 3. Business Behaviors
         public void UpdateContactInfo(string phone, string email)
@@ -52,11 +70,14 @@ namespace HR.Domain.Candidates
         }
 
         // 4. Managing Child Entities (Nomination File)
-        public void AddNominationFile(string filePath, string referenceNumber, DateTime? expectedEndDate = null)
+        public Result AddNominationFile(string filePath, string referenceNumber, DateTime? expectedEndDate = null)
         {
             // The Aggregate Root creates the child entity and passes its own Id
-            var file = new NominationFile(Id, filePath, referenceNumber, expectedEndDate);
-            _nominationFiles.Add(file);
+            var file = NominationFile.Create(Id, filePath, referenceNumber, expectedEndDate);
+            if(file.IsFailure)
+                return Result.Failure(file.Error); // Propagate the error if creation failed
+            _nominationFiles.Add(file.Value);
+            return Result.Success();
         }
     }
 }
