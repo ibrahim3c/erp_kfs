@@ -1,6 +1,6 @@
 ﻿using Modules.Shared.Domain;
 
-namespace HR.Domain.Organization
+namespace HR.Domain.Organizations
 {
     public class OrgUnit : Entity
     {

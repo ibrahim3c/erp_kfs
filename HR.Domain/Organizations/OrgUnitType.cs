@@ -1,5 +1,5 @@
 ﻿using Modules.Shared.Domain;
-namespace HR.Domain.Organization
+namespace HR.Domain.Organizations
 {
     public class OrgUnitType : Entity // هيرث الـ Guid Id من هنا
     {

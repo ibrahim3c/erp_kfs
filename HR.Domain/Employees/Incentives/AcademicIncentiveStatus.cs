@@ -1,4 +1,4 @@
-﻿namespace HR.Domain.Employees
+﻿namespace HR.Domain.Employees.Incentives
 {
     public enum AcademicIncentiveStatus
     {

@@ -13,11 +13,6 @@ namespace HR.Domain.Candidates
         public Guid VillageId { get; private set; }
         public bool IsActive { get; private set; }
 
-        //public int? CreatedBy { get; set; }
-        //public int? UpdatedBy { get; set; }
-
-        //public int? DeletedBy { get; set; }
-
         // Encapsulated Collection
         private readonly List<NominationFile> _nominationFiles = new();
         public IReadOnlyCollection<NominationFile> NominationFiles => _nominationFiles.AsReadOnly();
@@ -25,7 +20,6 @@ namespace HR.Domain.Candidates
         // 1. Parameterless constructor for EF Core
         private Candidate() { }
 
-        // 2. Public Constructor for Creation
         private Candidate(Guid id,string fullName, string nationalId, string phone, string email,
                          Guid qualificationTypeId, Guid cityCenterId, Guid villageId):base(id)
         {
@@ -52,7 +46,6 @@ namespace HR.Domain.Candidates
                 return Result<Candidate>.Success(new Candidate(Guid.NewGuid(),fullName, nationalId, phone, email, qualificationTypeId, cityCenterId, villageId));
         }   
 
-        // 3. Business Behaviors
         public void UpdateContactInfo(string phone, string email)
         {
             Phone = phone;
@@ -69,7 +62,6 @@ namespace HR.Domain.Candidates
             IsActive = true;
         }
 
-        // 4. Managing Child Entities (Nomination File)
         public Result AddNominationFile(string filePath, string referenceNumber, DateTime? expectedEndDate = null)
         {
             // The Aggregate Root creates the child entity and passes its own Id

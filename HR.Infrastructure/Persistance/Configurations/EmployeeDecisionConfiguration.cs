@@ -1,4 +1,4 @@
-﻿using HR.Domain.Employees;
+﻿using HR.Domain.Employees.Decisions;
 using HR.Infrastructure.Persistance.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
