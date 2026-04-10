@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using erp_kfs.Host.Models.Common;
 
 namespace MyERP.Web.Models.Common
 {
