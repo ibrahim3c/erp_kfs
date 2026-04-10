@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MyERP.Web.Models;
+using MyERP.Web.Models.Common;
+using System.ComponentModel.DataAnnotations;
 
-namespace MyERP.Web.Models.Common
+namespace erp_kfs.Host.Models.Common
 {
     public class Governorate: BaseEntity
     {

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using erp_kfs.Host.Models.Common;
+using Microsoft.EntityFrameworkCore;
 using MyERP.Web.Areas.Admin.Models;
-using MyERP.Web.Models.Common;
 
 namespace MyERP.Web.Models.SeedDataModels
 {

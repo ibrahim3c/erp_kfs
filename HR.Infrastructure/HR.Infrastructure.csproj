@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HR.Domain\HR.Domain.csproj" />
+    <ProjectReference Include="..\Modules.Shared.Infrastructure\Modules.Shared.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
