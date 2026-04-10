@@ -26,12 +26,29 @@ namespace HR.Domain.Organization
         {
             // Domain Validations
             if (string.IsNullOrWhiteSpace(code))
-                throw new ArgumentException("Code is required.", nameof(code));
+                return Result<OrgUnitType>.Failure(OrgUnitTypeErrors.CodeEmpty);
+
+            if (code.Length > 50)
+                return Result<OrgUnitType>.Failure(OrgUnitTypeErrors.CodeTooLong);
+
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required.", nameof(name));
+                return Result<OrgUnitType>.Failure(OrgUnitTypeErrors.NameEmpty);
+
+            if (name.Length > 100)
+                return Result<OrgUnitType>.Failure(OrgUnitTypeErrors.NameTooLong);
+
             if (levelOrder < 0)
-                throw new ArgumentException("LevelOrder must be non-negative.", nameof(levelOrder));
-            return Result<OrgUnitType>.Success(new OrgUnitType(Guid.NewGuid(), code, name, levelOrder, canHaveChild));
+                return Result<OrgUnitType>.Failure(OrgUnitTypeErrors.LevelOrderInvalid);
+
+            var orgUnitType = new OrgUnitType(
+                Guid.NewGuid(),
+                code.Trim(),
+                name.Trim(),
+                levelOrder,
+                canHaveChild
+            );
+
+            return Result<OrgUnitType>.Success(orgUnitType);
         }
 
         // 3. Business Behaviors (Methods)

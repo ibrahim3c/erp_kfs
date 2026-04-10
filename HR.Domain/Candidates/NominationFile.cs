@@ -10,6 +10,9 @@ namespace HR.Domain.Candidates
         public NominationStatus Status { get; private set; }
         public string ReferenceNumber { get; private set; }
 
+        // Navigation Property
+        public Candidate Candidate { get; private set; }
+
         // 1. Parameterless constructor for EF Core
         private NominationFile() { }
 
@@ -28,10 +31,12 @@ namespace HR.Domain.Candidates
         {
             // You can add domain validations here before creating the NominationFile
             if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("File path is required.", nameof(filePath));
+                return Result<NominationFile>.Failure(NominationFileErrors.FilePathEmpty);
             if (string.IsNullOrWhiteSpace(referenceNumber))
-                throw new ArgumentException("Reference number is required.", nameof(referenceNumber));
-            return Result<NominationFile>.Success(new NominationFile(Guid.NewGuid(), candidateId, filePath, referenceNumber, expectedEndDate));
+                return Result<NominationFile>.Failure(NominationFileErrors.ReferenceNumberEmpty);
+
+            var nominationFile = new NominationFile(Guid.NewGuid(), candidateId, filePath, referenceNumber, expectedEndDate);
+            return Result<NominationFile>.Success(nominationFile);
         }
 
         // 3. Business Behaviors
@@ -43,14 +48,8 @@ namespace HR.Domain.Candidates
             Status = NominationStatus.UnderReview;
         }
 
-        public void Accept()
-        {
-            Status = NominationStatus.Accepted;
-        }
+        public void Accept() => Status = NominationStatus.Accepted; 
+        public void Reject() => Status = NominationStatus.Rejected;
 
-        public void Reject()
-        {
-            Status = NominationStatus.Rejected;
-        }
     }
 }

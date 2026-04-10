@@ -1,23 +1,42 @@
-﻿using HR.Domain.Candidates;
+﻿using HR.Domain.Abstractions;
+using HR.Domain.Candidates;
+using HR.Domain.Employees;
+using HR.Domain.Organization;
 using HR.Infrastructure.Persistance.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HR.Infrastructure.Persistance.Repositories;
+using Modules.Shared.Domain.Common.City_Center;
+using Modules.Shared.Domain.Common.Governorates;
+using Modules.Shared.Infrastructure.Presistance.Repositories;
+
 
 namespace HR.Infrastructure.Persistance
 {
-    public class HRUnitOfWork // : IHRUnitOfWork
+    public class HRUnitOfWork  : IHRUnitOfWork
     {
         private readonly HRDbContext _dbContext;
 
         public ICandidateRepository Candidates { get; }
 
-        public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
+        public IEmployeeRepository Employees {  get; }
+
+        public IOrgUnitRepository OrgUnits { get; }
+
+        public IOrgUnitTypeRepository ReadOrgUnitTypes { get; }
+
+        public IGovernorateRepository Governorate { get; }
+        public ICityCenterRepository CityCenter { get; }
+
+
+        public HRUnitOfWork(HRDbContext dbContext)
         {
             _dbContext = dbContext;
-            Candidates = candidateRepository;
+             Candidates = new CandidateRepository(_dbContext);
+             Employees = new EmployeeRepository(_dbContext);
+             OrgUnits = new OrgUnitRepository(_dbContext);
+             ReadOrgUnitTypes = new OrgUnitTypeRepository(_dbContext);
+             Governorate = new GovernorateRepository(_dbContext);
+             CityCenter = new CityCenterRepository(_dbContext);
+            
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

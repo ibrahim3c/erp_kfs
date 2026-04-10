@@ -10,4 +10,12 @@
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\Decision\" />
+    <Folder Include="Common\Document\" />
+    <Folder Include="Common\Setting\" />
+    <Folder Include="Common\Review\" />
+    <Folder Include="Common\Notification\" />
+  </ItemGroup>
+
 </Project>

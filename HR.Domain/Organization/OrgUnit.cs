@@ -14,6 +14,8 @@ namespace HR.Domain.Organization
         // Navigation Properties (Encapsulated)
         private readonly List<OrgUnit> _children = new();
         public IReadOnlyCollection<OrgUnit> Children => _children.AsReadOnly();
+        public OrgUnit Parent { get; private set; }
+        public OrgUnitType OrgUnitType { get; private set; }
 
         private OrgUnit() { } // For EF Core
 
@@ -31,24 +33,35 @@ namespace HR.Domain.Organization
         {
             // Domain Validations
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required.", nameof(name));
+                return Result<OrgUnit>.Failure(OrgUnitErrors.NameEmpty);
+
+            if (name.Length > 150)
+                return Result<OrgUnit>.Failure(OrgUnitErrors.NameTooLong);
+
             if (string.IsNullOrWhiteSpace(code))
-                throw new ArgumentException("Code is required.", nameof(code));
+                return Result<OrgUnit>.Failure(OrgUnitErrors.CodeEmpty);
+
+            if (code.Length > 50)
+                return Result<OrgUnit>.Failure(OrgUnitErrors.CodeTooLong);
+
             if (orgUnitTypeId == Guid.Empty)
-                throw new ArgumentException("OrgUnitTypeId is required.", nameof(orgUnitTypeId));
-            return Result<OrgUnit>.Success(new OrgUnit(Guid.NewGuid(), name, code, orgUnitTypeId, parentId, governorateId));
+                return Result<OrgUnit>.Failure(OrgUnitErrors.OrgUnitTypeRequired);
+
+            var orgUnit = new OrgUnit(
+                Guid.NewGuid(),
+                name.Trim(),
+                code.Trim(),
+                orgUnitTypeId,
+                parentId,
+                governorateId
+            );
+
+            return Result<OrgUnit>.Success(orgUnit);
         }
 
         // Business Behaviors
-        public void Deactivate()
-        {
-            IsActive = false;
-        }
-
-        public void Activate()
-        {
-            IsActive = true;
-        }
+        public void Deactivate() =>  IsActive = false;
+        public void Activate() => IsActive = true;
 
         public void UpdateDetails(string name, string code)
         {
