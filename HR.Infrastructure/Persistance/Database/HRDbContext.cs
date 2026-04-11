@@ -1,6 +1,7 @@
 ﻿using HR.Domain.Candidates;
 using HR.Domain.Employees;
 using Microsoft.EntityFrameworkCore;
+using Modules.Shared.Infrastructure.Database;
 using System.Reflection;
 namespace HR.Infrastructure.Persistance.Database
 {

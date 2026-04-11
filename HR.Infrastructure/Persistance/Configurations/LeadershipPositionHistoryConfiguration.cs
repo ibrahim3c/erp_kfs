@@ -1,8 +1,8 @@
 ﻿using HR.Domain.Employees;
 using HR.Domain.Organization;
-using HR.Infrastructure.Persistance.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Modules.Shared.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
