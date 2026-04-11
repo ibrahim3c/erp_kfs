@@ -1,6 +1,6 @@
-﻿using HR.Domain.Employees.Decisions;
-using HR.Domain.Employees.Incentives;
-using HR.Domain.Employees.Terminations;
+﻿using HR.Domain.Decisions;
+using HR.Domain.Incentives;
+using HR.Domain.Terminations;
 using Modules.Shared.Domain;
 
 namespace HR.Domain.Employees

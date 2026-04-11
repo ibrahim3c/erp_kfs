@@ -1,7 +1,10 @@
-﻿namespace HR.Infrastructure.Persistance.Database
+﻿namespace Modules.Shared.Infrastructure.Database
 {
-    internal static class Schemas
+    public static class Schemas
     {
-        internal const string HR = "HR";
+        public const string HR = "HR";
+        public const string Geopraphy = "Geopraphy";
+        public const string Organization = "Organization";
+        public const string Common = "Common";
     }
 }
