@@ -1,4 +1,5 @@
 ﻿using HR.Domain.Decisions;
+using HR.Domain.Employees.Qualifications;
 using HR.Domain.Incentives;
 using HR.Domain.Terminations;
 using Modules.Shared.Domain;
@@ -47,6 +48,9 @@ namespace HR.Domain.Employees
 
         private readonly List<EmployeeFile> _employeeFiles = new();
         public IReadOnlyCollection<EmployeeFile> EmployeeFiles => _employeeFiles.AsReadOnly();
+
+        private readonly List<EmployeeQualification> _employeeQualifications = new();
+        public IReadOnlyCollection<EmployeeQualification> EmployeeQualifications => _employeeQualifications.AsReadOnly();
 
 
         //private readonly List<Notification> _notificationsReceived = new();

@@ -1,26 +1,59 @@
 ﻿using Modules.Shared.Domain;
-using System.ComponentModel.DataAnnotations;
 
 namespace Geography.Domain
 {
-    public class CityCenter : Entity
+    public sealed class CityCenter : Entity
     {
-        [Required]
-        public int GovernorateId { get; set; }
+        private readonly List<LocalUnit> _localUnits = new();
+        private readonly List<Village> _villages = new();
 
-        [Required]
-        [MaxLength(150)]
-        public string Name { get; set; }
+        private CityCenter() { }
 
-        [Required]
-        [MaxLength(20)]
-        public string Type { get; set; } // center | city
+        private CityCenter(Guid id, Guid governorateId, string name, string type)
+            : base(id)
+        {
+            GovernorateId = governorateId;
+            Name = name;
+            Type = type;
+        }
 
+        public Guid GovernorateId { get; private set; }
 
+        public string Name { get; private set; }
 
-        // Navigation
-        public Governorate Governorate { get; set; }
-        public ICollection<LocalUnit> LocalUnits { get; set; }
-        public ICollection<Village> Villages { get; set; }
+        public string Type { get; private set; } // center | city
+
+        public IReadOnlyCollection<LocalUnit> LocalUnits =>
+            _localUnits.AsReadOnly();
+
+        public IReadOnlyCollection<Village> Villages =>
+            _villages.AsReadOnly();
+         public Governorate Governorate { get; private set; }
+        public static Result<CityCenter> Create(
+            Guid governorateId,
+            string name,
+            string type)
+        {
+            if (governorateId == Guid.Empty)
+                return Result<CityCenter>.Failure(GeoErrors.GovernorateIdEmpty);
+
+            if (string.IsNullOrWhiteSpace(name))
+                return Result<CityCenter>.Failure(GeoErrors.NameEmpty);
+
+            return Result<CityCenter>.Success(
+                new CityCenter(Guid.NewGuid(), governorateId, name, type));
+        }
+
+        public Result UpdateDetails(Guid governorateId, string name, string type)
+        {
+            if (governorateId == Guid.Empty)
+                return Result.Failure(GeoErrors.GovernorateIdEmpty);
+            if (string.IsNullOrWhiteSpace(name))
+                return Result.Failure(GeoErrors.NameEmpty);
+            GovernorateId = governorateId;
+            Name = name;
+            Type = type;
+            return Result.Success();
+        }
     }
 }

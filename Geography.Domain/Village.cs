@@ -1,24 +1,44 @@
 ﻿using Modules.Shared.Domain;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Geography.Domain
 {
-    public class Village:Entity
+    public sealed class Village : Entity
     {
+        private Village() { }
 
-        [Required]
-        public int LocalUnitId { get; set; }
+        private Village(Guid id, Guid localUnitId, string name)
+            : base(id)
+        {
+            LocalUnitId = localUnitId;
+            Name = name;
+        }
 
-        [Required]
-        [MaxLength(150)]
-        public string Name { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public Guid LocalUnitId { get; private set; }
 
-        // Navigation Properties
+        public string Name { get; private set; }
+        public LocalUnit LocalUnit { get; private set; } = null!;
 
+        public static Result<Village> Create(Guid localUnitId, string name)
+        {
+            if (localUnitId == Guid.Empty)
+                return Result<Village>.Failure(GeoErrors.LocalUnitIdEmpty);
 
-        [ForeignKey(nameof(LocalUnitId))]
-        public LocalUnit LocalUnit { get; set; }
+            if (string.IsNullOrWhiteSpace(name))
+                return Result<Village>.Failure(GeoErrors.NameEmpty);
+
+            return Result<Village>.Success(
+                new Village(Guid.NewGuid(), localUnitId, name));
+        }
+
+        public Result UpdateDetails(Guid localUnitId, string name)
+        {
+            if (localUnitId == Guid.Empty)
+                return Result.Failure(GeoErrors.LocalUnitIdEmpty);
+            if (string.IsNullOrWhiteSpace(name))
+                return Result.Failure(GeoErrors.NameEmpty);
+            LocalUnitId = localUnitId;
+            Name = name;
+            return Result.Success();
+        }
     }
 }
