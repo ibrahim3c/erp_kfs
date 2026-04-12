@@ -1,23 +1,49 @@
 ﻿using Modules.Shared.Domain;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Geography.Domain
 {
-    public class LocalUnit : Entity
+    public sealed class LocalUnit : Entity
     {
-        [Required]
-        public int CityCenterId { get; set; }
+        private readonly List<Village> _villages = new();
 
-        [Required]
-        [MaxLength(150)]
-        public string Name { get; set; }
+        private LocalUnit() { }
 
-        // Navigation Properties
-        [ForeignKey(nameof(CityCenterId))]
-        public CityCenter CityCenter { get; set; }
+        private LocalUnit(Guid id, Guid cityCenterId, string name)
+            : base(id)
+        {
+            CityCenterId = cityCenterId;
+            Name = name;
+        }
 
-        public ICollection<Village> Villages { get; set; }
+        public Guid CityCenterId { get; private set; }
 
+        public string Name { get; private set; }
+
+        public IReadOnlyCollection<Village> Villages =>
+            _villages.AsReadOnly();
+
+        public CityCenter CityCenter { get; private set; }
+        public static Result<LocalUnit> Create(Guid cityCenterId, string name)
+        {
+            if (cityCenterId == Guid.Empty)
+                return Result<LocalUnit>.Failure(GeoErrors.CityCenterIdEmpty);
+
+            if (string.IsNullOrWhiteSpace(name))
+                return Result<LocalUnit>.Failure(GeoErrors.NameEmpty);
+
+            return Result<LocalUnit>.Success(
+                new LocalUnit(Guid.NewGuid(), cityCenterId, name));
+        }
+
+        public Result UpdateDetails(Guid cityCenterId, string name)
+        {
+            if (cityCenterId == Guid.Empty)
+                return Result.Failure(GeoErrors.CityCenterIdEmpty);
+            if (string.IsNullOrWhiteSpace(name))
+                return Result.Failure(GeoErrors.NameEmpty);
+            CityCenterId = cityCenterId;
+            Name = name;
+            return Result.Success();
+        }
     }
 }

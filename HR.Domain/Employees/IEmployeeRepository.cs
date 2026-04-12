@@ -8,5 +8,7 @@
         void Add(Employee employee);
         void Update(Employee employee);
         void Delete(Employee employee);
+
+        Task<string> GetNextCodeAsync(CancellationToken cancellationToken = default);
     }
 }
