@@ -2,7 +2,7 @@
 {
     public interface IEmployeeRepository
     {
-        Task<Employee> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<Employee> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<Employee> GetByNationalIdAsync(string nationalId, CancellationToken cancellationToken = default);
 
         void Add(Employee employee);

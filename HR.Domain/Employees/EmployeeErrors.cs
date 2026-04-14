@@ -4,7 +4,10 @@ namespace HR.Domain.Employees
 {
     public static class EmployeeErrors
     {
+
+
         public static readonly Error AlreadyInactive = new Error("Employee.AlreadyInactive", "الموظف غير نشط بالفعل");
+        public static readonly Error NotFound = new Error("Employee.NotFound", "الموظف غير موجود.");
         public static readonly Error CodeEmpty = new Error(
             "Employee.CodeEmpty",
             "كود الموظف مطلوب ولا يمكن أن يكون فارغاً");

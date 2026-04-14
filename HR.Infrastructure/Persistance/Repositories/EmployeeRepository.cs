@@ -12,7 +12,7 @@ namespace HR.Infrastructure.Persistance.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Employee> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Employee> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             // ملاحظة: لو كنت تستخدم Guid بدلاً من int لـ Id، قم بتعديل int إلى Guid هنا وفي الـ Interface
             return await _dbContext.Employees
