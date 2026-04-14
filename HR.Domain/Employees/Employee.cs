@@ -147,6 +147,28 @@ namespace HR.Domain.Employees
         }
         // --- Business Behaviors (Methods) ---
 
+        public Result UpdateMainDetails(string name, string code, DateTime hireDate, bool isActive)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return Result.Failure(EmployeeErrors.NameEmpty);
+
+            if (string.IsNullOrWhiteSpace(code))
+                return Result.Failure(EmployeeErrors.CodeEmpty);
+
+            if (hireDate == default)
+                return Result.Failure(EmployeeErrors.InvalidHireDate);
+
+            Name = name;
+            Code = code;
+            HireDate = hireDate;
+            IsActive = isActive;
+
+            // Optional: If status changes to inactive, you might want to automatically set TerminationDate
+            // if (!isActive && TerminationDate == null) TerminationDate = DateTime.UtcNow;
+
+            return Result.Success();
+        }
+
         public void UpdatePersonalDetails(DateTime? dateOfBirth, string gender, string maritalStatus)
         {
             DateOfBirth = dateOfBirth;
@@ -215,7 +237,7 @@ namespace HR.Domain.Employees
             string description,
             DateTime? validFrom,
             DateTime? validTo,
-            DecisionStatus status,
+            EmployeeDecisionStatus status,
             string notes)
         {
             var result = EmployeeDecision.Create(Id,decisionId,description,validFrom,validTo,status,notes);
