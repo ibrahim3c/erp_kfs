@@ -25,6 +25,7 @@ namespace HR.Infrastructure
             // 1. تسجيل DbContext
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                ?? throw new ArgumentNullException(nameof(configuration));
+
             services.AddDbContext<HRDbContext>(options =>
                 options.UseNpgsql(connectionString));
 

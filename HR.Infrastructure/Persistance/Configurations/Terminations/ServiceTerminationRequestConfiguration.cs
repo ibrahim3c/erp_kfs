@@ -1,4 +1,5 @@
-﻿using HR.Domain.Employees.Termination;
+﻿
+using HR.Domain.Terminations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
@@ -26,17 +27,17 @@ namespace HR.Infrastructure.Persistance.Configurations.Terminations
                 .HasMaxLength(300);
 
             // Relationships
-            // 1. Relationship with Employee
-            builder.HasOne(r => r.Employee)
-                .WithMany() // Assuming Employee doesn't have an ICollection<ServiceTerminationRequest>. If it does, put it inside WithMany(e => e.Requests)
-                .HasForeignKey(r => r.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //// 1. Relationship with Employee
+            //builder.HasOne(r => r.Employee)
+            //    .WithMany() // Assuming Employee doesn't have an ICollection<ServiceTerminationRequest>. If it does, put it inside WithMany(e => e.Requests)
+            //    .HasForeignKey(r => r.EmployeeId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            // 2. Relationship with ServiceTerminationType (Already configured in Type config, but good to ensure both sides align)
-            builder.HasOne(r => r.ServiceTerminationType)
-                .WithMany(t => t.ServiceTerminationRequests)
-                .HasForeignKey(r => r.ServiceTerminationTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //// 2. Relationship with ServiceTerminationType (Already configured in Type config, but good to ensure both sides align)
+            //builder.HasOne(r => r.ServiceTerminationType)
+            //    .WithMany(t => t.ServiceTerminationRequests)
+            //    .HasForeignKey(r => r.ServiceTerminationTypeId)
+            //    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

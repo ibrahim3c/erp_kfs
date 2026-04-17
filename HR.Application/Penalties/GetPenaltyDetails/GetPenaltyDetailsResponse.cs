@@ -5,20 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HR.Application.Penalties.GetPenaltyList
+namespace HR.Application.Penalties.GetPenaltyDetails
 {
-    public class GetPenaltyListResponse
+    public class GetPenaltyDetailsResponse
     {
-
         public Guid Id { get; init; }
         public string EmployeeName { get; init; } = string.Empty;
-        public PenaltyActionType ActionType { get; init; } 
+        public PenaltyActionType ActionType { get; init; }
         public DateTime ViolationDate { get; init; }
         public string PenaltyType { get; init; } = string.Empty;
         public decimal? DeductionDays { get; init; }
         public DateTime ExecutionMonth { get; init; }
         public string DecisionReference { get; init; } = string.Empty;
         public string? AttachmentPathath { get; init; }
-       
+        public string? Notes { get; init; }
     }
 }

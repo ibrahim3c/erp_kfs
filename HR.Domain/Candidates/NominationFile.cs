@@ -29,9 +29,9 @@ namespace HR.Domain.Candidates
             // You can add domain validations here before creating the NominationFile
             if (string.IsNullOrWhiteSpace(filePath))
                 //throw new ArgumentException("File path is required.", nameof(filePath));
-                return Result<NominationFile>.Failure();
+                return Result<NominationFile>.Failure(new Error("File path is required.", "FilePathRequired"));
             if (string.IsNullOrWhiteSpace(referenceNumber))
-                throw new ArgumentException("Reference number is required.", nameof(referenceNumber));
+                return Result<NominationFile>.Failure(new Error("Reference number is required.", "ReferenceNumberRequired"));
             return Result<NominationFile>.Success(new NominationFile(Guid.NewGuid(), candidateId, filePath, referenceNumber, expectedEndDate));
         }
 

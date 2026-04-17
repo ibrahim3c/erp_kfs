@@ -71,5 +71,38 @@ namespace HR.Domain.Penalties
 
             return Result<PenaltyRecord>.Success(penalty);
         }
+
+        // this is instance method to update the existing penalty record
+        public Result Update(
+            DateTime violationDate,
+            PenaltyActionType actionType,
+            string penaltyType,
+            decimal? deductionDays,
+            DateTime executionMonth,
+            string decisionReference,
+            string notes,
+            string attachmentPath)
+        {
+            if ((actionType == PenaltyActionType.Deduct || actionType == PenaltyActionType.Hold) && (deductionDays == null || deductionDays <= 0))
+                return Result.Failure(PenaltyErrors.InvalidDays);
+
+            if (actionType == PenaltyActionType.Warning || actionType == PenaltyActionType.Postpone)
+                deductionDays = 0;
+
+            ViolationDate = violationDate;
+            ActionType = actionType;
+            PenaltyType = penaltyType;
+            DeductionDays = deductionDays;
+            ExecutionMonth = executionMonth;
+            DecisionReference = decisionReference;
+            Notes = notes;
+
+            if (!string.IsNullOrWhiteSpace(attachmentPath))
+            {
+                AttachmentPath = attachmentPath;
+            }
+
+            return Result.Success();
+        }
     }
 }

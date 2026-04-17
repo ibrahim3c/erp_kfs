@@ -30,7 +30,7 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
         {
             // 1. إنشاء الدورة
             var cycleResult = PayrollCycle.Create(
-                request.Month, request.Year, request.EmployeeCategory);
+                request.Month, request.Year, request.EmploymentTypeId);
 
             if (cycleResult.IsFailure)
                 return Result<Guid>.Failure(cycleResult.Error);
@@ -41,7 +41,7 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
             var entries = await _calculationService.CalculateAsync(
                 request.Month, 
                 request.Year,
-                request.EmployeeCategory,
+                request.EmploymentTypeId,
                 cycle!.Id,
                 cancellationToken);
 

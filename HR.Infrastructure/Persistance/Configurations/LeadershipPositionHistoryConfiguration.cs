@@ -1,8 +1,8 @@
 ﻿using HR.Domain.Employees;
-using HR.Domain.Organization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
+using Organization.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace HR.Infrastructure.Persistance.Configurations
 
             // العلاقة مع الموظف
             builder.HasOne<Employee>()
-                   .WithMany(e => e.LeadershipHistory) // تأكد من وجود هذه الـ List في كلاس Employee
+                   .WithMany() // تأكد من وجود هذه الـ List في كلاس Employee
                    .HasForeignKey(l => l.EmployeeId)
                    .OnDelete(DeleteBehavior.Cascade); // إذا تم حذف الموظف، يُحذف سجله القيادي
         }
