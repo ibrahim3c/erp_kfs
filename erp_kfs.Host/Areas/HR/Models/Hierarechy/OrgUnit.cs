@@ -1,8 +1,8 @@
 ﻿using MyERP.Web.Models;
+using MyERP.Web.Models.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using MyERP.Web.Areas.Admin.Models;
-using erp_kfs.Host.Models.Common;
 
 namespace MyERP.Web.Areas.HR.Models.Hierarechy
 {

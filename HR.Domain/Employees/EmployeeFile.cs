@@ -16,7 +16,8 @@ namespace HR.Domain.Employees
             string nationalIdCardFront,
             string nationalIdCardBack,
             string marriageDocument,
-            string personalPhoto) : base(id)
+            string personalPhoto,
+            string contractFile) : base(id)
         {
             EmployeeId = employeeId;
             MilitaryFile = militaryFile;
@@ -27,6 +28,7 @@ namespace HR.Domain.Employees
             NationalIdCardBack = nationalIdCardBack;
             MarriageDocument = marriageDocument;
             PersonalPhoto = personalPhoto;
+            ContractFile = contractFile;
         }
 
         public Guid EmployeeId { get; private set; }
@@ -46,7 +48,7 @@ namespace HR.Domain.Employees
         public string MarriageDocument { get; private set; }
 
         public string PersonalPhoto { get; private set; }
-
+        public string ContractFile { get; private set; }
 
         public static Result<EmployeeFile> Create(
             Guid employeeId,
@@ -57,7 +59,8 @@ namespace HR.Domain.Employees
             string nationalIdCardFront,
             string nationalIdCardBack,
             string marriageDocument,
-            string personalPhoto)
+            string personalPhoto,
+            string contractFile)
         {
             if (employeeId == Guid.Empty)
                 return Result<EmployeeFile>.Failure(EmployeeErrors.EmployeeIdEmpty);
@@ -70,7 +73,8 @@ namespace HR.Domain.Employees
                 nationalIdCardFront,
                 nationalIdCardBack,
                 marriageDocument,
-                personalPhoto))
+                personalPhoto,
+                contractFile))
             {
                 return Result<EmployeeFile>.Failure(EmployeeErrors.EmployeeFileRequired);
             }
@@ -85,7 +89,8 @@ namespace HR.Domain.Employees
                 nationalIdCardFront,
                 nationalIdCardBack,
                 marriageDocument,
-                personalPhoto
+                personalPhoto,
+                contractFile
             );
 
             return Result<EmployeeFile>.Success(employeeFile);
@@ -133,7 +138,8 @@ namespace HR.Domain.Employees
             string nationalIdCardFront,
             string nationalIdCardBack,
             string marriageDocument,
-            string personalPhoto)
+            string personalPhoto,
+            string contractFile)
         {
             return string.IsNullOrWhiteSpace(militaryFile) &&
                    string.IsNullOrWhiteSpace(qualificationFile) &&
@@ -142,6 +148,7 @@ namespace HR.Domain.Employees
                    string.IsNullOrWhiteSpace(nationalIdCardFront) &&
                    string.IsNullOrWhiteSpace(nationalIdCardBack) &&
                    string.IsNullOrWhiteSpace(marriageDocument) &&
+                   string.IsNullOrWhiteSpace(contractFile) &&
                    string.IsNullOrWhiteSpace(personalPhoto);
         }
     }

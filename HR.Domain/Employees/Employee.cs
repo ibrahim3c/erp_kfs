@@ -20,7 +20,7 @@ namespace HR.Domain.Employees
         public DateTime? TerminationDate { get; private set; }
         public string MaritalStatus { get; private set; }
         public bool IsActive { get; private set; }
-
+        public bool IsDisabled { get; private set; }
         public Guid? CityCenterId { get; private set; }
         public Guid? VillageId { get; private set; }
 
@@ -32,6 +32,8 @@ namespace HR.Domain.Employees
         public Guid? JobGradeId { get; private set; }
         public Guid? FunctionalGroupId { get; private set; }
         public Guid? OrgUnitId { get; private set; }
+
+        public EmployeeFinancial FinancialInfo { get; private set; }
 
         // --- Encapsulated Collections (Children Entities) ---
         private readonly List<EmployeeFamily> _employeeFamilies = new();
@@ -61,7 +63,7 @@ namespace HR.Domain.Employees
 
         // EF Core Parameterless constructor
         private Employee() { }
-        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, Guid? cityCenterId, Guid? villageId, Guid? qualificationTypeId, string specialization, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId) : base(id)
+        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? qualificationTypeId, string specialization, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId) : base(id)
         {
             Code = code;
             Name = name;
@@ -75,6 +77,7 @@ namespace HR.Domain.Employees
             TerminationDate = terminationDate;
             MaritalStatus = maritalStatus;
             IsActive = isActive;
+            IsDisabled = isDisabled;
             CityCenterId = cityCenterId;
             VillageId = villageId;
             QualificationTypeId = qualificationTypeId;
@@ -97,6 +100,7 @@ namespace HR.Domain.Employees
                     string email = null,
                     string address = null,
                     string maritalStatus = null,
+                    bool isDisabled=false,
                     Guid? cityCenterId = null,
                     Guid? villageId = null,
                     Guid? qualificationTypeId = null,
@@ -117,7 +121,7 @@ namespace HR.Domain.Employees
                 return Result<Employee>.Failure(EmployeeErrors.InvalidNationalId);
 
             if (hireDate == default)
-                return Result<Employee>.Failure(EmployeeErrors.InvalidHireDate);       
+                return Result<Employee>.Failure(EmployeeErrors.InvalidHireDate);
             var employee = new Employee(
                 id: Guid.NewGuid(),
                 code: code,
@@ -132,6 +136,7 @@ namespace HR.Domain.Employees
                 terminationDate: null,
                 maritalStatus: maritalStatus,
                 isActive: true,
+                isDisabled: isDisabled,
                 cityCenterId: cityCenterId,
                 villageId: villageId,
                 qualificationTypeId: qualificationTypeId,
@@ -224,7 +229,7 @@ namespace HR.Domain.Employees
             bool isDisabled = false)
 
         {
-            var result = EmployeeFamily.Create(Id,fullName,relationshipType,healthStatus,nationalId,phone,isDisabled);
+            var result = EmployeeFamily.Create(Id, fullName, relationshipType, healthStatus, nationalId, phone, isDisabled);
             if (result.IsFailure)
                 Result.Failure(result.Error);
 
@@ -232,7 +237,7 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
 
-        public Result RecordDecision ( 
+        public Result RecordDecision(
             Guid decisionId,
             string description,
             DateTime? validFrom,
@@ -240,7 +245,7 @@ namespace HR.Domain.Employees
             EmployeeDecisionStatus status,
             string notes)
         {
-            var result = EmployeeDecision.Create(Id,decisionId,description,validFrom,validTo,status,notes);
+            var result = EmployeeDecision.Create(Id, decisionId, description, validFrom, validTo, status, notes);
             if (result.IsFailure)
                 Result.Failure(result.Error);
             _employeeDecisions.Add(result.Value);
@@ -273,11 +278,38 @@ namespace HR.Domain.Employees
             string filePath)
 
         {
-            var result =  ServiceTerminationRequest.Create(Id, serviceTerminationTypeId, requestNumber, issuedTo, requestDate, requestStartDate, reason, filePath);
-            if(result.IsFailure)
+            var result = ServiceTerminationRequest.Create(Id, serviceTerminationTypeId, requestNumber, issuedTo, requestDate, requestStartDate, reason, filePath);
+            if (result.IsFailure)
                 return Result.Failure(result.Error);
             _serviceTerminationRequests.Add(result.Value);
-           return  Result.Success();
+            return Result.Success();
+        }
+
+    public Result AddFinancialInformation(
+        decimal? basicSalary2019,
+        decimal? grossSalary,
+        string insuranceNumber,
+        string bankName,
+        string bankAccount,
+        bool hasFellowshipFund,
+        bool hasMedicalFund)
+        {
+            var financialResult = EmployeeFinancial.Create(
+                Id, // نمرر الـ ID الخاص بالموظف الحالي
+                basicSalary2019,
+                grossSalary,
+                insuranceNumber,
+                bankName,
+                bankAccount,
+                hasFellowshipFund,
+                hasMedicalFund);
+
+            if (financialResult.IsFailure)
+                return Result.Failure(financialResult.Error);
+
+            FinancialInfo = financialResult.Value;
+            return Result.Success();
         }
     }
+
 }
