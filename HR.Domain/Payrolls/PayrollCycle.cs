@@ -13,15 +13,15 @@ namespace HR.Domain.Payrolls
     /// </summary>
     public class PayrollCycle : Entity
     {
-        private readonly List<PayrollEntry> _entries = new();
+        private readonly List<PayrollEntry> _entries = new();      
 
         private PayrollCycle() { }
 
-        private PayrollCycle(Guid id, int month, int year, EmploymentType employeeCategory) : base(id)
+        private PayrollCycle(Guid id, int month, int year, Guid employmentTypeId) : base(id)
         {
             Month = month;
             Year = year;
-            EmployeeCategory = employeeCategory;
+            EmploymentTypeId = employmentTypeId;
             Status = PayrollCycleStatus.Draft;
             CreatedAt = DateTime.UtcNow;
         }
@@ -30,8 +30,8 @@ namespace HR.Domain.Payrolls
         public int Year { get; private set; }
 
         /// <summary>فئة الموظفين — الكل / الدائمين / المؤقتين</summary>
-        public EmploymentType EmployeeCategory { get; private set; }
-
+        public Guid EmploymentTypeId { get; private set; }
+        public EmploymentType EmploymentType { get; private set; }
         public PayrollCycleStatus Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? CalculatedAt { get; private set; }
@@ -45,7 +45,7 @@ namespace HR.Domain.Payrolls
         public decimal TotalNetSalary => _entries.Sum(e => e.NetSalary);
 
         // ─── Factory ───────────────────────────────────────────
-        public static Result<PayrollCycle> Create(int month, int year, EmploymentType employeeCategory)
+        public static Result<PayrollCycle> Create(int month, int year, Guid employmentTypeId)
         {
             if (month is < 1 or > 12)
                 return Result<PayrollCycle>.Failure(PayrollErrors.InvalidMonth);
@@ -54,7 +54,7 @@ namespace HR.Domain.Payrolls
                 return Result<PayrollCycle>.Failure(PayrollErrors.InvalidYear);
 
             return Result<PayrollCycle>.Success(
-                new PayrollCycle(Guid.NewGuid(), month, year, employeeCategory));
+                new PayrollCycle(Guid.NewGuid(), month, year, employmentTypeId));
         }
 
         // ─── Behaviors ─────────────────────────────────────────

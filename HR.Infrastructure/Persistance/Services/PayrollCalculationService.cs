@@ -24,7 +24,7 @@ namespace HR.Infrastructure.Persistance.Services
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<List<PayrollEntry>> CalculateAsync(int month, int year, EmploymentType employeeCategory, Guid cycleId, CancellationToken cancellationToken = default)
+        public async Task<List<PayrollEntry>> CalculateAsync(int month, int year, Guid employmentTypeId, Guid cycleId, CancellationToken cancellationToken = default)
         {
             using var connection = _connectionFactory.CreateConnection();
 
@@ -73,7 +73,7 @@ namespace HR.Infrastructure.Persistance.Services
             {
                 Month = month,
                 Year = year,
-                EmployeeCategory = employeeCategory
+                EmploymentTypeId = employmentTypeId
             });
 
             var entries = new List<PayrollEntry>();

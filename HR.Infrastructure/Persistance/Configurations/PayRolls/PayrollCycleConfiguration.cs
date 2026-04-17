@@ -16,11 +16,6 @@ namespace HR.Infrastructure.Persistance.Configurations.PayRolls
             builder.Property(c => c.Month).IsRequired();
             builder.Property(c => c.Year).IsRequired();
 
-            builder.Property(c => c.EmployeeCategory)
-                    .HasConversion<string>() // لحفظ (Competition, TemporaryContract...) بدلاً من (1, 2...)
-                    .HasMaxLength(50)
-                    .IsRequired(false);
-
             // حفظ الـ Enum كنص في الداتا بيز (أفضل لقابلية القراءة وتجنب أخطاء الترتيب)
             builder.Property(c => c.Status)
                 .HasConversion<string>()
@@ -37,6 +32,11 @@ namespace HR.Infrastructure.Persistance.Configurations.PayRolls
                 .HasForeignKey(e => e.CycleId)
                 .OnDelete(DeleteBehavior.Cascade); // عند حذف شهر الرواتب (مثلاً كمسودة)، تُحذف كل مفردات رواتب الموظفين لهذا الشهر
 
+            builder.HasOne(c => c.EmploymentType)
+                .WithMany() 
+                .HasForeignKey(c => c.EmploymentTypeId)
+                .OnDelete(DeleteBehavior.Restrict); // لا نريد حذف نوع التوظيف إذا تم حذف شهر الرواتب
+           
             // إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
             builder.Metadata.FindNavigation(nameof(PayrollCycle.Entries))
                 ?.SetPropertyAccessMode(PropertyAccessMode.Field);

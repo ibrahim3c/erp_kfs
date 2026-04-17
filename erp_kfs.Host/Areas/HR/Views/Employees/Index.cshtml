@@ -2,270 +2,176 @@
     ViewData["Title"] = "سجل الموظفين العام";
 }
 
-<!-- رابط CSS الخاص بـ DataTables -->
-<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/css/global/hr-custom.css" asp-append-version="true">
 
-<!-- 1. قسم الفلتر والبحث المتقدم -->
-<div class="card card-outline card-primary collapsed-card">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-filter mr-1"></i> بحث متقدم وفلترة</h3>
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                <i class="fas fa-plus"></i>
-            </button>
+<div class="hr-page-container animate__animated animate__fadeIn">
+    <!-- 1. Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h5 font-weight-bold text-dark mb-1">سجل الموظفين العام</h1>
+            <p class="text-muted mb-0 small">إدارة ومتابعة بيانات العاملين بالمحافظة</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Create" class="hr-btn hr-btn-primary">
+                <i class="fas fa-plus"></i> إضافة موظف جديد
+            </a>
         </div>
     </div>
-    <div class="card-body" style="display: none;">
-        <form>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label>الرقم القومي / الوظيفي</label>
-                    <input type="text" class="form-control" placeholder="أدخل الرقم...">
-                </div>
 
-                <div class="col-md-3 mb-3">
-                    <label>اسم الموظف</label>
-                    <input type="text" class="form-control" placeholder="بحث بالاسم...">
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label>الإدارة / القسم</label>
-                    <select class="form-control select2">
-                        <option value="">-- الكل --</option>
-                        <option>الإدارة العامة لنظم المعلومات</option>
-                        <option>التخطيط العمراني</option>
-                        <option>الشئون الهندسية</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label>الدرجة الوظيفية</label>
-                    <select class="form-control">
-                        <option value="">-- الكل --</option>
-                        <option>مدير عام</option>
-                        <option>الأولى</option>
-                        <option>الثانية</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label>نوع التعيين</label>
-                    <select class="form-control">
-                        <option value="">-- الكل --</option>
-                        <option>دائم</option>
-                        <option>مؤقت / عقد</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label>حالة الموظف</label>
-                    <select class="form-control">
-                        <option value="1">على رأس العمل</option>
-                        <option value="2">إجازة بدون مرتب</option>
-                        <option value="3">منتهية خدمته</option>
-                    </select>
-                </div>
-
-                <div class="col-md-12 text-left">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> بحث</button>
-                    <button type="reset" class="btn btn-default">إعادة تعيين</button>
-                </div>
+    <!-- 2. Search & Filter Section -->
+    <div class="hr-card mb-4">
+        <div class="hr-card-header" data-bs-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" style="cursor: pointer;">
+            <h3 class="hr-card-title">
+                <i class="fas fa-filter"></i> أدوات البحث والتصفية المتقدمة
+            </h3>
+            <i class="fas fa-chevron-down text-muted"></i>
+        </div>
+        <div class="collapse" id="filterCollapse">
+            <div class="hr-filter-section">
+                <form>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="hr-form-label">الرقم القومي / الوظيفي</label>
+                            <input type="text" class="form-control hr-form-control" placeholder="أدخل الرقم...">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="hr-form-label">اسم الموظف</label>
+                            <input type="text" class="form-control hr-form-control" placeholder="بحث بالاسم...">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="hr-form-label">الإدارة / القسم</label>
+                            <select class="form-select hr-form-control">
+                                <option value="">-- الكل --</option>
+                                <option>الإدارة العامة لنظم المعلومات</option>
+                                <option>التخطيط العمراني</option>
+                                <option>الشئون الهندسية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="hr-form-label">حالة الموظف</label>
+                            <select class="form-select hr-form-control">
+                                <option value="1">على رأس العمل</option>
+                                <option value="2">إجازة بدون مرتب</option>
+                                <option value="3">منتهية خدمته</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mt-2 d-flex justify-content-end gap-2">
+                            <button type="submit" class="hr-btn hr-btn-primary">تطبيق البحث</button>
+                            <button type="reset" class="hr-btn hr-btn-outline">إعادة تعيين</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-</div>
-
-<!-- 2. جدول البيانات (Data Table) -->
-<div class="card">
-    <div class="card-header border-0">
-        <h3 class="card-title text-bold text-dark">قاعدة بيانات العاملين</h3>
-        <div class="card-tools">
-            <a asp-action="Create" class="btn btn-success btn-sm">
-                <i class="fas fa-user-plus"></i> إضافة موظف جديد
-            </a>
-            <a href="#" class="btn btn-info btn-sm">
-                <i class="fas fa-file-excel"></i> استيراد (Excel)
-            </a>
         </div>
     </div>
 
-    <div class="card-body">
-        <div class="table-responsive">
-            <table id="employeesTable" class="table table-bordered table-striped table-hover text-center" style="width:100%">
-                <thead class="bg-dark text-white">
+    <!-- 3. Employee Listing Table -->
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title">
+                <i class="fas fa-list-ul"></i> قاعدة بيانات العاملين
+            </h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table id="employeesTable" class="table hr-table text-center mb-0" style="width:100%">
+                <thead>
                     <tr>
-                        <th style="width: 2%">#</th>
-                        <th>كود</th>
-                        <th style="width: 20%">الاسم بالكامل</th>
+                        <th style="width: 5%">#</th>
+                        <th style="width: 8%">كود</th>
+                        <th style="width: 25%">الاسم بالكامل</th>
                         <th>الوظيفة / التخصص</th>
                         <th>الدرجة</th>
                         <th>الإدارة</th>
-                        <th>تاريخ التعيين</th>
-                        <th>نوع التعيين</th>
                         <th>الحالة</th>
-                        <th style="width: 10%">خيارات</th>
+                        <th style="width: 10%">الخيارات</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- مثال 1 -->
                     <tr>
                         <td>1</td>
-                        <td>1001</td>
-                        <td class="text-right font-weight-bold">فاطمة عبدالفتاح الشرباني</td>
+                        <td><span class="font-weight-bold text-primary">1001</span></td>
+                        <td class="text-right">فاطمة عبدالفتاح الشرباني</td>
                         <td>مدير عام (أخصائي عمراني)</td>
-                        <td><span class="badge badge-warning">مدير عام</span></td>
+                        <td><span class="hr-badge hr-badge-warning">مدير عام</span></td>
                         <td>التخطيط العمراني</td>
-                        <td>01-05-2002</td>
-                        <td>موازنة</td>
-                        <td><span class="badge badge-success">يعمل</span></td>
+                        <td><span class="hr-badge hr-badge-success">يعمل</span></td>
                         <td>
-                            <div class="btn-group">
-                                <!-- التعديل هنا: data-bs-toggle -->
-                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-pill" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-h text-muted"></i>
                                 </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
-
+                                <div class="dropdown-menu hr-dropdown-menu dropdown-menu-end shadow">
+                                    <a class="dropdown-item hr-dropdown-item" href="#"><i class="fas fa-eye text-primary"></i> عرض الملف</a>
+                                    <a class="dropdown-item hr-dropdown-item" href="#"><i class="fas fa-edit text-warning"></i> تعديل</a>
                                     <div class="dropdown-divider"></div>
-
-                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                    <a class="dropdown-item hr-dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> حذف</a>
                                 </div>
                             </div>
                         </td>
                     </tr>
-
-                    <!-- مثال 2 -->
                     <tr>
                         <td>2</td>
-                        <td>1002</td>
-                        <td class="text-right font-weight-bold">محمد فؤاد ابراهيم</td>
+                        <td><span class="font-weight-bold text-primary">1002</span></td>
+                        <td class="text-right">محمد فؤاد ابراهيم</td>
                         <td>كبير اخصائيين</td>
-                        <td><span class="badge badge-primary">الأولى</span></td>
+                        <td><span class="hr-badge hr-badge-primary">الأولى</span></td>
                         <td>الشئون الهندسية</td>
-                        <td>12-01-2006</td>
-                        <td>موازنة</td>
-                        <td><span class="badge badge-success">يعمل</span></td>
+                        <td><span class="hr-badge hr-badge-success">يعمل</span></td>
                         <td>
-                            <div class="btn-group">
-                                <!-- التعديل هنا: data-bs-toggle -->
-                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-pill" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-h text-muted"></i>
                                 </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
+                                <div class="dropdown-menu shadow">
+                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary"></i> عرض الملف</a>
+                                    <a class="dropdown-item" href="#"><i class="fas fa-edit text-warning"></i> تعديل</a>
                                 </div>
                             </div>
                         </td>
                     </tr>
-
-                    <!-- مثال 3 (أجازة) -->
-                    <tr>
-                        <td>3</td>
-                        <td>1003</td>
-                        <td class="text-right font-weight-bold">بهجت ابراهيم محمد</td>
-                        <td>مهندس زراعي</td>
-                        <td><span class="badge badge-info">الثانية</span></td>
-                        <td>الحدائق والتشجير</td>
-                        <td>19-05-2002</td>
-                        <td>موازنة</td>
-                        <td><span class="badge badge-danger">أجازة</span></td>
-                        <td>
-                            <div class="btn-group">
-                                <!-- التعديل هنا: data-bs-toggle -->
-                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- مثال 4 -->
-                    <tr>
-                        <td>4</td>
-                        <td>1004</td>
-                        <td class="text-right font-weight-bold">رانيا ابو النصر عبد السلام</td>
-                        <td>باحث قانوني</td>
-                        <td><span class="badge badge-primary">الأولى</span></td>
-                        <td>الشئون القانونية</td>
-                        <td>01-07-2019</td>
-                        <td>موازنة</td>
-                        <td><span class="badge badge-success">يعمل</span></td>
-                        <td>
-                            <div class="btn-group">
-                                <!-- التعديل هنا: data-bs-toggle -->
-                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- مثال 5 (مؤقت) -->
-                    <tr>
-                        <td>5</td>
-                        <td>1005</td>
-                        <td class="text-right font-weight-bold">آمنة جمعة رزق</td>
-                        <td>كاتب سكرتارية</td>
-                        <td><span class="badge badge-secondary">الرابعة</span></td>
-                        <td>خدمة المواطنين</td>
-                        <td>04-09-2023</td>
-                        <td>مؤقت / فصل</td>
-                        <td><span class="badge badge-success">يعمل</span></td>
-                        <td>
-                            <div class="btn-group">
-                                <!-- التعديل هنا: data-bs-toggle -->
-                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#"><i class="fas fa-eye text-primary mr-2"></i> الملف الشخصي</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-pen text-warning mr-2"></i> تعديل بيانات</a>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <a class="dropdown-item" href="#"><i class="fas fa-print text-secondary mr-2"></i> طباعة بيان حالة</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-umbrella-beach text-success mr-2"></i> رصيد الأجازات</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-gavel text-danger mr-2"></i> تسجيل جزاء</a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#employeesTable').DataTable({
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "language": {
+                    "sProcessing": "جاري التحميل...",
+                    "sLengthMenu": "عرض _MENU_",
+                    "sZeroRecords": "لا توجد نتائج",
+                    "sEmptyTable": "لا توجد بيانات",
+                    "sInfo": "سجل _START_ - _END_ من _TOTAL_",
+                    "sInfoEmpty": "سجل 0 - 0 من 0",
+                    "sInfoFiltered": "(من _MAX_)",
+                    "sInfoPostFix": "",
+                    "sSearch": "بحث شامل:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "جاري التحميل...",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sLast": "الأخير",
+                        "sNext": "التالي",
+                        "sPrevious": "السابق"
+                    },
+                    "search": "",
+                    "searchPlaceholder": "بحث في النتائج..."
+                },
+                "dom": '<"hr-dt-top p-3 border-bottom w-100"B><"hr-dt-bottom p-3 d-flex align-items-center justify-content-between w-100"lf>rt<"p-3 d-flex flex-column align-items-center gap-2 w-100"pi>',
+                "buttons": [
+                    { extend: 'copy', text: '<i class="fas fa-copy"></i> نسخ', className: 'hr-btn-dt' },
+                    { extend: 'excel', text: '<i class="fas fa-file-excel"></i> إكسيل', className: 'hr-btn-dt' },
+                    { extend: 'print', text: '<i class="fas fa-print"></i> طباعة', className: 'hr-btn-dt' },
+                    { extend: 'colvis', text: '<i class="fas fa-columns"></i> الأعمدة', className: 'hr-btn-dt' }
+                ]
+            });
+        });
+    </script>
+}
