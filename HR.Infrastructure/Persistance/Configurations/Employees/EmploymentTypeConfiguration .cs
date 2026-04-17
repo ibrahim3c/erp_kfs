@@ -1,4 +1,5 @@
 ﻿using HR.Domain.Employees;
+using HR.Domain.Payrolls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
@@ -29,6 +30,10 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
             // Optional Index
             builder.HasIndex(x => x.Code)
                 .IsUnique();
+
+            // إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
+            builder.Metadata.FindNavigation(nameof(EmploymentType.PayrollCycles))
+                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 

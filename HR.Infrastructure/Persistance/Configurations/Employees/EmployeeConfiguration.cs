@@ -24,31 +24,31 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
             // --- العلاقات (Relationships) مع التوابع ---
 
             // 1. Employee Families
-            builder.HasMany(e => e.Families)
+            builder.HasMany(e => e.EmployeeFamilies)
                    .WithOne()
                    .HasForeignKey(f => f.EmployeeId)
                    .OnDelete(DeleteBehavior.Cascade); // مسح الموظف يمسح عائلته
 
             // إخبار EF Core بكيفية قراءة الـ Private List
-            builder.Metadata.FindNavigation(nameof(Employee.Families))
+            builder.Metadata.FindNavigation(nameof(Employee.EmployeeFamilies))
                    ?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
             // 2. Employee Qualifications
-            builder.HasMany(e => e.Qualifications)
+            builder.HasMany(e => e.EmployeeQualifications)
                    .WithOne()
                    .HasForeignKey(q => q.EmployeeId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Metadata.FindNavigation(nameof(Employee.Qualifications))
+            builder.Metadata.FindNavigation(nameof(Employee.EmployeeQualifications))
                    ?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
             // 3. Employee Decisions
-            builder.HasMany(e => e.Decisions)
+            builder.HasMany(e => e.EmployeeDecisions)
                    .WithOne()
                    .HasForeignKey(d => d.EmployeeId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Metadata.FindNavigation(nameof(Employee.Decisions))
+            builder.Metadata.FindNavigation(nameof(Employee.EmployeeDecisions))
                    ?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
             // 4. Leadership History (إذا تم إضافتها كما اتفقنا)

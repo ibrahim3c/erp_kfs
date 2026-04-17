@@ -15,8 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HR.Application\HR.Application.csproj" />
     <ProjectReference Include="..\HR.Domain\HR.Domain.csproj" />
     <ProjectReference Include="..\Modules.Shared.Infrastructure\Modules.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\Organization.Domain\Organization.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

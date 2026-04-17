@@ -1,4 +1,5 @@
-﻿using Modules.Shared.Domain;
+﻿using HR.Domain.Payrolls;
+using Modules.Shared.Domain;
 
 namespace HR.Domain.Employees
 {
@@ -28,6 +29,9 @@ namespace HR.Domain.Employees
 
         public bool IsActive { get; private set; }
 
+        // navigation properties
+        private readonly List<PayrollCycle> _payrollCycle = new();
+        public IReadOnlyCollection<PayrollCycle> PayrollCycles => _payrollCycle.AsReadOnly();
         public static EmploymentType Create(string code, string name, string description)
         {
             return new EmploymentType(
