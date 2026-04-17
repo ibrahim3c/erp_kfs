@@ -5,24 +5,68 @@ namespace HR.Domain.JobStructures
 {
     public class JobTitle : Entity
     {
-        [Required]
-        public int FunctionalGroupId { get; set; }
+        private JobTitle() { }
 
-        [Required, MaxLength(50)]
-        public string Code { get; set; }
+        private JobTitle(Guid id, Guid functionalGroupId, string code, string name, string description, bool isActive) : base(id)
+        {
+            FunctionalGroupId = functionalGroupId;
+            Code = code;
+            Name = name;
+            Description = description;
+            IsActive = isActive;
+            CreatedAt = DateTime.UtcNow;
+        }
 
-        [Required, MaxLength(200)]
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public bool IsActive { get; set; } = true;
-
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public Guid FunctionalGroupId { get; private set; }
+        public string Code { get; private set; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public bool IsActive { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
 
         // Navigation
-        [ForeignKey(nameof(FunctionalGroupId))]
-        public FunctionalGroup FunctionalGroup { get; set; }
+        public FunctionalGroup FunctionalGroup { get; private set; }
+
+        // Factory
+        public static Result<JobTitle> Create(Guid functionalGroupId, string code, string name, string description)
+        {
+            if (functionalGroupId == Guid.Empty)
+                return Result<JobTitle>.Failure(JobStructureErrors.FunctionalGroupIdEmpty);
+
+            if (string.IsNullOrWhiteSpace(code))
+                return Result<JobTitle>.Failure(JobStructureErrors.CodeEmpty);
+
+            if (string.IsNullOrWhiteSpace(name))
+                return Result<JobTitle>.Failure(JobStructureErrors.NameEmpty);
+
+            var jobTitle = new JobTitle(Guid.NewGuid(), functionalGroupId, code, name, description, true);
+            return Result<JobTitle>.Success(jobTitle);
+        }
+
+        // Behaviors
+        public Result UpdateDetails(string code, string name, string description)
+        {
+            if (string.IsNullOrWhiteSpace(code)) return Result.Failure(JobStructureErrors.CodeEmpty);
+            if (string.IsNullOrWhiteSpace(name)) return Result.Failure(JobStructureErrors.NameEmpty);
+
+            Code = code;
+            Name = name;
+            Description = description;
+            UpdatedAt = DateTime.UtcNow;
+
+            return Result.Success();
+        }
+
+        public Result Activate() { 
+            IsActive = true; 
+            UpdatedAt = DateTime.UtcNow; 
+            return Result.Success();
+        }
+        public Result Deactivate() {
+            IsActive = false; 
+            UpdatedAt = DateTime.UtcNow;
+            return Result.Success();
+        }
     }
 }

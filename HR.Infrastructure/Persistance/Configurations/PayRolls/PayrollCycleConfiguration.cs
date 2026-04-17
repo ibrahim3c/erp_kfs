@@ -1,0 +1,45 @@
+﻿using HR.Domain.Payrolls;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Modules.Shared.Infrastructure.Database;
+
+
+namespace HR.Infrastructure.Persistance.Configurations.PayRolls
+{
+    public class PayrollCycleConfiguration : IEntityTypeConfiguration<PayrollCycle>
+    {
+        public void Configure(EntityTypeBuilder<PayrollCycle> builder)
+        {
+            builder.ToTable("PayrollCycles", Schemas.HR);
+            builder.HasKey(c => c.Id);
+
+            builder.Property(c => c.Month).IsRequired();
+            builder.Property(c => c.Year).IsRequired();
+
+            builder.Property(c => c.EmployeeCategory)
+                    .HasConversion<string>() // لحفظ (Competition, TemporaryContract...) بدلاً من (1, 2...)
+                    .HasMaxLength(50)
+                    .IsRequired(false);
+
+            // حفظ الـ Enum كنص في الداتا بيز (أفضل لقابلية القراءة وتجنب أخطاء الترتيب)
+            builder.Property(c => c.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50);
+
+            
+            builder.Ignore(c => c.EmployeeCount);
+            builder.Ignore(c => c.TotalDeductions);
+            builder.Ignore(c => c.TotalNetSalary);
+
+            // ─── العلاقات ───────────────────────────────────────
+            builder.HasMany(c => c.Entries)
+                .WithOne() 
+                .HasForeignKey(e => e.CycleId)
+                .OnDelete(DeleteBehavior.Cascade); // عند حذف شهر الرواتب (مثلاً كمسودة)، تُحذف كل مفردات رواتب الموظفين لهذا الشهر
+
+            // إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
+            builder.Metadata.FindNavigation(nameof(PayrollCycle.Entries))
+                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+        }
+    }
+}
