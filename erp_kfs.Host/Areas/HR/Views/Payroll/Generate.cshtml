@@ -1,19 +1,8 @@
-﻿@model HR.Application.Payrolls.GetPayrollCycle.GetPayrollCycleResponse
-@{
+﻿@{
     ViewData["Title"] = "مسير الرواتب والأجور";
-    
-    // القيم المحددة من الكنترولر
-    int selectedMonth = ViewBag.SelectedMonth ?? DateTime.Now.Month;
-    int selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year;
-
-    // حساب الإحصائيات إذا كان الموديل متاحاً
-    bool isCycleCalculated = Model != null;
-    int employeeCount = isCycleCalculated ? Model!.Entries.Count() : 0;
-    decimal totalDeductions = isCycleCalculated ? Model!.Entries.Sum(e => e.TotalDeductions) : 0;
-    decimal totalNet = isCycleCalculated ? Model!.Entries.Sum(e => e.NetSalary) : 0;
-    string cycleStatus = isCycleCalculated ? Model!.Status.ToString() : "لم يتم الحساب";
 }
 
+<!-- Styles -->
 <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
@@ -38,6 +27,7 @@
 <section class="content">
     <div class="container-fluid">
 
+        <!-- 1. لوحة التشغيل (Payroll Engine) -->
         <div class="card card-outline card-success">
             <div class="card-header">
                 <h3 class="card-title text-bold">إعداد وحساب الدورة المستندية</h3>
@@ -45,69 +35,58 @@
             <div class="card-body bg-light">
                 <form method="post" asp-action="CalculateCycle" id="calcForm">
                     <div class="row align-items-end">
+                        <!-- اختيار الشهر والسنة -->
                         <div class="col-md-2 mb-3">
                             <label class="form-label">الشهر</label>
-                            <select name="month" class="form-select fw-bold">
-                                @for (int i = 1; i <= 12; i++)
-                                {
-                                    if (i == selectedMonth)
-                                    {
-                                        <option value="@i" selected>@System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@i">@System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(i)</option>
-                                    }
-                                }
+                            <select class="form-select fw-bold">
+                                <option value="1">يناير</option>
+                                <option value="2">فبراير</option>
+                                <option value="3">مارس</option>
+                                <option value="4">أبريل</option>
+                                <option value="5">مايو</option>
+                                <option value="6" selected>يونيو</option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-3">
                             <label class="form-label">السنة</label>
-                            <input type="number" name="year" class="form-control fw-bold" value="@selectedYear">
+                            <input type="number" class="form-control fw-bold" value="2024">
                         </div>
 
+                        <!-- فلاتر الحساب -->
                         <div class="col-md-3 mb-3">
                             <label class="form-label">فئة الموظفين</label>
-                            <select name="employmentTypeId" class="form-select" required>
-                                <option value="">-- اختر الفئة --</option>
-                                @* استبدل هذه الـ Options بالـ ViewBag الخاص بك *@
-                                <option value="00000000-0000-0000-0000-000000000000">الكل (شامل)</option>
+                            <select class="form-select">
+                                <option>الكل (شامل)</option>
+                                <option>الدائمين (موازنة)</option>
+                                <option>المؤقتين (صناديق)</option>
                             </select>
                         </div>
 
+                        <!-- زرار التشغيل -->
                         <div class="col-md-5 mb-3 text-end">
-                            <button type="button" onclick="submitCalculation()" class="btn btn-app bg-success text-white border-0 shadow-sm mb-0">
+                            <button type="button" onclick="startCalculation()" class="btn btn-app bg-success text-white border-0 shadow-sm mb-0">
                                 <i class="fas fa-calculator" style="font-size: 1.2rem;"></i> حساب الرواتب
                             </button>
-                            
-                            @if (isCycleCalculated && cycleStatus != "Locked")
-                            {
-                                <button type="button" onclick="confirmLock()" class="btn btn-app bg-danger text-white border-0 shadow-sm mb-0">
-                                    <i class="fas fa-lock" style="font-size: 1.2rem;"></i> إقفال الشهر
-                                </button>
-                            }
+                            <button type="button" class="btn btn-app bg-secondary text-white border-0 shadow-sm mb-0">
+                                <i class="fas fa-envelope" style="font-size: 1.2rem;"></i> إرسال مفردات
+                            </button>
+                            <button type="button" class="btn btn-app bg-danger text-white border-0 shadow-sm mb-0">
+                                <i class="fas fa-lock" style="font-size: 1.2rem;"></i> إقفال الشهر
+                            </button>
                         </div>
                     </div>
                 </form>
-
-                @if (isCycleCalculated)
-                {
-                    <form id="lockForm" method="post" asp-action="LockCycle">
-                        <input type="hidden" name="cycleId" value="@Model.CycleId" />
-                        <input type="hidden" name="month" value="@selectedMonth" />
-                        <input type="hidden" name="year" value="@selectedYear" />
-                    </form>
-                }
             </div>
         </div>
 
+        <!-- 2. ملخص الأرقام (Dashboard) -->
         <div class="row">
             <div class="col-12 col-sm-6 col-md-3">
                 <div class="info-box">
                     <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">عدد الموظفين</span>
-                        <span class="info-box-number">@employeeCount</span>
+                        <span class="info-box-number">142</span>
                     </div>
                 </div>
             </div>
@@ -116,7 +95,7 @@
                     <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-minus-circle text-white"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">إجمالي الاستقطاعات</span>
-                        <span class="info-box-number">@totalDeductions.ToString("N2") <small>جم</small></span>
+                        <span class="info-box-number">45,200 <small>جم</small></span>
                     </div>
                 </div>
             </div>
@@ -125,7 +104,7 @@
                     <span class="info-box-icon bg-success elevation-1"><i class="fas fa-money-bill-wave"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">صافي مستحق للصرف</span>
-                        <span class="info-box-number text-success" style="font-size:1.2rem">@totalNet.ToString("N2") <small>جم</small></span>
+                        <span class="info-box-number text-success" style="font-size:1.2rem">320,500 <small>جم</small></span>
                     </div>
                 </div>
             </div>
@@ -134,25 +113,13 @@
                     <span class="info-box-icon bg-purple elevation-1"><i class="fas fa-check-double"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">حالة المسير</span>
-                        <span class="info-box-number">
-                            @if (cycleStatus == "Locked")
-                            {
-                                <span class="badge bg-danger">مغلق نهائياً</span>
-                            }
-                            else if (cycleStatus == "Draft" || cycleStatus == "UnderReview")
-                            {
-                                <span class="badge bg-warning text-dark">قيد المراجعة</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">@cycleStatus</span>
-                            }
-                        </span>
+                        <span class="info-box-number"><span class="badge bg-warning text-dark">قيد المراجعة</span></span>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- 3. جدول تفاصيل المرتبات (Review) -->
         <div class="card card-outline card-secondary">
             <div class="card-header">
                 <h3 class="card-title"><i class="fas fa-list me-1"></i> كشف استحقاقات الموظفين (للمراجعة)</h3>
@@ -177,44 +144,45 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isCycleCalculated && Model.Entries.Any())
-                        {
-                            int index = 1;
-                            foreach (var entry in Model.Entries)
-                            {
-                                <tr>
-                                    <td>@(index++)</td>
-                                    <td class="text-end fw-bold">@entry.EmployeeName</td>
-                                    <td class="text-bold">@entry.BasicSalary.ToString("N2")</td>
-                                    <td>@entry.Incentives.ToString("N2")</td>
-                                    <td>@entry.Allowances.ToString("N2")</td>
-                                    <td class="text-primary fw-bold">@entry.GrossSalary.ToString("N2")</td>
-                                    <td class="text-danger fw-bold text-center">
-                                        @entry.TotalDeductions.ToString("N2")
-                                        @if (!string.IsNullOrEmpty(entry.DeductionDetails))
-                                        {
-                                            <br><small class="text-muted text-xs">@entry.DeductionDetails</small>
-                                        }
-                                    </td>
-                                    <td class="bg-gradient-success fw-bold text-lg">@entry.NetSalary.ToString("N2")</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a asp-action="Payslip" asp-route-entryId="@entry.EntryId" class="btn btn-sm btn-info" title="مفردات مرتب"><i class="fas fa-file-invoice"></i></a>
-                                            
-                                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#adjustModal" data-entryid="@entry.EntryId">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="9" class="text-muted py-4">لم يتم حساب رواتب لهذا الشهر. يرجى الضغط على "حساب الرواتب" للبدء.</td>
-                            </tr>
-                        }
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td class="text-bold">3,200</td>
+                            <td>1,500</td>
+                            <td>300</td>
+                            <td class="text-primary fw-bold">5,000</td>
+                            <td class="text-danger fw-bold text-center">
+                                500
+                                <br><small class="text-muted text-xs">(تأمينات + ضرائب)</small>
+                            </td>
+                            <td class="bg-gradient-success fw-bold text-lg">4,500</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-info" title="مفردات مرتب"><i class="fas fa-file-invoice"></i></button>
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#adjustModal"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
+                            <td class="text-bold">2,800</td>
+                            <td>1,200</td>
+                            <td>0</td>
+                            <td class="text-primary fw-bold">4,000</td>
+                            <td class="text-danger fw-bold text-center">
+                                200
+                                <br><small class="text-danger text-xs">(شامل 3 أيام جزاء)</small>
+                            </td>
+                            <td class="bg-gradient-success fw-bold text-lg">3,800</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-info" title="مفردات مرتب"><i class="fas fa-file-invoice"></i></button>
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#adjustModal"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -223,6 +191,7 @@
     </div>
 </section>
 
+<!-- Modal: التعديل اليدوي (استدراك) -->
 <div class="modal fade" id="adjustModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -230,127 +199,74 @@
                 <h5 class="modal-title"><i class="fas fa-sliders-h me-2"></i> تسوية يدوية (إضافة / خصم)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" asp-action="AddAdjustment">
+            <form>
                 <div class="modal-body">
-                    <input type="hidden" name="entryId" id="modalEntryId" />
-                    <input type="hidden" name="month" value="@selectedMonth" />
-                    <input type="hidden" name="year" value="@selectedYear" />
-
                     <div class="mb-3">
                         <label class="form-label">نوع التسوية</label>
-                        <select name="adjType" class="form-select" required>
+                        <select class="form-select" id="adjType">
                             <option value="plus">إضافة مبلغ (مكافأة بأثر رجعي)</option>
                             <option value="minus">خصم مبلغ (غرامة / سلفة)</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">المبلغ</label>
-                        <input type="number" step="0.01" name="amount" class="form-control fw-bold" placeholder="0.00" required>
+                        <input type="number" class="form-control fw-bold" placeholder="0.00">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">السبب / الملاحظات</label>
-                        <textarea name="reason" class="form-control" rows="2" required></textarea>
+                        <textarea class="form-control" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">تحديث صافي الراتب</button>
+                    <button type="button" class="btn btn-primary">تحديث صافي الراتب</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="~/plugins/jszip/jszip.min.js"></script>
-<script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/plugins/jszip/jszip.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
 
-<script>
-    $(function () {
-        // تفعيل الجدول مع أزرار التصدير
-        $("#payrollTable").DataTable({
-            "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
-            "responsive": true,
-            "lengthChange": true,
-            "autoWidth": false,
-            "buttons": [
-                { extend: 'excel', text: 'Excel البنك', className: 'btn-success' },
-                { extend: 'print', text: 'طباعة' }
-            ]
-        }).buttons().container().appendTo('#payrollTable_wrapper .col-md-6:eq(0)');
-
-        // تمرير الـ EntryId للمودال عند فتحه
-        $('#adjustModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var entryId = button.data('entryid');
-            var modal = $(this);
-            modal.find('#modalEntryId').val(entryId);
+    <script>
+        $(function () {
+            // تفعيل الجدول مع أزرار التصدير
+            $("#payrollTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "buttons": [
+                    { extend: 'excel', text: 'Excel البنك', className: 'btn-success' },
+                    { extend: 'print', text: 'طباعة' }
+                ]
+            }).buttons().container().appendTo('#payrollTable_wrapper .col-md-6:eq(0)');
         });
 
-        // قراءة رسائل الـ TempData من الكنترولر
-        @if (TempData["SuccessMessage"] != null)
-        {
-                <text>
+        // محاكاة عملية الحساب (تظهر لودينج)
+        function startCalculation() {
+            Swal.fire({
+                title: 'جاري تجميع وحساب الرواتب...',
+                html: 'يتم احتساب الجزاءات، الأذونات، والتأمينات الاجتماعية.<br>يرجى الانتظار...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                timer: 2000 // محاكاة وقت المعالجة
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'تم بنجاح',
-                        text: '@TempData["SuccessMessage"]'
+                        title: 'تم الانتهاء بنجاح',
+                        text: 'تم حساب رواتب عدد (142) موظف وجاهز للمراجعة.'
                     });
-                </text>
+                }
+            });
         }
-        
-        @if (TempData["ErrorMessage"] != null)
-        {
-                <text>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'حدث خطأ',
-                        text: '@TempData["ErrorMessage"]'
-                    });
-                </text>
-        }
-    });
-
-    // دالة إرسال فورم الحساب مع إظهار اللودينج الحقيقي
-    function submitCalculation() {
-        // التحقق من صحة الفورم (مثلا هل اختار فئة الموظفين؟)
-        if (!$('#calcForm')[0].checkValidity()) {
-            $('#calcForm')[0].reportValidity();
-            return;
-        }
-
-        Swal.fire({
-            title: 'جاري تجميع وحساب الرواتب...',
-            html: 'يتم احتساب الجزاءات، السلف، والتأمينات الاجتماعية.<br>يرجى الانتظار...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading()
-            }
-        });
-        
-        // إرسال الفورم للكنترولر
-        document.getElementById('calcForm').submit();
-    }
-
-    // تأكيد قبل إقفال الشهر
-    function confirmLock() {
-        Swal.fire({
-            title: 'تأكيد الإقفال',
-            text: "هل أنت متأكد من إقفال هذا المسير؟ لن تتمكن من تعديل رواتب هذا الشهر بعد الإقفال!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'نعم، إقفال نهائي',
-            cancelButtonText: 'إلغاء'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('lockForm').submit();
-            }
-        })
-    }
-</script>
+    </script>

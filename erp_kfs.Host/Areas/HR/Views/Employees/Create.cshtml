@@ -183,12 +183,11 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- 4. تبويب البيانات المالية -->
-                        <div class="tab-pane fade" id="financial" role="tabpanel" aria-labelledby="financial-tab">
-                            <div class="row">
-                                <div class="col-md-4 form-group">
-                                    <label>الأساسي في 2019 (بداية الربط)</label>
+                        <div class="row">
+                            @for (int i = 1; i <= 6; i++) {
+                                string[] labels = { "", "صورة بطاقة الرقم القومي", "صورة المؤهل الدراسي", "شهادة الميلاد المميكنة", "الموقف من التجنيد", "قرار التعيين / العقد", "فيش جنائي حديث" };
+                                <div class="col-md-6 hr-form-group">
+                                    <label>@labels[i]</label>
                                     <div class="input-group">
                                         <input type="file" class="form-control hr-form-control" id="file@i">
                                     </div>

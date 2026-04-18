@@ -1,338 +1,111 @@
-﻿@model HR.Application.JobStructures.JobStructureViewModel
-@{
-    ViewData["Title"] = "تهيئة النظام والأكواد";
+﻿@{
+    ViewData["Title"] = "أكواد النظام وثوابت البيانات (Lookups)";
 }
-
-<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
-<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">
-                    <i class="fas fa-cogs text-secondary me-2"></i> تهيئة النظام والأكواد
-                </h1>
+                <h1 class="m-0 text-dark"><i class="fas fa-cogs text-secondary me-2"></i> تهيئة النظام والأكواد</h1>
             </div>
         </div>
     </div>
 </div>
-
-@* ── Alerts ── *@
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show mx-3">
-        <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show mx-3">
-        <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
 
 <section class="content">
     <div class="container-fluid">
-        <div class="row">
 
-            @* ══ القائمة الجانبية ══ *@
+        <div class="row">
+            <!-- القائمة الجانبية للتصنيفات -->
             <div class="col-md-3">
-                <div class="card shadow-sm">
+                <div class="card">
                     <div class="card-header bg-navy text-white">
-                        <h3 class="card-title">
-                            <i class="fas fa-list me-2"></i> التصنيفات
-                        </h3>
+                        <h3 class="card-title">التصنيفات</h3>
                     </div>
                     <div class="card-body p-0">
-                        <div class="nav flex-column nav-pills p-2"
-                             id="v-pills-tab" role="tablist"
-                             aria-orientation="vertical">
-
-                            <a class="nav-link active mb-1"
-                                   data-bs-toggle="pill" href="#tab-grades" role="tab">
-                                <i class="fas fa-star me-2 text-warning"></i> الدرجات المالية
-                                <span class="badge bg-secondary float-end">
-                                    @Model.JobGrades.Count
-                                </span>
+                        <div class="nav flex-column nav-pills p-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link active mb-1" id="v-pills-grades-tab" data-bs-toggle="pill" href="#v-pills-grades" role="tab">
+                                <i class="fas fa-star me-2"></i> الدرجات المالية
                             </a>
-
-                            <a class="nav-link mb-1"
-                                   data-bs-toggle="pill" href="#tab-titles" role="tab">
-                                <i class="fas fa-id-badge me-2 text-primary"></i> المسميات الوظيفية
-                                <span class="badge bg-secondary float-end">
-                                    @Model.JobTitles.Count
-                                </span>
+                            <a class="nav-link mb-1" id="v-pills-titles-tab" data-bs-toggle="pill" href="#v-pills-titles" role="tab">
+                                <i class="fas fa-id-badge me-2"></i> المسميات الوظيفية
                             </a>
-
-                            <a class="nav-link mb-1"
-                                   data-bs-toggle="pill" href="#tab-contract" role="tab">
-                                <i class="fas fa-file-signature me-2 text-info"></i> أنواع التعيين/العقد
+                            <a class="nav-link mb-1" id="v-pills-contract-tab" data-bs-toggle="pill" href="#v-pills-contract" role="tab">
+                                <i class="fas fa-file-signature me-2"></i> أنواع التعيين/العقد
                             </a>
-
-                            <a class="nav-link mb-1"
-                                   data-bs-toggle="pill" href="#tab-leave" role="tab">
-                                <i class="fas fa-umbrella-beach me-2 text-success"></i> أنواع الإجازات
+                            <a class="nav-link mb-1" id="v-pills-leave-tab" data-bs-toggle="pill" href="#v-pills-leave" role="tab">
+                                <i class="fas fa-umbrella-beach me-2"></i> أنواع الأجازات
                             </a>
-
-                            <a class="nav-link mb-1"
-                                   data-bs-toggle="pill" href="#tab-penalty" role="tab">
-                                <i class="fas fa-gavel me-2 text-danger"></i> أنواع الجزاءات
+                            <a class="nav-link mb-1" id="v-pills-pen-tab" data-bs-toggle="pill" href="#v-pills-pen" role="tab">
+                                <i class="fas fa-gavel me-2"></i> أنواع الجزاءات
                             </a>
-
                         </div>
                     </div>
                 </div>
             </div>
 
-            @* ══ محتوى التبويبات ══ *@
+            <!-- محتوى الجداول -->
             <div class="col-md-9">
                 <div class="tab-content" id="v-pills-tabContent">
 
-                    @* ── TAB 1: الدرجات المالية ── *@
-                    <div class="tab-pane fade show active" id="tab-grades" role="tabpanel">
-                        <div class="card card-outline card-warning">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-star me-1 text-warning"></i>
-                                    جدول الدرجات الوظيفية والمالية
-                                </h3>
-                                <div class="card-tools">
-                                    <button class="btn btn-sm btn-primary"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#gradeModal">
-                                        <i class="fas fa-plus me-1"></i> إضافة درجة
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body p-0">
-                                <table id="tableGrades"
-                                       class="table table-striped table-bordered text-center align-middle">
-                                    <thead class="bg-warning text-dark">
-                                        <tr>
-                                            <th>الاسم</th>
-                                            <th>الكود</th>
-                                            <th>الترتيب</th>
-                                            <th>عدد السنوات</th>
-                                            <th>ملاحظات</th>
-                                            <th>الحالة</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var grade in Model.JobGrades)
-                                        {
-                                            <tr>
-                                                <td class="fw-bold text-end">@grade.Name</td>
-                                                <td><code>@grade.Code</code></td>
-                                                <td>@grade.GradeLevel</td>
-                                                <td>@grade.YearsNo</td>
-                                                <td class="text-muted">@grade.Description</td>
-                                                <td>
-                                                    @if (grade.IsActive)
-                                                    {
-                                                        <span class="badge bg-success">نشط</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-secondary">غير نشط</span>
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    @* ── TAB 2: المسميات الوظيفية ── *@
-                    <div class="tab-pane fade" id="tab-titles" role="tabpanel">
+                    <!-- 1. الدرجات المالية -->
+                    <div class="tab-pane fade show active" id="v-pills-grades" role="tabpanel">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-id-badge me-1 text-primary"></i>
-                                    دليل الوظائف (Jobs)
-                                </h3>
+                                <h3 class="card-title">جدول الدرجات الوظيفية والمالية</h3>
                                 <div class="card-tools">
-                                    <button class="btn btn-sm btn-primary"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#titleModal">
-                                        <i class="fas fa-plus me-1"></i> إضافة وظيفة
-                                    </button>
+                                    <button class="btn btn-xs btn-primary" onclick="addItem('Grade')"><i class="fas fa-plus"></i> إضافة درجة</button>
                                 </div>
                             </div>
                             <div class="card-body p-0">
-                                <table id="tableTitles"
-                                       class="table table-striped table-bordered text-center align-middle">
-                                    <thead class="bg-primary text-white">
-                                        <tr>
-                                            <th>المجموعة النوعية</th>
-                                            <th>المجموعة الوظيفية</th>
-                                            <th>المسمى الوظيفي</th>
-                                            <th>الكود</th>
-                                            <th>الحالة</th>
-                                            <th>خيارات</th>
-                                        </tr>
-                                    </thead>
+                                <table class="table table-striped text-center">
+                                    <thead><tr><th>الاسم</th><th>الترتيب</th><th>ملاحظات</th><th>الحالة</th></tr></thead>
                                     <tbody>
-                                        @foreach (var title in Model.JobTitles)
-                                        {
-                                            <tr>
-                                                <td>@title.QualitativeGroupName</td>
-                                                <td>@title.FunctionalGroupName</td>
-                                                <td class="fw-bold text-end">@title.Name</td>
-                                                <td><code>@title.Code</code></td>
-                                                <td>
-                                                    @if (title.IsActive)
-                                                    {
-                                                        <span class="badge bg-success">نشط</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-secondary">غير نشط</span>
-                                                    }
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-secondary"
-                                                            onclick="openEditTitle(
-                                                        '@title.Id',
-                                                        '@title.Code',
-                                                        '@title.Name',
-                                                        '@title.Description')"
-                                                            title="تعديل">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        }
+                                        <tr><td>الممتازة</td><td>1</td><td>رئيس قطاع</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>العالية</td><td>2</td><td>وكيل وزارة</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>مدير عام</td><td>3</td><td>-</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>الأولى (أ)</td><td>4</td><td>كبير باحثين</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                        <tr><td>الثانية (أ/ب)</td><td>5</td><td>-</td><td><span class="badge bg-success">نشط</span></td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    @* ── TAB 3: أنواع التعيين ── *@
-                    <div class="tab-pane fade" id="tab-contract" role="tabpanel">
-                        <div class="card card-outline card-info">
+                    <!-- 2. المسميات الوظيفية -->
+                    <div class="tab-pane fade" id="v-pills-titles" role="tabpanel">
+                        <div class="card card-outline card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-file-signature me-1 text-info"></i>
-                                    أنواع العقود والتعيينات
-                                </h3>
+                                <h3 class="card-title">دليل الوظائف (Jobs)</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-xs btn-primary" onclick="addItem('Title')"><i class="fas fa-plus"></i> إضافة وظيفة</button>
+                                </div>
                             </div>
                             <div class="card-body p-0">
-                                <table class="table table-striped table-bordered text-center align-middle">
-                                    <thead class="bg-info text-white">
-                                        <tr>
-                                            <th>النوع</th>
-                                            <th>هل له معاش؟</th>
-                                            <th>تجديد سنوي؟</th>
-                                        </tr>
-                                    </thead>
+                                <table class="table table-striped text-center">
+                                    <thead><tr><th>المجموعة النوعية</th><th>المسمى الوظيفي</th><th>خيارات</th></tr></thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="fw-bold">دائم (موازنة)</td>
-                                            <td><i class="fas fa-check text-success fs-5"></i></td>
-                                            <td><i class="fas fa-times text-secondary fs-5"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">عقد شامل (صناديق)</td>
-                                            <td><i class="fas fa-check text-success fs-5"></i></td>
-                                            <td><i class="fas fa-check text-warning fs-5"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">يومية (سركي)</td>
-                                            <td><i class="fas fa-times text-danger fs-5"></i></td>
-                                            <td><i class="fas fa-times text-secondary fs-5"></i></td>
-                                        </tr>
+                                        <tr><td>تخصصية (هندسة)</td><td>مهندس معماري ثالث</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                        <tr><td>تخصصية (نظم)</td><td>أخصائي تشغيل حاسب</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                        <tr><td>كتابية</td><td>كاتب شئون عاملين</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
+                                        <tr><td>حرفية</td><td>سائق درجة أولى</td><td><button class="btn btn-xs btn-default"><i class="fas fa-edit"></i></button></td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    @* ── TAB 4: أنواع الإجازات ── *@
-                    <div class="tab-pane fade" id="tab-leave" role="tabpanel">
-                        <div class="card card-outline card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-umbrella-beach me-1 text-success"></i>
-                                    أنواع الإجازات
-                                </h3>
-                            </div>
+                    <!-- 3. أنواع التعيين -->
+                    <div class="tab-pane fade" id="v-pills-contract" role="tabpanel">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header"><h3 class="card-title">أنواع العقود والتعيينات</h3></div>
                             <div class="card-body p-0">
-                                <table class="table table-striped table-bordered text-center align-middle">
-                                    <thead class="bg-success text-white">
-                                        <tr>
-                                            <th>نوع الإجازة</th>
-                                            <th>الحد الأقصى (يوم/سنة)</th>
-                                            <th>مدفوعة الأجر؟</th>
-                                        </tr>
-                                    </thead>
+                                <table class="table table-striped text-center">
+                                    <thead><tr><th>النوع</th><th>هل له معاش؟</th><th>تجديد سنوي؟</th></tr></thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="fw-bold">إجازة اعتيادية</td>
-                                            <td>45</td>
-                                            <td><i class="fas fa-check text-success fs-5"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">إجازة مرضية</td>
-                                            <td>180</td>
-                                            <td><i class="fas fa-check text-success fs-5"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">إجازة بدون مرتب</td>
-                                            <td>365</td>
-                                            <td><i class="fas fa-times text-danger fs-5"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">إجازة عارضة</td>
-                                            <td>7</td>
-                                            <td><i class="fas fa-check text-success fs-5"></i></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    @* ── TAB 5: أنواع الجزاءات ── *@
-                    <div class="tab-pane fade" id="tab-penalty" role="tabpanel">
-                        <div class="card card-outline card-danger">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-gavel me-1 text-danger"></i>
-                                    أنواع الجزاءات
-                                </h3>
-                            </div>
-                            <div class="card-body p-0">
-                                <table class="table table-striped table-bordered text-center align-middle">
-                                    <thead class="bg-danger text-white">
-                                        <tr>
-                                            <th>نوع الجزاء</th>
-                                            <th>أيام الخصم</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="fw-bold">إنذار كتابي</td>
-                                            <td>0</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">خصم يوم</td>
-                                            <td>1</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">خصم 3 أيام</td>
-                                            <td>3</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">خصم أسبوع</td>
-                                            <td>7</td>
-                                        </tr>
+                                        <tr><td>دائم (موازنة)</td><td><i class="fas fa-check text-success"></i></td><td><i class="fas fa-times text-secondary"></i></td></tr>
+                                        <tr><td>عقد شامل (صناديق)</td><td><i class="fas fa-check text-success"></i></td><td><i class="fas fa-check text-warning"></i></td></tr>
+                                        <tr><td>يومية (سركي)</td><td><i class="fas fa-times text-danger"></i></td><td><i class="fas fa-times text-secondary"></i></td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -342,229 +115,45 @@
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 
-@* ══ Modal: إضافة درجة مالية ══ *@
-<div class="modal fade" id="gradeModal" tabindex="-1" aria-hidden="true">
+<!-- Modal عام للإضافة -->
+<div class="modal fade" id="addLookupModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="CreateJobGrade" asp-controller="Lookups" asp-area="HR" method="post">
-                @Html.AntiForgeryToken()
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title">
-                        <i class="fas fa-star me-1"></i> إضافة درجة مالية جديدة
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">إضافة بيان جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">الاسم عربي</label>
-                            <input type="text" name="name" class="form-control" required maxlength="100">
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">الكود (إنجليزي)</label>
-                            <input type="text" name="code" class="form-control" required maxlength="20"
-                                   placeholder="مثال: FIRST_A">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">الترتيب (المستوى)</label>
-                            <input type="number" name="gradeLevel" class="form-control" min="1" required>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">عدد سنوات الترقي</label>
-                            <input type="number" name="yearsNo" class="form-control" min="0" value="0">
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم عربي</label>
+                        <input type="text" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">ملاحظات</label>
-                        <input type="text" name="description" class="form-control"
-                               placeholder="رئيس قطاع / وكيل وزارة ...">
+                        <label class="form-label">الاسم إنجليزي (كود)</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" checked>
+                        <label class="form-check-label">نشط</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-warning text-dark">
-                        <i class="fas fa-save me-1"></i> حفظ
-                    </button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-@* ══ Modal: إضافة مسمى وظيفي ══ *@
-<div class="modal fade" id="titleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="CreateJobTitle" asp-controller="Lookups" asp-area="HR" method="post">
-                @Html.AntiForgeryToken()
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-id-badge me-1"></i> إضافة مسمى وظيفي جديد
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">المجموعة النوعية</label>
-                        <select id="qualGroupSelect"
-                                class="form-select select2-modal"
-                                onchange="loadFunctionalGroups(this.value)"
-                                style="width:100%">
-                            <option value="">-- اختر المجموعة النوعية --</option>
-                            @foreach (var qg in Model.QualitativeGroups)
-                            {
-                                <option value="@qg.Id">@qg.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">المجموعة الوظيفية</label>
-                        <select name="functionalGroupId"
-                                id="funcGroupSelect"
-                                class="form-select"
-                                required>
-                            <option value="">-- اختر أولاً المجموعة النوعية --</option>
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">المسمى الوظيفي</label>
-                            <input type="text" name="name" class="form-control"
-                                   required maxlength="150">
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">الكود</label>
-                            <input type="text" name="code" class="form-control"
-                                   required maxlength="20" placeholder="مثال: ARCH_ENG_3">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">الوصف</label>
-                        <input type="text" name="description" class="form-control">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i> حفظ
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@* ══ Modal: تعديل مسمى وظيفي ══ *@
-<div class="modal fade" id="editTitleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="UpdateJobTitle" asp-controller="Lookups" asp-area="HR" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" id="editTitleId">
-                <div class="modal-header bg-secondary text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-edit me-1"></i> تعديل المسمى الوظيفي
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">المسمى الوظيفي</label>
-                            <input type="text" name="name" id="editTitleName"
-                                   class="form-control" required maxlength="150">
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="form-label fw-bold">الكود</label>
-                            <input type="text" name="code" id="editTitleCode"
-                                   class="form-control" required maxlength="20">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">الوصف</label>
-                        <input type="text" name="description" id="editTitleDesc"
-                               class="form-control">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-dark">
-                        <i class="fas fa-save me-1"></i> حفظ التعديلات
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="~/plugins/select2/js/select2.full.min.js"></script>
-
-    @* بيانات المجموعات الوظيفية — بيتعبأ من السيرفر *@
-    <script>
-        // Map: qualitativeGroupId → [{id, name}]
-        const functionalGroupsMap = @Html.Raw(
-                    System.Text.Json.JsonSerializer.Serialize(
-                            Model.QualitativeGroups.ToDictionary(
-                                    qg => qg.Id.ToString(),
-                                    qg => new[] { new { id = qg.Id, name = qg.Name } }
-                            )
-                    )
-            );
-    </script>
 
     <script>
-        $(function () {
-            // DataTables
-            $('#tableGrades').DataTable({
-                lengthChange: false,
-                autoWidth: false,
-                language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
-            });
-            $('#tableTitles').DataTable({
-                lengthChange: false,
-                autoWidth: false,
-                language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
-            });
-
-            // Select2
-            $('.select2-modal').select2({
-                theme: 'bootstrap4',
-                dropdownParent: $(this).closest('.modal')
-            });
-        });
-
-        // تعبئة المجموعات الوظيفية بناءً على المجموعة النوعية المختارة
-        function loadFunctionalGroups(qualGroupId) {
-            const select = document.getElementById('funcGroupSelect');
-            select.innerHTML = '<option value="">-- اختر --</option>';
-
-            if (!qualGroupId) return;
-
-            const groups = functionalGroupsMap[qualGroupId] || [];
-            groups.forEach(g => {
-                const opt = document.createElement('option');
-                opt.value = g.id;
-                opt.text  = g.name;
-                select.appendChild(opt);
-            });
-        }
-
-        // فتح Modal التعديل وتعبئة البيانات
-        function openEditTitle(id, code, name, description) {
-            document.getElementById('editTitleId').value   = id;
-            document.getElementById('editTitleCode').value = code;
-            document.getElementById('editTitleName').value = name;
-            document.getElementById('editTitleDesc').value = description;
-
-            new bootstrap.Modal(document.getElementById('editTitleModal')).show();
+        function addItem(type) {
+            // يمكن هنا تغيير عنوان المودال حسب النوع
+            var myModal = new bootstrap.Modal(document.getElementById('addLookupModal'));
+            myModal.show();
         }
     </script>
-}
