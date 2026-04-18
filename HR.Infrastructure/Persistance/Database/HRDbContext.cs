@@ -7,13 +7,13 @@ using HR.Domain.Penalties;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Infrastructure.Database;
 using System.Reflection;
-namespace HR.Infrastructure.Persistance.Database
+namespace HR.Infrastructure.Persistance.Database;
+
+public class HRDbContext : DbContext
 {
-    public class HRDbContext : DbContext
+    public HRDbContext(DbContextOptions<HRDbContext> options) : base(options)
     {
-        public HRDbContext(DbContextOptions<HRDbContext> options) : base(options)
-        {
-        }
+    }
 
         // candidate
         public DbSet<Candidate> Candidates { get; set; }
@@ -38,12 +38,10 @@ namespace HR.Infrastructure.Persistance.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+        // تحديد الـ Schema الافتراضية
+        modelBuilder.HasDefaultSchema(Schemas.HR);
 
-            // تحديد الـ Schema الافتراضية
-            modelBuilder.HasDefaultSchema(Schemas.HR);
-
-            // هذا السطر يقوم بقراءة جميع كلاسات الـ Configuration اللي عملناها فوق وتطبيقها تلقائياً
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        }
+        // هذا السطر يقوم بقراءة جميع كلاسات الـ Configuration اللي عملناها فوق وتطبيقها تلقائياً
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

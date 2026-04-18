@@ -12,8 +12,8 @@ namespace HR.Application.Penalties.EditPenalty
     {
         public EditPenaltyValidator()
         {
-            RuleFor(x => x.EmployeeId)
-                .NotEmpty().WithMessage("يجب اختيار الموظف");
+            //RuleFor(x => x.EmployeeId)
+            //    .NotEmpty().WithMessage("يجب اختيار الموظف");
 
             RuleFor(x => x.ViolationDate)
                 .NotEmpty().WithMessage("تاريخ المخالفة مطلوب")

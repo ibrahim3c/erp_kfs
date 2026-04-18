@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
@@ -14,132 +14,77 @@
     <link rel="stylesheet" href="~/css/all.min.css">
     <!-- animate -->
     <link rel="stylesheet" href="~/css/animate/animate.css">
-    <!-- Global Css Link -->
-    <link rel="stylesheet" href="~/css/global/main.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
+    <!-- Modern Luxe Stylesheet -->
+    <link rel="stylesheet" href="~/css/modern-luxe.css?v=@DateTime.Now.Ticks">
+    
 </head>
 <body style="margin:0;">
 
-    <!-- Top Bar -->
-    <section class="top-bar bg-dark bg-light-radial">
+
+    <!-- Start Navbar (Modernized) -->
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <div class="row pt-2 pb-2">
-                <div class="col time">
-                    <div id="clock" class="BannerBarText text-light wow fadeInUp" data-wow-offset="10"></div>
-                </div>
-                <div class="col d-none d-lg-block text-start">
-                    <div class="links wow fadeInDown" data-wow-offset="10">
-                        <a class="Prayer" href="http://prayertimes3.today/egypt-eg/kafrsheikh-175.html" target="_blank" title="مواقيت الصلاة"><i class="fa-solid fa-mosque"></i></a>
-                        <a class="weather" href="http://ema.gov.eg/wp/archives/105" target="_blank" title="الطقس"><i class="fa-solid fa-cloud-sun-rain"></i></a>
-                    </div>
-                </div>
+
+            <!-- Branding (logo only) -->
+            <div class="navbar-brand d-flex align-items-center" style="cursor: default;">
+                <img src="~/imgs/kfslogo.jpg" class="ms-2 nav-logo" alt="KFS Logo">
             </div>
-        </div>
-    </section>
 
-    <!-- Header LG -->
-    <header class="d-none d-lg-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-2">
-                    <div class="logo d-flex mt-5 mx-auto">
-                        <img src="~/image/kfs-logo (2).png" alt="" class="wow fadeInRight" data-wow-offset="10" data-wow-delay="1s">
-                        <div class="border m-2"></div>
-                    </div>
-                </div>
-                <div class="col-8">
-                    <div class="head text-center pt-4">
-                        <img class="wow fadeInDown" data-wow-duration="2s" src="~/image/kfs-word.png" alt="">
-                        @* <h4 class="light-dark pt-4 wow fadeInUp" data-wow-duration="3s">الإدارة العامة لنظم المعلومات والتحول الرقمي</h4> *@
-                        <h5 class="light-dark pt-4 wow flipInY" data-wow-duration="4s">ERP System</h5>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="logo d-flex mt-5 mx-auto">
-                        <div class="border m-2"></div>
-                        <img src="~/image/eg-logo.png" alt="" class="wow fadeInLeft" data-wow-offset="10" data-wow-delay="1s">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Start Navbar -->
-    <nav class="navbar navbar-expand-lg bg-dark bg-light-radial sticky-top">
-        <div class="container">
-
-            <!-- زر القائمة للموبايل -->
-            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#main"
-                    aria-controls="main" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fa-solid fa-bars"></i>
+            <!-- Toggle Menu -->
+            <button class="navbar-toggler border-0 shadow-none text-white p-1" type="button" data-bs-toggle="collapse" data-bs-target="#main">
+                <i class="fa-solid fa-bars" style="font-size: 1.5rem;"></i>
             </button>
 
             <div class="collapse navbar-collapse" id="main">
-
-                <!-- القائمة الرئيسية (في المنتصف) -->
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 wow fadeIn" data-wow-duration="1s">
-
-                    <!-- 1. الرئيسية -->
+                <!-- Main Nav Links -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 wow fadeIn text-center" data-wow-duration="1s">
                     <li class="nav-item">
-                        <a class="nav-link active fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                            <i class="fa-solid fa-home ms-1"></i> الرئيسية
+                        <a class="nav-link active fw-bold text-white shadow-none d-inline-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 1.15rem; height: 1.15rem; margin-left: 6px;" class="opacity-50"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                            الرئيسية
                         </a>
                     </li>
 
-                    <!-- 2. قائمة الأنظمة (Dropdown مجمع) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-layer-group ms-1"></i> الأنظمة والتطبيقات
+                        <a class="nav-link dropdown-toggle fw-bold text-white opacity-75 shadow-none d-inline-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 1.15rem; height: 1.15rem; margin-left: 6px;" class="opacity-50"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+                            الأنظمة والتطبيقات
                         </a>
-                        <ul class="dropdown-menu p-0 text-end shadow" aria-labelledby="navbarDropdown">
-
-                            <!-- قسم الإدارة الداخلية -->
-                            <li><h6 class="dropdown-header text-primary">الإدارة الداخلية</h6></li>
-                            <li><a class="dropdown-item pe-3" asp-area="HR" asp-controller="Home" asp-action="Index">الموارد البشرية (HR)</a></li>
-                            <li><a class="dropdown-item pe-3" asp-area="Accounting" asp-controller="Home" asp-action="Index">الحسابات والمالية</a></li>
-                            <li><a class="dropdown-item pe-3" asp-area="Legal" asp-controller="Home" asp-action="Index">الشئون القانونية</a></li>
-
-                            <li><hr class="dropdown-divider"></li>
-
-                            <!-- قسم اللوجيستيات والمشاريع -->
-                            <li><h6 class="dropdown-header text-primary">التشغيل واللوجيستيات</h6></li>
-                            <li><a class="dropdown-item pe-3" asp-area="Inventory" asp-controller="Home" asp-action="Index">المخازن والمشتريات</a></li>
-                            <li><a class="dropdown-item pe-3" asp-area="Fleet" asp-controller="Home" asp-action="Index">الحملة والمركبات</a></li>
-                            <li><a class="dropdown-item pe-3" asp-area="Projects" asp-controller="Home" asp-action="Index">المشاريع والتخطيط</a></li>
-
-                            <li><hr class="dropdown-divider"></li>
-
-                            <!-- قسم الخدمات والتعليم -->
-                            <li><h6 class="dropdown-header text-primary">خدمات عامة</h6></li>
-                            <li><a class="dropdown-item pe-3" asp-area="Education" asp-controller="Home" asp-action="Index">مركز استدامة (التدريب)</a></li>
+                        <ul class="dropdown-menu p-0 text-end shadow-lg border-0 rounded-4 overflow-hidden" aria-labelledby="navbarDropdown">
+                            <li><h6 class="dropdown-header py-3 bg-light fw-bold" style="color: #3b82f6; font-size: 1.1rem;">المكاتب الداخلية</h6></li>
+                            <li><a class="dropdown-item py-2 px-4" asp-area="HR" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-users-gear ms-2 opacity-25"></i>الموارد البشرية</a></li>
+                            <li><a class="dropdown-item py-2 px-4" asp-area="Accounting" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-file-invoice-dollar ms-2 opacity-25"></i>الحسابات والمالية</a></li>
+                            <li><a class="dropdown-item py-2 px-4" asp-area="Legal" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-scale-balanced ms-2 opacity-25"></i>الشئون القانونية</a></li>
+                            <li><hr class="dropdown-divider my-0"></li>
+                            <li><h6 class="dropdown-header py-3 bg-light fw-bold" style="color: #3b82f6; font-size: 1.1rem;">التشغيل والمشاريع</h6></li>
+                            <li><a class="dropdown-item py-2 px-4" asp-area="Inventory" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-warehouse ms-2 opacity-25"></i>المخازن والمشتريات</a></li>
+                            <li><a class="dropdown-item py-2 px-4" asp-area="Fleet" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-truck-front ms-2 opacity-25"></i>الحملة المركزية</a></li>
+                            <li><a class="dropdown-item py-2 px-4" asp-area="Projects" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-diagram-project ms-2 opacity-25"></i>التخطيط والمشاريع</a></li>
                         </ul>
                     </li>
 
-                    <!-- 3. لوحة التحكم (مفصول لوحدها لأهميتها) -->
                     <li class="nav-item">
-                        <a class="nav-link fw-bold text-warning" asp-area="Admin" asp-controller="Home" asp-action="Index">
-                            <i class="fa-solid fa-gear ms-1"></i> لوحة التحكم
+                        <a class="nav-link fw-bold shadow-none d-inline-flex align-items-center" style="color: #3b82f6;" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 1.15rem; height: 1.15rem; margin-left: 6px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                            الإدارة المركزية
                         </a>
                     </li>
                 </ul>
 
-                <!-- جزء تسجيل الدخول (Identity) -->
-                <ul class="navbar-nav">
-                    <!-- سنستخدم Partial View جاهزة تأتي مع Identity للتعرف على المستخدم المسجل -->
+                <!-- User Profile / Login / State Logo -->
+                <ul class="navbar-nav align-items-center text-center">
                     <partial name="_LoginPartial" />
-                </ul>
 
+                </ul>
             </div>
         </div>
     </nav>
     <!-- End Navbar -->
-    <!-- Body Content (هنا المحتوى المتغير لكل صفحة هيتحقن) -->
-    <div>
+
+    <!-- Main Content Injection -->
+    <main class="content-wrapper animate-bottom">
         @RenderBody()
-    </div>
+    </main>
 
     <!-- Footer -->
     <footer class="bg-dark bg-light-radial p-3 mt-auto">
@@ -148,7 +93,7 @@
                 <div class="col">
                     <p class="copyright-text">
                         حقوق الطبع والنشر <span> &copy; @DateTime.Now.Year </span> الإدارة العامة لنظم المعلومات
-                        <a class="nozom" href="#">فريق التطوير</a>.
+                        <a class="dev-team-link" href="#">فريق التطوير</a>.
                     </p>
                 </div>
             </div>

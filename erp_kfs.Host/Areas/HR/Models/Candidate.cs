@@ -12,6 +12,7 @@ namespace MyERP.Web.Areas.HR.Models
         public string NationalId { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+
         public int QualificationTypeId { get; set; }
         public int CityCenterId { get; set; }
         public int VillageId { get; set; }
