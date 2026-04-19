@@ -53,17 +53,13 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
             builder.Property(f => f.EmployeeId)
                 .IsRequired();
 
-            // 5. Relationship (One-to-One)
+            // 5. Relationship (One-to-Many)
 
             builder.HasOne<Employee>()
-                .WithOne() // assuming Employee does not expose navigation property
-                .HasForeignKey<EmployeeFile>(f => f.EmployeeId)
+                .WithMany(e => e.EmployeeFiles)
+                .HasForeignKey(f => f.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // 6. Index
-
-            builder.HasIndex(f => f.EmployeeId)
-                .IsUnique(); // ensures one file record per employee
         }
     }
 }

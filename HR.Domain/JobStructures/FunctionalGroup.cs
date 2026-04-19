@@ -1,7 +1,4 @@
 ﻿using Modules.Shared.Domain;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace HR.Domain.JobStructures
 {
     public class FunctionalGroup : Entity

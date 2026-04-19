@@ -1,5 +1,4 @@
 ﻿using HR.Domain.Employees.Qualifications;
-using HR.Domain.Employees.Qualifications.HR.Domain.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
@@ -11,12 +10,6 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
         {
             // 1. Table Name and Schema
             builder.ToTable("EmployeeQualifications", Schemas.HR);
-
-            builder.HasKey(q => q.Id);
-
-            builder.Property(q => q.QualificationFullName).IsRequired().HasMaxLength(200);
-            builder.Property(q => q.University).HasMaxLength(150);
-
 
             // 2. Primary Key
             builder.HasKey(q => q.Id);

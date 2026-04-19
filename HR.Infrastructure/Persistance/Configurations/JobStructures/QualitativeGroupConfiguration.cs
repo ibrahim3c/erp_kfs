@@ -29,15 +29,10 @@ namespace HR.Infrastructure.Persistance.Configurations.JobStructures
             builder.Property(q => q.Description)
                 .HasMaxLength(500);
 
-            // Relationships
-            builder.HasMany(q => q.FunctionalGroups)
-                .WithOne(f => f.QualitativeGroup)
-                .HasForeignKey(f => f.QualitativeGroupId)
-                .OnDelete(DeleteBehavior.Restrict); // منع الحذف إذا كان هناك مجموعات وظيفية مرتبطة
 
             // إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
-            builder.Metadata.FindNavigation(nameof(QualitativeGroup.FunctionalGroups))
-                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            //builder.Metadata.FindNavigation(nameof(QualitativeGroup.FunctionalGroups))
+            //    ?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

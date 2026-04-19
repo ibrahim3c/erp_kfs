@@ -1,4 +1,5 @@
 ﻿using HR.Domain.Candidates;
+using HR.Domain.Employees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
@@ -22,6 +23,11 @@ namespace HR.Infrastructure.Persistance.Configurations.Candidates
             // حفظ الـ Enum كرقم (Int) في الداتا بيز (وهو الافتراضي)، أو كنص (String) لو تفضل
             builder.Property(nf => nf.Status)
                    .IsRequired();
+
+            builder.HasOne<Candidate>()
+                   .WithMany()
+                   .HasForeignKey(nf => nf.CandidateId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -16,4 +16,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HR.Application\HR.Application.csproj" />
+    <ProjectReference Include="..\HR.Infrastructure\HR.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules.Shared.Application\Modules.Shared.Application.csproj" />
+    <ProjectReference Include="..\Modules.Shared.Infrastructure\Modules.Shared.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

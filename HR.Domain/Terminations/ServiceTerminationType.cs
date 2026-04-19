@@ -31,6 +31,9 @@ namespace HR.Domain.Terminations
 
         public bool IsActive { get; private set; }
 
+        private readonly List<ServiceTerminationRequest> _serviceTerminationRequests = new();
+        public IReadOnlyCollection<ServiceTerminationRequest> ServiceTerminationRequests => _serviceTerminationRequests.AsReadOnly();
+
         public static Result<ServiceTerminationType> Create(
             string code,
             string name,

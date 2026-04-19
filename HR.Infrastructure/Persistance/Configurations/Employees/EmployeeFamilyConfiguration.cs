@@ -50,7 +50,6 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
                 .OnDelete(DeleteBehavior.Cascade);
 
             // 6. Indexes
-            builder.HasIndex(f => f.EmployeeId);
             builder.HasIndex(f => f.NationalId);
         }
     }

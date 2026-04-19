@@ -34,6 +34,8 @@ namespace HR.Domain.Employees
         public Guid? FunctionalGroupId { get; private set; }
         public Guid? OrgUnitId { get; private set; }
 
+        
+
         public EmployeeFinancial FinancialInfo { get; private set; }
 
         // --- Encapsulated Collections (Children Entities) ---

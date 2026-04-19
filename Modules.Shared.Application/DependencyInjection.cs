@@ -6,7 +6,7 @@ namespace Modules.Shared.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
+    public static IServiceCollection AddSharedApplication(this IServiceCollection services)
     {
         services.AddMediatR(configuration =>
         {
@@ -17,8 +17,8 @@ public static class DependencyInjection
         });
 
         // includeInternalTypes for swagger or other reflection-based libs
-        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly,
-         includeInternalTypes: true);
+        //services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly,
+         //includeInternalTypes: true);
 
         return services;
     }

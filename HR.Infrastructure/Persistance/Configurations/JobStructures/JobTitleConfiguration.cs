@@ -2,12 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace HR.Infrastructure.Persistance.Configurations.JobStructures
 {
     public class JobTitleConfiguration : IEntityTypeConfiguration<JobTitle>
@@ -28,6 +22,12 @@ namespace HR.Infrastructure.Persistance.Configurations.JobStructures
 
             builder.Property(j => j.Description)
                 .HasMaxLength(500);
+
+            // Relationships
+            builder.HasOne<FunctionalGroup>()
+                .WithMany(j => j.JobTitles)
+                .HasForeignKey(j => j.FunctionalGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // لا نحتاج لتعريف العلاقة هنا مرة أخرى لأننا عرفناها في FunctionalGroupConfiguration
             // EF Core ذكي بما يكفي لربطها من الجانب الآخر، ولكن يمكن إضافتها للتأكيد إن أردت.
