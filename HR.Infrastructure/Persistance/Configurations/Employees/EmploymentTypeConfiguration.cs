@@ -31,9 +31,9 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
             builder.HasIndex(x => x.Code)
                 .IsUnique();
 
-            // إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
-            builder.Metadata.FindNavigation(nameof(EmploymentType.PayrollCycles))
-                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            //// إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
+            //builder.Metadata.FindNavigation(nameof(EmploymentType.PayrollCycles))
+            //    ?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 

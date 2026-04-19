@@ -36,8 +36,8 @@ namespace HR.Infrastructure.Persistance.Configurations.AcademicIncentives
                    .OnDelete(DeleteBehavior.Cascade); // إذا تم حذف الموظف، تُحذف طلباته
 
             // إخبار EF Core بكيفية قراءة القائمة المخفية داخل الموظف
-            builder.Metadata.FindNavigation(nameof(Employee.AcademicIncentiveRequests))
-                   ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            //builder.Metadata.FindNavigation(nameof(Employee.AcademicIncentiveRequests))
+            //       ?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
             // ملاحظة: الحقول AcademicIncentiveTypeId و QualificationId سيتم التعامل معها 
             // كـ Foreign Keys لجداول أخرى في الداتا بيز إذا تم عمل Configurations لها لاحقاً.

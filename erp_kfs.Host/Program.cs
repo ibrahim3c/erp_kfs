@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using HR.Application;
+using HR.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Modules.Shared.Application;
+using Modules.Shared.Infrastructure;
 using MyERP.Web.Data;
 
 namespace erp_kfs.Host
@@ -12,20 +16,28 @@ namespace erp_kfs.Host
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection")
-            ));
-            // --- Configure Identity ---
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = true;
-                options.Password.RequireDigit = false; // (اختياري) تسهيل الباسورد أثناء التطوير
-                options.Password.RequiredLength = 6;
-            })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //options.UseSqlServer(
+            //    builder.Configuration.GetConnectionString("DefaultConnection")
+            //));
+            //// --- Configure Identity ---
+            //builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            //{
+            //    options.SignIn.RequireConfirmedAccount = true;
+            //    options.Password.RequireDigit = false; // (اختياري) تسهيل الباسورد أثناء التطوير
+            //    options.Password.RequiredLength = 6;
+            //})
+            //.AddEntityFrameworkStores<ApplicationDbContext>()
+            //.AddDefaultTokenProviders();
 
+
+            #region Modules Registration
+            builder.Services.AddSharedInfrastructure(builder.Configuration);
+            builder.Services.AddSharedApplication();
+
+            builder.Services.AddHRInfrastructure(builder.Configuration);
+            builder.Services.AddHRApplication(); 
+            #endregion
 
             var app = builder.Build();
 

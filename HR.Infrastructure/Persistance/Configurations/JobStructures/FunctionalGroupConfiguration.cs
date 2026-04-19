@@ -30,14 +30,14 @@ namespace HR.Infrastructure.Persistance.Configurations.JobStructures
                 .HasMaxLength(500);
 
             // Relationships
-            builder.HasMany(f => f.JobTitles)
-                .WithOne(j => j.FunctionalGroup)
-                .HasForeignKey(j => j.FunctionalGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne<QualitativeGroup>(fg=>fg.QualitativeGroup)
+                .WithMany(f => f.FunctionalGroups)
+                .HasForeignKey(f => f.QualitativeGroupId)
+                .OnDelete(DeleteBehavior.Restrict); // منع الحذف إذا كان هناك مجموعات وظيفية مرتبطة
 
             // إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة قائمة المسميات
-            builder.Metadata.FindNavigation(nameof(FunctionalGroup.JobTitles))
-                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            //builder.Metadata.FindNavigation(nameof(FunctionalGroup.JobTitles))
+            //    ?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

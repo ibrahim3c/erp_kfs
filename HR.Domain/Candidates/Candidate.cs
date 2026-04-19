@@ -8,9 +8,9 @@ namespace HR.Domain.Candidates
         public string NationalId { get; private set; }
         public string Phone { get; private set; }
         public string Email { get; private set; }
-        public Guid QualificationTypeId { get; private set; }
-        public Guid CityCenterId { get; private set; }
-        public Guid VillageId { get; private set; }
+        //public Guid QualificationTypeId { get; private set; }
+        public Guid? CityCenterId { get; private set; }
+        public Guid? VillageId { get; private set; }
         public bool IsActive { get; private set; }
 
         // Encapsulated Collection
@@ -21,20 +21,20 @@ namespace HR.Domain.Candidates
         private Candidate() { }
 
         private Candidate(Guid id,string fullName, string nationalId, string phone, string email,
-                         Guid qualificationTypeId, Guid cityCenterId, Guid villageId):base(id)
+                         Guid cityCenterId, Guid villageId):base(id)
         {
             FullName = fullName;
             NationalId = nationalId;
             Phone = phone;
             Email = email ?? string.Empty;
-            QualificationTypeId = qualificationTypeId;
+            //QualificationTypeId = qualificationTypeId;
             CityCenterId = cityCenterId;
             VillageId = villageId;
             IsActive = true;
         }
 
             public static Result<Candidate> Create(string fullName, string nationalId, string phone, string email,
-                                            Guid qualificationTypeId, Guid cityCenterId, Guid villageId)
+                                           Guid cityCenterId, Guid villageId)
             {
                 // You can add domain validations here before creating the Candidate
                 if (string.IsNullOrWhiteSpace(fullName))
@@ -43,7 +43,7 @@ namespace HR.Domain.Candidates
                 if (string.IsNullOrWhiteSpace(nationalId))
                     throw new ArgumentException("National ID is required.", nameof(nationalId));
     
-                return Result<Candidate>.Success(new Candidate(Guid.NewGuid(),fullName, nationalId, phone, email, qualificationTypeId, cityCenterId, villageId));
+                return Result<Candidate>.Success(new Candidate(Guid.NewGuid(),fullName, nationalId, phone, email, cityCenterId, villageId));
         }   
 
         public void UpdateContactInfo(string phone, string email)

@@ -1,4 +1,5 @@
 ﻿using HR.Domain.Employees;
+using HR.Domain.JobStructures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
@@ -12,52 +13,82 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
 
             builder.HasKey(e => e.Id);
 
-            // Validations
-            builder.Property(e => e.Code).IsRequired().HasMaxLength(50);
-            builder.Property(e => e.Name).IsRequired().HasMaxLength(200);
-            builder.Property(e => e.NationalId).IsRequired().HasMaxLength(14);
+            builder.Property(e => e.Code)
+                               .IsRequired()
+                               .HasMaxLength(50);
+            builder.HasIndex(e => e.Code).IsUnique(); // كود الموظف يجب أن يكون فريداً
+
+            builder.Property(e => e.Name)
+                   .IsRequired()
+                   .HasMaxLength(200);
+
+            builder.Property(e => e.NationalId)
+                   .IsRequired()
+                   .HasMaxLength(14);
+            builder.HasIndex(e => e.NationalId).IsUnique(); // الرقم القومي يجب أن يكون فريداً
+
             builder.Property(e => e.Phone).HasMaxLength(20);
+            builder.Property(e => e.Gender).HasMaxLength(20);
+            builder.Property(e => e.Email).HasMaxLength(150);
+            builder.Property(e => e.Address).HasMaxLength(500);
+            builder.Property(e => e.MaritalStatus).HasMaxLength(50);
+            //builder.Property(e => e.Specialization).HasMaxLength(200);
 
-            builder.HasIndex(e => e.NationalId).IsUnique(); // الرقم القومي لا يتكرر
-            builder.HasIndex(e => e.Code).IsUnique(); // كود الموظف لا يتكرر
+            builder.Property(e => e.IsActive)
+                   .IsRequired();
+            builder.Property(e => e.IsDisabled)
+                .IsRequired();
+            builder.Property(e => e.HireDate)
+                .IsRequired();
+            builder.Property(e => e.TerminationDate)
+                .IsRequired(false);
+            builder.Property(e => e.DateOfBirth)
+                .IsRequired(false);
 
-            // --- العلاقات (Relationships) مع التوابع ---
+            //builder.HasOne<CityCenter>()   // from Geography module
+            //  .WithMany()
+            //  .HasForeignKey(e => e.CityCenterId)
+            //  .OnDelete(DeleteBehavior.Restrict);
 
-            // 1. Employee Families
-            builder.HasMany(e => e.EmployeeFamilies)
-                   .WithOne()
-                   .HasForeignKey(f => f.EmployeeId)
-                   .OnDelete(DeleteBehavior.Cascade); // مسح الموظف يمسح عائلته
+            //builder.HasOne<Village>()     // from Geography module
+            //    .WithMany()
+            //    .HasForeignKey(e => e.VillageId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            // إخبار EF Core بكيفية قراءة الـ Private List
-            builder.Metadata.FindNavigation(nameof(Employee.EmployeeFamilies))
-                   ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            // 1. تعريفهم كحقول عادية (Soft References) بدون HasOne و WithMany
+            builder.Property(e => e.CityCenterId).IsRequired(false);
+            builder.Property(e => e.VillageId).IsRequired(false);
+            builder.Property(e => e.OrgUnitId).IsRequired(false);
 
-            // 2. Employee Qualifications
-            builder.HasMany(e => e.EmployeeQualifications)
-                   .WithOne()
-                   .HasForeignKey(q => q.EmployeeId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne<EmploymentType>()
+                .WithMany()
+                .HasForeignKey(e => e.EmploymentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Metadata.FindNavigation(nameof(Employee.EmployeeQualifications))
-                   ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            builder.HasOne<JobTitle>()
+                .WithMany()
+                .HasForeignKey(e => e.JobTitleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // 3. Employee Decisions
-            builder.HasMany(e => e.EmployeeDecisions)
-                   .WithOne()
-                   .HasForeignKey(d => d.EmployeeId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne<JobGrade>()
+                .WithMany()
+                .HasForeignKey(e => e.JobGradeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Metadata.FindNavigation(nameof(Employee.EmployeeDecisions))
-                   ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            builder.HasOne<FunctionalGroup>()
+                .WithMany()
+                .HasForeignKey(e => e.FunctionalGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // 4. Leadership History (إذا تم إضافتها كما اتفقنا)
-            // builder.HasMany(e => e.LeadershipHistory)
-            //       .WithOne()
-            //       .HasForeignKey(l => l.EmployeeId)
-            //       .OnDelete(DeleteBehavior.Cascade);
-            // builder.Metadata.FindNavigation(nameof(Employee.LeadershipHistory))
-            //       ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            //builder.HasOne<OrgUnit>()
+            //    .WithMany()
+            //    .HasForeignKey(e => e.OrgUnitId)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.HasIndex(e => e.Code).IsUnique();
+            builder.HasIndex(e => e.NationalId).IsUnique();
+
         }
     }
-}
+    }

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HR.Infrastructure.Persistance.Services
+namespace HR.Infrastructure.Services
 {
     /// <summary>
     /// Implementation — بتجمع:

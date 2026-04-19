@@ -12,7 +12,7 @@ using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
-using HR.Infrastructure.Persistance.Services;
+using HR.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +27,7 @@ namespace HR.Infrastructure
                ?? throw new ArgumentNullException(nameof(configuration));
 
             services.AddDbContext<HRDbContext>(options =>
-                options.UseNpgsql(connectionString));
+                options.UseSqlServer(connectionString));
 
 
             // 2. تسجيل الـ Repositories

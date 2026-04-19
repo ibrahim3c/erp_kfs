@@ -67,7 +67,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Loans
 
             // ─── Relations ───────────────────────────────────────────
             builder.HasOne(x => x.Employee)
-                .WithMany()
+                .WithMany(e=>e.InsurancePeriodPurchases)
                 .HasForeignKey(x => x.EmployeeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
