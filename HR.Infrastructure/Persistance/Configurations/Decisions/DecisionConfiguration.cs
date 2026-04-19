@@ -74,7 +74,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Decisions
 
             // DecisionAuthority (Many Decisions → One Authority)
             builder.HasOne(d => d.DecisionAuthority)
-                .WithMany()
+                .WithMany(du=>du.Decisions)
                 .HasForeignKey(d => d.DecisionAuthorityId)
                 .OnDelete(DeleteBehavior.Restrict);
 

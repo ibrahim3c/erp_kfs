@@ -64,7 +64,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
 
             // Employee (Many Qualifications)
             builder.HasOne(q => q.Employee)
-                .WithMany()
+                .WithMany(e=>e.EmployeeQualifications)
                 .HasForeignKey(q => q.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
 

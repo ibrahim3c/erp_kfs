@@ -3,7 +3,6 @@ using HR.Domain.JobStructures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
-using Organization.Domain;
 namespace HR.Infrastructure.Persistance.Configurations.Employees
 {
     public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
@@ -33,7 +32,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
             builder.Property(e => e.Email).HasMaxLength(150);
             builder.Property(e => e.Address).HasMaxLength(500);
             builder.Property(e => e.MaritalStatus).HasMaxLength(50);
-            builder.Property(e => e.Specialization).HasMaxLength(200);
+            //builder.Property(e => e.Specialization).HasMaxLength(200);
 
             builder.Property(e => e.IsActive)
                    .IsRequired();
@@ -59,6 +58,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
             // 1. تعريفهم كحقول عادية (Soft References) بدون HasOne و WithMany
             builder.Property(e => e.CityCenterId).IsRequired(false);
             builder.Property(e => e.VillageId).IsRequired(false);
+            builder.Property(e => e.OrgUnitId).IsRequired(false);
 
             builder.HasOne<EmploymentType>()
                 .WithMany()
@@ -80,10 +80,10 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
                 .HasForeignKey(e => e.FunctionalGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<OrgUnit>()
-                .WithMany()
-                .HasForeignKey(e => e.OrgUnitId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne<OrgUnit>()
+            //    .WithMany()
+            //    .HasForeignKey(e => e.OrgUnitId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
 
             builder.HasIndex(e => e.Code).IsUnique();

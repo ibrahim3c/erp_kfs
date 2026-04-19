@@ -24,15 +24,15 @@ namespace HR.Domain.Employees
         public bool IsDisabled { get; private set; }
         public Guid? CityCenterId { get; private set; }
         public Guid? VillageId { get; private set; }
+        public Guid? OrgUnitId { get; private set; }
 
-        public Guid? QualificationTypeId { get; private set; }
-        public string Specialization { get; private set; }
+        //public Guid? QualificationTypeId { get; private set; }
+        //public string Specialization { get; private set; }
         public Guid? EmploymentTypeId { get; private set; }
 
         public Guid? JobTitleId { get; private set; }
         public Guid? JobGradeId { get; private set; }
         public Guid? FunctionalGroupId { get; private set; }
-        public Guid? OrgUnitId { get; private set; }
 
         
 
@@ -71,7 +71,7 @@ namespace HR.Domain.Employees
 
         // EF Core Parameterless constructor
         private Employee() { }
-        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? qualificationTypeId, string specialization, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId) : base(id)
+        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId) : base(id)
         {
             Code = code;
             Name = name;
@@ -88,8 +88,8 @@ namespace HR.Domain.Employees
             IsDisabled = isDisabled;
             CityCenterId = cityCenterId;
             VillageId = villageId;
-            QualificationTypeId = qualificationTypeId;
-            Specialization = specialization;
+            //QualificationTypeId = qualificationTypeId;
+            //Specialization = specialization;
             EmploymentTypeId = employmentTypeId;
             JobTitleId = jobTitleId;
             JobGradeId = jobGradeId;
@@ -111,8 +111,8 @@ namespace HR.Domain.Employees
                     bool isDisabled=false,
                     Guid? cityCenterId = null,
                     Guid? villageId = null,
-                    Guid? qualificationTypeId = null,
-                    string specialization = null,
+                    //Guid? qualificationTypeId = null,
+                    //string specialization = null,
                     Guid? employmentTypeId = null,
                     Guid? jobTitleId = null,
                     Guid? jobGradeId = null,
@@ -147,8 +147,8 @@ namespace HR.Domain.Employees
                 isDisabled: isDisabled,
                 cityCenterId: cityCenterId,
                 villageId: villageId,
-                qualificationTypeId: qualificationTypeId,
-                specialization: specialization,
+                //qualificationTypeId: qualificationTypeId,
+                //specialization: specialization,
                 employmentTypeId: employmentTypeId,
                 jobTitleId: jobTitleId,
                 jobGradeId: jobGradeId,
@@ -206,11 +206,11 @@ namespace HR.Domain.Employees
             FunctionalGroupId = functionalGroupId;
         }
 
-        public void UpdateQualification(Guid? qualificationTypeId, string specialization)
-        {
-            QualificationTypeId = qualificationTypeId;
-            Specialization = specialization;
-        }
+        //public void UpdateQualification(Guid? qualificationTypeId, string specialization)
+        //{
+        //    QualificationTypeId = qualificationTypeId;
+        //    Specialization = specialization;
+        //}
 
         public void SetEmploymentType(Guid employmentTypeId)
         {

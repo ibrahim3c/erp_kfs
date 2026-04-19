@@ -1,4 +1,4 @@
-﻿using HR.Domain.Employees.Qualifications.HR.Domain.Employees;
+﻿using HR.Domain.Employees.Qualifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;

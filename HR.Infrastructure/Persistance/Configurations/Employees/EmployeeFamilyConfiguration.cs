@@ -45,7 +45,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
 
             // 5. Relationships
             builder.HasOne<Employee>()
-                .WithMany() // if Employee doesn't expose a navigation property
+                .WithMany(e=>e.EmployeeFamilies) // if Employee doesn't expose a navigation property
                 .HasForeignKey(f => f.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
 

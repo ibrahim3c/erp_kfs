@@ -25,7 +25,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Candidates
                    .IsRequired();
 
             builder.HasOne<Candidate>()
-                   .WithMany()
+                   .WithMany(c=>c.NominationFiles)
                    .HasForeignKey(nf => nf.CandidateId)
                    .OnDelete(DeleteBehavior.Cascade);
         }

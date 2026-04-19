@@ -30,7 +30,7 @@ namespace HR.Infrastructure.Persistance.Configurations.JobStructures
                 .HasMaxLength(500);
 
             // Relationships
-            builder.HasOne<QualitativeGroup>()
+            builder.HasOne<QualitativeGroup>(fg=>fg.QualitativeGroup)
                 .WithMany(f => f.FunctionalGroups)
                 .HasForeignKey(f => f.QualitativeGroupId)
                 .OnDelete(DeleteBehavior.Restrict); // منع الحذف إذا كان هناك مجموعات وظيفية مرتبطة

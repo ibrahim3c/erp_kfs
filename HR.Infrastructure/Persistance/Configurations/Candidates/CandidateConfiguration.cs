@@ -30,6 +30,12 @@ namespace HR.Infrastructure.Persistance.Configurations.Candidates
             builder.Property(c => c.Email)
                    .HasMaxLength(150);
 
+            // 1. تعريفهم كحقول عادية (Soft References) بدون HasOne و WithMany
+            builder.Property(e => e.CityCenterId).IsRequired(false);
+            builder.Property(e => e.VillageId).IsRequired(false);
+
+
+
             //// إعداد العلاقة مع ملفات الترشيح (One-to-Many)
             //// استخدام Metadata لتعريف EF Core بالمتغير المخفي _nominationFiles
             //builder.HasMany(c => c.NominationFiles)

@@ -24,7 +24,7 @@ namespace HR.Infrastructure.Persistance.Configurations.JobStructures
                 .HasMaxLength(500);
 
             // Relationships
-            builder.HasOne<FunctionalGroup>()
+            builder.HasOne<FunctionalGroup>(jt=>jt.FunctionalGroup)
                 .WithMany(j => j.JobTitles)
                 .HasForeignKey(j => j.FunctionalGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
