@@ -1,8 +1,11 @@
 ﻿using HR.Infrastructure;
 using HR.Application;
+using Modules.Shared.Infrastructure;
+using Modules.Shared.Application;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyERP.Web.Data;
+using erp_kfs.Host.Models;
 
 namespace erp_kfs.Host
 {
@@ -14,12 +17,13 @@ namespace erp_kfs.Host
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")
             ));
             // --- Configure Identity ---
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequireDigit = false; 
@@ -28,7 +32,16 @@ namespace erp_kfs.Host
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            // policy and permission handlers
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Permission.Leadership.Manage", policy =>
+                    policy.RequireClaim("Permission", "Leadership.Manage"));
+            });
+
             // add dependancies
+            builder.Services.AddSharedInfrastructure(builder.Configuration);
+            builder.Services.AddSharedApplication();
             builder.Services.AddHRInfrastructure(builder.Configuration);
             builder.Services.AddHRApplication(); 
   
@@ -49,6 +62,7 @@ namespace erp_kfs.Host
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseAuthentication(); 
             app.UseAuthorization();
             app.MapRazorPages();
 

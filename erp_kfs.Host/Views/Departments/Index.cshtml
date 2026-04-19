@@ -1,0 +1,150 @@
+@using erp_kfs.Host.Models
+@model List<Department>
+@{
+    ViewData["Title"] = "الإدارات";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">الهيكل الإداري</h1>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> إضافة إدارة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>الإدارة</th>
+                            <th>المدير</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dept in Model)
+                        {
+                            <!-- الإدارة العامة -->
+                            <tr class="bg-primary text-white">
+                                <td><strong>@dept.Name</strong></td>
+                                <td>@dept.Manager?.FullName</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-warning" 
+                                            data-toggle="modal" data-target="#assignModal-@dept.Id">
+                                        تعيين مدير
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- الإدارات الفرعية -->
+                            @if (dept.Children.Any())
+                            {
+                                @foreach (var sub in dept.Children)
+                                {
+                                    <tr>
+                                        <td style="padding-left: 30px;">↳ @sub.Name</td>
+                                        <td>@sub.Manager?.FullName</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                    data-toggle="modal" data-target="#assignModal-@sub.Id">
+                                                تعيين مدير
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                            <!-- Modal الإدارة العامة -->
+                            <div class="modal fade" id="assignModal-@dept.Id">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="post" asp-action="AssignManager">
+                                            <input type="hidden" name="departmentId" value="@dept.Id" />
+                                            <div class="modal-header">
+                                                <h5>تعيين مدير لـ @dept.Name</h5>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <select name="managerId" class="form-control">
+                                                    <option value="">-- إزالة المدير --</option>
+                                                    @foreach (var emp in ViewBag.Employees as List<EmployeeAdmin>)
+                                                    {
+                                                        <option value="@emp.Id">@emp.FullName</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-success">حفظ</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modals الإدارات الفرعية -->
+                            @if (dept.Children.Any())
+                            {
+                                @foreach (var sub in dept.Children)
+                                {
+                                    <div class="modal fade" id="assignModal-@sub.Id">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="post" asp-action="AssignManager">
+                                                    <input type="hidden" name="departmentId" value="@sub.Id" />
+                                                    <div class="modal-header">
+                                                        <h5>تعيين مدير لـ @sub.Name</h5>
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <select name="managerId" class="form-control">
+                                                            <option value="">-- إزالة المدير --</option>
+                                                            @foreach (var emp in ViewBag.Employees as List<EmployeeAdmin>)
+                                                            {
+                                                                <option value="@emp.Id">@emp.FullName</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-success">حفظ</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+}

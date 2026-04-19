@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using erp_kfs.Host.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using erp_kfs.Host.Models;
 using MyERP.Web.Data;
+using System.Security.Claims;
 
 public static class IdentitySeeder
 {
@@ -35,8 +36,22 @@ public static class IdentitySeeder
 
             await userManager.CreateAsync(adminUser, "Admin@123");
             await userManager.AddToRoleAsync(adminUser, "Admin");
-        }
 
+            //  إضافة Permission
+            await userManager.AddClaimAsync(adminUser,
+                new Claim("Permission", "Leadership.Manage"));
+        }
+        else
+        {
+            //  تأكد إنه عنده الـ Claim حتى لو موجود
+            var claims = await userManager.GetClaimsAsync(adminUser);
+
+            if (!claims.Any(c => c.Type == "Permission" && c.Value == "Leadership.Manage"))
+            {
+                await userManager.AddClaimAsync(adminUser,
+                    new Claim("Permission", "Leadership.Manage"));
+            }
+        }
         // HR
         var hrEmail = "hr@erp.com";
         var hrUser = await userManager.FindByEmailAsync(hrEmail);

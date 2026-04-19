@@ -1,0 +1,45 @@
+@using erp_kfs.Host.Models
+
+@model AssignUserPermissionsViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    ViewData["Title"] = "تعيين الصلاحيات للمستخدم";
+
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">تعيين الصلاحيات للمستخدم: @Model.UserName</h3>
+    </div>
+    <div class="card-body">
+        <form asp-action="AssignToUser" method="post">
+            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" asp-for="UserName" />
+            
+            <div class="form-group">
+                <label>اختر الصلاحيات:</label>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px;">
+                    @foreach (var permission in Model.Permissions)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="SelectedPermissionIds" 
+                                   value="@permission.Id" 
+                                   id="perm-@permission.Id"
+                                   @(Model.SelectedPermissionIds.Contains(permission.Id) ? "checked" : "")>
+                            <label class="form-check-label" for="perm-@permission.Id">
+                                @permission.DisplayName
+                                <small class="text-muted">(@permission.Name)</small>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-success">حفظ الصلاحيات</button>
+            <a asp-controller="Users" asp-action="Index" asp-area="Admin" class="btn btn-secondary">إلغاء</a>
+        </form>
+    </div>
+</div>

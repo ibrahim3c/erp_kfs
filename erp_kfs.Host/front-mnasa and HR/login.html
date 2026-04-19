@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>المنصة الرقمية لمحافظة كفرالشيخ</title>
+    <!-- Bootstrab -->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="css/all.min.css">
+    <!-- animate -->
+    <link rel="stylesheet" href="css/animate/animate.css">
+    <!-- Globa Css Link -->
+    <link rel="stylesheet" href="css/global/main.css">
+    <link rel="stylesheet" href="css/global/login.css">
+    <!-- Globa Css Link -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
+    <!-- Google Fonts -->
+  </head>
+  <body onload="myFunction()" style="margin:0;">
+    <!--<div id="loader">
+        <div class="img-load">
+            <img src="image/kfs-logo (2).png">
+        </div>
+    </div>-->
+    <div style="display:none;" id="myDiv">
+        <!-- start top bar -->
+        <section class="top-bar bg-dark bg-light-radial">
+            <div class="container">
+                <div class="row pt-2 pb-2">
+                    <div class="col time " >
+                        <div id="clock" class="BannerBarText text-light wow fadeInUp" data-wow-offset="10"></div>
+                    </div>
+                    <div class="col d-none d-lg-block text-start" >
+                        <div class="links wow fadeInDown" data-wow-offset="10">
+                                <a class="Prayer" href="http://prayertimes3.today/egypt-eg/kafrsheikh-175.html"
+                                target="_blank" title="مواقيت الصلاة"><i class="fa-solid fa-mosque"></i></a>
+                                <a class="weather " href="http://ema.gov.eg/wp/bulletin-page" target="_blank" title="مواقيت الصلاة"><i
+                                class="fa-solid fa-cloud-sun-rain"></i></a>
+                        </div>
+                    </div>
+                </div>
+        </section>
+        <!-- end top bar -->
+        <!-- start header lg -->
+        <header class=" d-none d-lg-block">
+            <div class="container">
+                <div class="row">
+                    <div class="col-2 ">
+                        <div class="logo d-flex mt-5 mx-auto">
+                            <img src="image/kfs-logo (2).png" alt="" class=" wow fadeInRight" data-wow-offset="10" data-wow-delay="1s">
+                            <div class="border m-2"></div>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                    <div class="head text-center pt-4">
+                        <img class=" wow fadeInDown" data-wow-duration="2s"  src="image/kfs-word.png" alt="">
+                        <h4 class=" light-dark pt-4  wow fadeInUp" data-wow-duration="3s"  >الإدارة العامة لنظم المعلومات والتحول الرقمي</h4>
+                        <h5 class=" light-dark pt-4  wow flipInY " data-wow-duration="4s" >المنصة الإحصائية</h5>
+                    </div>
+                    </div>
+                    <div class="col-2 ">
+                        <div class="logo d-flex mt-5 mx-auto">
+                            <div class="border m-2"></div>
+                            <img src="image/eg-logo.png" alt="" class=" wow fadeInLeft"data-wow-offset="10" data-wow-delay="1s" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- end header lg -->
+        <!-- start header sm screen -->
+        <header class="d-lg-none">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 pt-2  d-flex">
+                        <div class="logo mx-auto d-block">
+                                <img src="image/kfs-logo (2).png" alt="" class="wow fadeInDown" data-wow-offset="10" data-wow-delay="1s" >
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="head text-center pt-3">
+                            <img class="wow wow fadeInDown mb-3" data-wow-duration="2s"  src="image/kfs-word.png" alt="">
+                            <h4 class=" light-dark wow fadeInUp mb-3" data-wow-duration="3s">الإدارة العامة لنظم المعلومات والتحول الرقمي</h4>
+                            <h5 class=" light-dark wow flipInY" data-wow-duration="4s">المنصة الإحصائية</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- end header sm screen -->
+        <!-- Start Navbar -->
+        <nav class="navbar navbar-expand-lg bg-dark bg-light-radial sticky-top">
+            <div class="container">
+                <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#main"
+                    aria-controls="main" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="main">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 wow fadeIn" data-wow-duration="8s" data-wow-offset="10" >
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="index.html">الرئيسة</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">إتصل بنا</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- End Navbar -->
+        <!-- start login -->
+        <section class="login">
+            <div class="container">
+                    <div class="login-box wow fadeIn" data-wow-delay="1s" data-wow-duration="5s" data-wow-offset="10">
+                        <h2>تسجيل الدخول</h2>
+                        <form>
+                            <div class="user-box" dir="rtl">
+                                <input type="text" name="" required="">
+                                <label>اسم المستخدم</label>
+                            </div>
+                            <div class="user-box">
+                                <input type="password" name="" required="">
+                                <label>كلمة السر</label>
+                            </div>
+                            <a href="dashboard.html">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <button type="button" class="btn btn-outline-primary">دخول</button>
+                            </a>
+                        </form>
+                    </div>
+            </div>
+        </section>
+
+        <!-- end login -->
+        <!-- Start footer-->
+        <footer class="bg-dark bg-light-radial p-3 mt-1">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col">
+                        <p class="copyright-text">
+                            حقوق الطبع والنشر <span> &copy; </span> الإدارة العامة لنظم المعلومات والتحول الرقمي
+        
+                            <a class="nozom" href="#">إدارة النظم والتطبيقات</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end footer-->
+    </div>
+  
+<!-- Bootstrab -->
+<script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+<!-- fontawesome -->
+<script src="js/all.min.js"></script>
+<!-- global -->
+<script src="js/global/main.js"></script>
+<!-- animate -->
+<script src="js/animate/wow.min.js"></script>
+<script>
+    new WOW().init();
+</script>
+</body>
+</html>

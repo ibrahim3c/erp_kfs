@@ -1,5 +1,12 @@
+@model List<IdentityRole>
+@using MyERP.Web.Models
+@using Microsoft.AspNetCore.Identity
 @{
-    ViewData["Title"] = "لوحة التحكم";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "إدارة الصلاحيات والأدوار";
+
+    var permissions = ViewBag.Permissions as List<Permission> ?? new List<Permission>();
+    var rolePermissions = ViewBag.RolePermissions as List<RolePermission> ?? new List<RolePermission>();
 }
 
 <style>
@@ -23,79 +30,100 @@
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(255,255,255,0.05);
     }
-    
-    /* Glowing creative elements */
-    .welcome-banner::before {
-        content: '';
-        position: absolute;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-        top: -100px;
-        left: -50px;
-        border-radius: 50%;
-        filter: blur(40px);
-        z-index: 1;
-    }
-    .welcome-banner::after {
-        content: '';
-        position: absolute;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-        bottom: -150px;
-        right: -100px;
-        border-radius: 50%;
-        filter: blur(50px);
-        z-index: 1;
-    }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            top: -100px;
+            left: -50px;
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 1;
+        }
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+            border-radius: 50%;
+            filter: blur(50px);
+            z-index: 1;
+        }
 
     .welcome-content {
         position: relative;
         z-index: 2;
     }
 
-    .welcome-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -0.5px; }
-    .welcome-sub { color: rgba(255,255,255,0.75); font-size: 0.95rem; max-width: 650px; line-height: 1.7; }
+    .welcome-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
 
-    /* New Modern Card Design - Stacked Vertical & Compact */
-    .admin-dashboard .modern-card {
+    .welcome-sub {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.95rem;
+        max-width: 650px;
+        line-height: 1.7;
+    }
+
+    /* Stats Cards */
+    .modern-card {
         background: white !important;
         border-radius: 1rem !important;
         padding: 1.25rem !important;
         border: 1px solid rgba(226, 232, 240, 0.7) !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
         transition: all 0.3s ease !important;
-        height: 100% !important;
         display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
-        gap: 0.5rem !important;
-    }
-    .admin-dashboard .modern-card:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 15px rgba(0,0,0,0.05) !important;
-        border-color: #3b82f644 !important;
+        align-items: center;
+        gap: 1rem !important;
     }
 
-    /* Icon Box Style - Scaled Down */
-    .admin-dashboard .icon-box {
-        width: 45px !important;
-        height: 45px !important;
+        .modern-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05) !important;
+            border-color: #3b82f644 !important;
+        }
+
+    .icon-box {
+        width: 50px !important;
+        height: 50px !important;
         border-radius: 0.85rem !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 1.1rem !important;
+        font-size: 1.3rem !important;
         flex-shrink: 0 !important;
-        margin-bottom: 0.15rem !important;
     }
-    
-    .admin-dashboard .card-content { width: 100% !important; }
-    .admin-dashboard .card-title { font-size: 0.85rem !important; font-weight: 700 !important; color: #1e293b !important; margin-bottom: 0.15rem !important; display: block !important; }
-    .admin-dashboard .card-subtitle { font-size: 0.7rem !important; color: #94a3b8 !important; font-weight: 500 !important; display: block !important; margin-bottom: 0.4rem !important; }
-    .admin-dashboard .card-value { font-size: 1.25rem !important; font-weight: 900 !important; color: #0f172a !important; display: block !important; line-height: 1 !important; }
+
+    .card-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-title-sm {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+
+    .card-value {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1;
+    }
 
     /* Section Title */
     .section-header {
@@ -105,237 +133,207 @@
         margin-bottom: 1.5rem;
         margin-top: 1rem;
     }
-    .section-header h2 {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0;
-    }
-    .section-header .line {
-        flex: 1;
-        height: 1px;
-        background: #e2e8f0;
-    }
 
-    /* Quick Action Card (Vertical Style) */
-    .qa-card-modern {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 2rem 1.5rem;
-        text-align: center;
-        text-decoration: none !important;
-        border: 1px solid #e2e8f0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-    .qa-card-modern:hover {
-        background: #fff;
-        border-color: #3b82f6;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-        transform: translateY(-6px);
-    }
-    .qa-card-modern .icon-box {
-        margin-bottom: 1.25rem;
-    }
+        .section-header h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
 
-    /* Full Width Sections */
-    .full-width-section {
-        margin-bottom: 2.5rem;
-    }
+        .section-header .line {
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
 
-    /* Activity List */
-    .activity-list {
+    /* ====== Role Card (التصميم الجديد للأدوار والصلاحيات) ====== */
+    .role-card {
         background: white;
         border-radius: 1.25rem;
         border: 1px solid #e2e8f0;
-        padding: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     }
-    .activity-row {
+
+        .role-card:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+            transform: translateY(-4px);
+            border-color: #3b82f666;
+        }
+
+    .role-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .role-name {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
-        transition: background 0.2s;
+        gap: 0.5rem;
     }
-    .activity-row:last-child { border-bottom: none; }
-    .activity-row:hover { background: #f8fafc; }
-    .activity-icon-sm {
-        width: 40px; height: 40px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 0.9rem; flex-shrink: 0;
+
+    /* Permissions Badges بدلاً من الـ Checkboxes القديمة */
+    .perm-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.8rem;
+        border-radius: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin: 0.25rem;
+        transition: all 0.2s;
     }
+
+    .perm-active {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .perm-inactive {
+        background: #f8fafc;
+        color: #94a3b8;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-edit-role {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    }
+
+        .btn-edit-role:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+            color: white;
+        }
 </style>
 
 <div class="admin-dashboard">
     <div class="container-fluid px-4">
 
-        <!-- Welcome Banner -->
         <div class="welcome-banner wow fadeIn">
             <div class="welcome-content">
-                <h1 class="welcome-title">مرحباً بك في الإدارة المركزية</h1>
-                <p class="welcome-sub">لوحة التحكم الشاملة لإدارة المستخدمين، الصلاحيات، ومراقبة أداء الوحدات البرمجية المختلفة للنظام.</p>
+                <h1 class="welcome-title">إدارة صلاحيات النظام</h1>
+                <p class="welcome-sub">تتيح لك هذه الصفحة التحكم الكامل في الأدوار الوظيفية (Roles) وتوزيع الصلاحيات (Permissions) على كل دور لضمان أمان وسرية البيانات.</p>
             </div>
         </div>
 
-        <!-- KPI Stats Section -->
-        <div class="full-width-section">
-            <div class="section-header">
-                <i class="fa-solid fa-chart-line text-primary"></i>
-                <h2>إحصائيات سريعة</h2>
-                <div class="line"></div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-4 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="modern-card">
+                    <div class="icon-box" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-title-sm">إجمالي الأدوار</span>
+                        <span class="card-value">@Model.Count()</span>
+                    </div>
+                </div>
             </div>
-            <div class="row g-3">
-                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <span class="card-title">المستخدمين</span>
-                        <span class="card-subtitle">إجمالي المسجلين</span>
-                        <div class="card-value">248</div>
+            <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="modern-card">
+                    <div class="icon-box" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-title-sm">صلاحيات النظام المسجلة</span>
+                        <span class="card-value">@permissions.Count()</span>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background: rgba(16,185,129,0.1); color: #10b981;">
-                            <i class="fa-solid fa-circle-check"></i>
-                        </div>
-                        <span class="card-title">الوحدات</span>
-                        <span class="card-subtitle">وحدات نشطة</span>
-                        <div class="card-value">8</div>
+            </div>
+            <div class="col-md-4 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="modern-card">
+                    <div class="icon-box" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+                        <i class="fa-solid fa-link"></i>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
-                            <i class="fa-solid fa-key"></i>
-                        </div>
-                        <span class="card-title">الصلاحيات</span>
-                        <span class="card-subtitle">أدوار محددة</span>
-                        <div class="card-value">15</div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
-                            <i class="fa-solid fa-right-to-bracket"></i>
-                        </div>
-                        <span class="card-title">الدخول</span>
-                        <span class="card-subtitle">اليوم</span>
-                        <div class="card-value">34</div>
+                    <div class="card-info">
+                        <span class="card-title-sm">عمليات الربط النشطة</span>
+                        <span class="card-value">@rolePermissions.Count()</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Activity Feed (Full Width) -->
-        <div class="full-width-section">
-            <div class="section-header">
-                <i class="fa-solid fa-clock-rotate-left text-info"></i>
-                <h2>آخر الأنشطة والعمليات</h2>
-                <div class="line"></div>
-            </div>
-            <div class="activity-list wow fadeInUp">
-                <div class="activity-row">
-                    <div class="activity-icon-sm" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="fa-solid fa-user-plus"></i></div>
-                    <div class="flex-grow-1">
-                        <div style="font-size: 0.9rem; font-weight: 700; color: #1e293b;">تمت إضافة مستخدم جديد — <strong>Ahmed Mohamed</strong></div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">منذ 12 دقيقة</div>
-                    </div>
-                </div>
-                <div class="activity-row">
-                    <div class="activity-icon-sm" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="fa-solid fa-key"></i></div>
-                    <div class="flex-grow-1">
-                        <div style="font-size: 0.9rem; font-weight: 700; color: #1e293b;">تم تعديل صلاحيات دور <strong>مشرف المخازن</strong></div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">منذ 38 دقيقة</div>
-                    </div>
-                </div>
-                <div class="activity-row">
-                    <div class="activity-icon-sm" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="fa-solid fa-right-to-bracket"></i></div>
-                    <div class="flex-grow-1">
-                        <div style="font-size: 0.9rem; font-weight: 700; color: #1e293b;">تسجيل دخول ناجح من <strong>مدير الإدارة المركزية</strong></div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">منذ ساعة واحدة</div>
-                    </div>
-                </div>
-            </div>
+        <div class="section-header wow fadeIn">
+            <i class="fa-solid fa-layer-group text-primary"></i>
+            <h2>توزيع الصلاحيات حسب كل دور</h2>
+            <div class="line"></div>
         </div>
 
-        <!-- Modules Status (Full Width) -->
-        <div class="full-width-section">
-            <div class="section-header">
-                <i class="fa-solid fa-cubes text-warning"></i>
-                <h2>حالة الوحدات والموديولات</h2>
-                <div class="line"></div>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-4 wow fadeInUp">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background:rgba(59,130,246,0.08);color:#3b82f6;"><i class="fa-solid fa-users"></i></div>
-                        <span class="badge rounded-pill" style="background:#dcfce7;color:#16a34a;padding: 0.4rem 0.8rem; font-size: 0.7rem; margin-bottom: 0.5rem;">نشط الآن</span>
-                        <span class="card-title">الموارد البشرية</span>
-                        <span class="card-subtitle">HR Module</span>
-                    </div>
-                </div>
-                <div class="col-md-4 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background:rgba(16,185,129,0.08);color:#10b981;"><i class="fa-solid fa-scale-balanced"></i></div>
-                        <span class="badge rounded-pill" style="background:#dcfce7;color:#16a34a;padding: 0.4rem 0.8rem; font-size: 0.7rem; margin-bottom: 0.5rem;">نشط الآن</span>
-                        <span class="card-title">الشئون القانونية</span>
-                        <span class="card-subtitle">Legal Module</span>
-                    </div>
-                </div>
-                <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
-                    <div class="modern-card">
-                        <div class="icon-box" style="background:rgba(245,158,11,0.08);color:#f59e0b;"><i class="fa-solid fa-warehouse"></i></div>
-                        <span class="badge rounded-pill" style="background:#dcfce7;color:#16a34a;padding: 0.4rem 0.8rem; font-size: 0.7rem; margin-bottom: 0.5rem;">نشط الآن</span>
-                        <span class="card-title">المخازن والمشتريات</span>
-                        <span class="card-subtitle">Inventory Module</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="row">
+            @foreach (var role in Model)
+            {
+                <div class="col-12 wow fadeInUp">
+                    <div class="role-card">
 
-        <!-- Quick Actions (Bottom & Full Width) -->
-        <div class="full-width-section">
-            <div class="section-header">
-                <i class="fa-solid fa-bolt" style="color:#f59e0b;"></i>
-                <h2>الإجراءات السريعة</h2>
-                <div class="line"></div>
-            </div>
-            <div class="row g-3">
-                <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
-                    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="qa-card-modern">
-                        <div class="icon-box" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="fa-solid fa-user-plus"></i></div>
-                        <span class="card-title">إدارة المستخدمين</span>
-                        <span class="card-subtitle">إضافة وتعديل وحذف</span>
-                    </a>
+                        <div class="role-header">
+                            <h3 class="role-name">
+                                <i class="fa-solid fa-user-tag text-primary opacity-75"></i>
+                                @role.Name
+                            </h3>
+                            <a asp-area="Admin"
+                               asp-controller="Permissions"
+                               asp-action="Assign"
+                               asp-route-roleId="@role.Id"
+                               class="btn-edit-role text-decoration-none d-inline-flex align-items-center gap-2">
+                                <i class="fas fa-edit"></i> تعديل الصلاحيات
+                            </a>
+                        </div>
+
+                        <div class="role-body pt-2">
+                            @if (permissions.Any())
+                            {
+                                <div class="d-flex flex-wrap">
+                                    @foreach (var perm in permissions)
+                                    {
+                                        bool isChecked = rolePermissions.Any(rp => rp.RoleId == role.Id && rp.PermissionId == perm.Id);
+
+                                        if (isChecked)
+                                        {
+                                            <span class="perm-badge perm-active" title="مفعلة">
+                                                <i class="fa-solid fa-circle-check"></i> @perm.DisplayName
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="perm-badge perm-inactive" title="غير مفعلة">
+                                                <i class="fa-solid fa-circle-xmark opacity-50"></i> @perm.DisplayName
+                                            </span>
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-light border text-center text-muted mb-0">
+                                    <i class="fa-solid fa-inbox fs-4 mb-2 d-block opacity-50"></i>
+                                    لا توجد صلاحيات مسجلة في النظام بعد.
+                                </div>
+                            }
+                        </div>
+
+                    </div>
                 </div>
-                <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
-                    <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="qa-card-modern">
-                        <div class="icon-box" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="fa-solid fa-shield-halved"></i></div>
-                        <span class="card-title">الأدوار</span>
-                        <span class="card-subtitle">إدارة الصلاحيات</span>
-                    </a>
-                </div>
-                <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.3s">
-                    <a asp-area="Admin" asp-controller="Audit" asp-action="LoginHistory" class="qa-card-modern">
-                        <div class="icon-box" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <span class="card-title">سجل الدخول</span>
-                        <span class="card-subtitle">مراقبة النشاط</span>
-                    </a>
-                </div>
-                <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
-                    <a asp-area="Admin" asp-controller="Audit" asp-action="SystemLogs" class="qa-card-modern">
-                        <div class="icon-box" style="background:rgba(239,68,68,0.1);color:#ef4444;"><i class="fa-solid fa-clipboard-list"></i></div>
-                        <span class="card-title">سجل الأحداث</span>
-                        <span class="card-subtitle">System Logs</span>
-                    </a>
-                </div>
-            </div>
+            }
         </div>
 
     </div>

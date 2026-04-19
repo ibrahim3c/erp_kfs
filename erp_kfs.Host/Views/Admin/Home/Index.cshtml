@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "لوحة تحكم الأدمن";
+}
+<h2>اختبار السايدبار:</h2>
+@await Component.InvokeAsync("SidebarMenu")
+<div class="content-header">
+    <div class="container-fluid">
+        <h1>مرحباً بك في لوحة التحكم</h1>
+        <p>يمكنك إدارة الصلاحيات، الأدوار، والإعدادات من هنا.</p>
+        <a asp-controller="Permissions" asp-action="Index" class="btn btn-primary">إدارة الصلاحيات</a>
+    </div>
+</div>
