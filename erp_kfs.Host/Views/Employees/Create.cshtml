@@ -1,0 +1,375 @@
+@using erp_kfs.Host.Models
+@model MyERP.Web.Models.EmployeeAdmin
+@{
+    ViewData["Title"] = "إضافة موظف جديد";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-user-plus"></i> إضافة موظف جديد
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-left">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Employees" asp-action="Index">
+                            <i class="fas fa-users"></i> سجل الموظفين
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">إضافة جديد</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger alert-dismissible m-3">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>الأخطاء:</strong>
+        <ul class="mb-0">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="card card-primary card-outline card-tabs">
+                <div class="card-header p-0 pt-1 border-bottom-0">
+                    <!-- تبويبات صحيحة ل Bootstrap 4 -->
+                    <ul class="nav nav-tabs" id="employeeTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="personal-tab" data-toggle="tab" href="#personal" role="tab">
+                                <i class="fas fa-user mr-1"></i> البيانات الشخصية
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="job-tab" data-toggle="tab" href="#job" role="tab">
+                                <i class="fas fa-briefcase mr-1"></i> الوظيفة والدرجة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="financial-tab" data-toggle="tab" href="#financial" role="tab">
+                                <i class="fas fa-money-bill-wave mr-1"></i> البيانات المالية
+                            </a>
+                        </li>
+                        <li class="nav-item" style="display: none;">
+    <a class="nav-link" id="login-tab" data-toggle="tab" href="#login" role="tab">
+        <i class="fas fa-user-lock mr-1"></i> حساب الدخول
+    </a>
+</li>
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content" id="employeeTabsContent">
+
+                        <!-- 1. البيانات الشخصية -->
+                        <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-3 text-center mb-3">
+                                    <img id="imgPreview" src="~/image/icons/7.png" alt="Profile" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px;">
+                                    <div class="mt-3">
+                                        <label class="btn btn-sm btn-outline-primary">
+                                            رفع صورة شخصية <i class="fas fa-camera"></i>
+                                            <input type="file" name="ProfileImage" style="display: none;" onchange="previewImage(this)">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-md-4 form-group">
+                                            <label>الاسم الأول *</label>
+                                            <input asp-for="FirstName" class="form-control" placeholder="مثال: محمد">
+                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <label>اسم الأب *</label>
+                                            <input asp-for="MiddleName" class="form-control" placeholder="أحمد">
+                                            <span asp-validation-for="MiddleName" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <label>اسم العائلة (اللقب) *</label>
+                                            <input asp-for="LastName" class="form-control" placeholder="المنشاوي">
+                                            <span asp-validation-for="LastName" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="col-md-6 form-group">
+                                            <label class="text-danger">* الرقم القومي (14 رقم)</label>
+                                            <input asp-for="NationalId" class="form-control" maxlength="14" placeholder="2990901xxxxxxx">
+                                            <span asp-validation-for="NationalId" class="text-danger"></span>
+                                            <small class="text-muted">سيتم استخراج تاريخ الميلاد والمحافظة تلقائياً</small>
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            <label>تاريخ الميلاد</label>
+                                            <input asp-for="BirthDate" class="form-control" type="date">
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            <label>النوع</label>
+                                            <select asp-for="Gender" class="form-control">
+                                                <option value="ذكر">ذكر</option>
+                                                <option value="أنثى">أنثى</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4 form-group">
+                                            <label>رقم الموبايل</label>
+                                            <input asp-for="Mobile" class="form-control">
+                                        </div>
+                                        <div class="col-md-5 form-group">
+                                            <label>العنوان بالتفصيل</label>
+                                            <input asp-for="Address" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-3 form-group bg-light rounded border p-2">
+                                            <label class="text-primary" style="font-size: 14px;">فئة خاصة (ذوي الهمم)</label>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" asp-for="IsDisabled" class="custom-control-input" id="isDisabled">
+                                                <label class="custom-control-label" for="isDisabled">نعم (الـ 5%)</label>
+                                            </div>
+                                            <small class="text-danger" style="font-size:11px">سيتم رفع رصيد الأجازات لـ 45 يوم</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. الوظيفة والدرجة -->
+                        <div class="tab-pane fade" id="job" role="tabpanel">
+                            <div class="row">
+                                <!-- الإدارة العامة -->
+                                <div class="col-md-6 form-group">
+                                    <label>الإدارة العامة</label>
+                                    <select id="generalDeptSelect" class="form-control">
+                                        <option value="">-- اختر إدارة عامة --</option>
+                                        @foreach (var dept in ViewBag.GeneralDepartments as List<Department>)
+                                        {
+                                            <option value="@dept.Id">@dept.Name</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!-- الإدارة الفرعية (مخفية في البداية) -->
+                                <div class="col-md-6 form-group" id="subDeptSection" style="display:none;">
+                                    <label>الإدارة الفرعية</label>
+                                    <select id="subDeptSelect" class="form-control">
+                                        <option value="">-- اختر إدارة فرعية --</option>
+                                    </select>
+                                </div>
+
+                                <!-- الحقل المخفي اللي هيتحفظ -->
+                                <input type="hidden" asp-for="SelectedDepartmentId" id="selectedDeptId" />
+
+                                <div class="col-md-4 form-group">
+                                    <label>المسمى الوظيفي *</label>
+                                    <input asp-for="JobTitle" class="form-control" placeholder="مثال: أخصائي تشغيل حاسب">
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>المؤهل الدراسي</label>
+                                    <input asp-for="Qualification" class="form-control" placeholder="مثال: بكالوريوس هندسة">
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label>الدرجة المالية الحالية</label>
+                                    <select asp-for="FinancialGrade" class="form-control">
+                                        <option value="">-- اختر الدرجة --</option>
+                                        <option value="الممتازة (رئيس قطاع)">الممتازة (رئيس قطاع)</option>
+                                        <option value="العالية (وكيل وزارة)">العالية (وكيل وزارة)</option>
+                                        <option value="مدير عام">مدير عام</option>
+                                        <option value="الأولى">الأولى</option>
+                                        <option value="الثانية">الثانية</option>
+                                        <option value="الثالثة">الثالثة</option>
+                                        <option value="الرابعة">الرابعة</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label>تاريخ التعيين الفعلي</label>
+                                    <input asp-for="AppointmentDate" class="form-control" type="date">
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label class="text-primary">تاريخ الحصول على الدرجة</label>
+                                    <input asp-for="GradeDate" class="form-control" type="date">
+                                    <small class="text-muted">هام لاحتساب أقدمية الترقية</small>
+                                </div>
+
+                                <div class="col-md-3 form-group">
+                                    <label>نوع التعيين (الكادر)</label>
+                                    <select asp-for="AppointmentType" class="form-control">
+                                        <option value="">-- اختر النوع --</option>
+                                        <option value="دائم (موازنة)">دائم (موازنة)</option>
+                                        <option value="مكافأة شاملة (صناديق)">مكافأة شاملة (صناديق)</option>
+                                        <option value="عقد مؤقت / فصل مستقل">عقد مؤقت / فصل مستقل</option>
+                                        <option value="منتدب">منتدب</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. البيانات المالية -->
+                        <div class="tab-pane fade" id="financial" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    <label>الأساسي في 2019 (بداية الربط)</label>
+                                    <div class="input-group">
+                                        <input asp-for="BasicSalary2019" class="form-control" type="number" step="0.01" placeholder="0.00">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">جم</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label>إجمالي الاستحقاق (Gross)</label>
+                                    <div class="input-group">
+                                        <input asp-for="GrossSalary" class="form-control" type="number" step="0.01" placeholder="0.00">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">جم</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 form-group">
+                                    <label>الرقم التأميني</label>
+                                    <input asp-for="InsuranceNumber" class="form-control">
+                                </div>
+
+                                <div class="col-md-6 form-group">
+                                    <label>اسم البنك</label>
+                                    <select asp-for="BankName" class="form-control">
+                                        <option value="">-- اختر البنك --</option>
+                                        <option value="البنك الأهلي المصري">البنك الأهلي المصري</option>
+                                        <option value="بنك مصر">بنك مصر</option>
+                                        <option value="بنك القاهرة">بنك القاهرة</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label>رقم الحساب / بطاقة الدفع (Meeza)</label>
+                                    <input asp-for="AccountNumber" class="form-control" placeholder="أرقام البطاقة...">
+                                </div>
+
+                                <div class="col-md-12 mt-2">
+                                    <div class="card bg-light border-info shadow-none">
+                                        <div class="card-body py-2">
+                                            <label class="mb-2 text-info"><i class="fas fa-hand-holding-heart"></i> اشتراكات الصناديق الخاصة:</label>
+                                            <div class="form-group clearfix">
+                                                <div class="icheck-primary d-inline mr-4">
+                                                    <input type="checkbox" asp-for="HasFellowshipFund" id="checkboxFund1">
+                                                    <label for="checkboxFund1">مشترك في صندوق الزمالة (خصم 1%)</label>
+                                                </div>
+                                                <div class="icheck-success d-inline">
+                                                    <input type="checkbox" asp-for="HasMutualAid" id="checkboxFund2">
+                                                    <label for="checkboxFund2">مشترك في التكافل (رعاية طبية)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. حساب الدخول -->
+                        <div class="tab-pane fade" id="login" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label class="text-info">البريد الإلكتروني</label>
+                                    <input asp-for="Email" class="form-control" placeholder="example@email.com">
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="text-info">كلمة المرور</label>
+                                    <input asp-for="TempPassword" class="form-control" placeholder="كلمة المرور">
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i> سيتم إنشاء الحساب تلقائيًا عند الحفظ.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success float-left">
+                        <i class="fas fa-save ml-1"></i> حفظ وتفعيل الملف
+                    </button>
+                    <a asp-action="Index" class="btn btn-default">
+                        <i class="fas fa-times ml-1"></i> إلغاء
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // هذا السطر فقط كافي لتفعيل التبويبات
+        $('#employeeTabs a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+
+        // باقي الكود كما هو
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgPreview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // عند اختيار إدارة عامة
+        document.getElementById('generalDeptSelect').addEventListener('change', function () {
+            const parentId = this.value;
+            const subSection = document.getElementById('subDeptSection');
+            const subSelect = document.getElementById('subDeptSelect');
+            const hiddenInput = document.getElementById('selectedDeptId');
+
+            subSelect.innerHTML = '<option value="">-- اختر إدارة فرعية --</option>';
+            hiddenInput.value = '';
+
+            if (parentId) {
+                fetch('/Employees/GetSubDepartments?parentId=' + parentId)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            subSection.style.display = 'block';
+                            data.forEach(dept => {
+                                const option = document.createElement('option');
+                                option.value = dept.id;
+                                option.textContent = dept.name;
+                                subSelect.appendChild(option);
+                            });
+                        } else {
+                            subSection.style.display = 'none';
+                            hiddenInput.value = parentId;
+                        }
+                    });
+            } else {
+                subSection.style.display = 'none';
+            }
+        });
+
+        // عند اختيار إدارة فرعية
+        document.getElementById('subDeptSelect').addEventListener('change', function () {
+            document.getElementById('selectedDeptId').value = this.value;
+        });
+    </script>
+}

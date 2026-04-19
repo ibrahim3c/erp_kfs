@@ -74,71 +74,6 @@ namespace MyERP.Web.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -715,6 +650,9 @@ namespace MyERP.Web.Migrations
                     b.Property<int>("AcademicIncentiveTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AcademicIncentiveTypeId1")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -728,6 +666,12 @@ namespace MyERP.Web.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeId1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeQualificationId")
                         .HasColumnType("int");
 
                     b.Property<string>("FilePath")
@@ -763,7 +707,13 @@ namespace MyERP.Web.Migrations
 
                     b.HasIndex("AcademicIncentiveTypeId");
 
+                    b.HasIndex("AcademicIncentiveTypeId1");
+
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeId1");
+
+                    b.HasIndex("EmployeeQualificationId");
 
                     b.HasIndex("QualificationId");
 
@@ -1941,11 +1891,19 @@ namespace MyERP.Web.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SentBy")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SentTo")
+                    b.Property<int?>("EmployeeId1")
                         .HasColumnType("int");
+
+                    b.Property<string>("SentBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SentTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -1955,6 +1913,10 @@ namespace MyERP.Web.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeId1");
 
                     b.HasIndex("SentBy");
 
@@ -1988,8 +1950,9 @@ namespace MyERP.Web.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("ReviewerId")
-                        .HasColumnType("int");
+                    b.Property<string>("ReviewerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -2082,6 +2045,667 @@ namespace MyERP.Web.Migrations
                     b.ToTable("Villages");
                 });
 
+            modelBuilder.Entity("MyERP.Web.Models.EmployeeAdmin", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("AppointmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AppointmentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("BasicSalary2019")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FinancialGrade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("GradeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("GrossSalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("HasFellowshipFund")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasMutualAid")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("HireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InitialLeaveBalance")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InsuranceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTerminated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Mobile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)");
+
+                    b.Property<string>("ProfileImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Qualification")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelectedDepartmentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ServiceDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceMonths")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceYears")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TerminationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TerminationReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("SelectedDepartmentId");
+
+                    b.ToTable("EmployeeAdmins");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.GlobalLeadershipPosition", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DepartmentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("GlobalLeadershipPositions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "pos-governor",
+                            DepartmentId = "governorate",
+                            DisplayName = "المحافظ",
+                            IsActive = true,
+                            Level = 1,
+                            Title = "Governor"
+                        },
+                        new
+                        {
+                            Id = "pos-deputy-governor",
+                            DepartmentId = "governorate",
+                            DisplayName = "نائب المحافظ",
+                            IsActive = true,
+                            Level = 2,
+                            Title = "DeputyGovernor"
+                        },
+                        new
+                        {
+                            Id = "pos-chief-secretary",
+                            DepartmentId = "governorate",
+                            DisplayName = "السكرتير العام",
+                            IsActive = true,
+                            Level = 3,
+                            Title = "ChiefSecretary"
+                        },
+                        new
+                        {
+                            Id = "pos-deputy-chief",
+                            DepartmentId = "governorate",
+                            DisplayName = "السكرتير العام المساعد",
+                            IsActive = true,
+                            Level = 4,
+                            Title = "DeputyChiefSecretary"
+                        });
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.LeadershipAssignment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GlobalLeadershipPositionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("HijriDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PositionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("GlobalLeadershipPositionId");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("LeadershipAssignments");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.LeaveRequest", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("DaysRequested")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LeaveTypeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LeaveTypeId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MedicalReportPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("LeaveTypeId");
+
+                    b.HasIndex("LeaveTypeId1");
+
+                    b.ToTable("LeaveRequests");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.LeaveType", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AutoRenewDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAnnualBasedOnService")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCasual")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGenderSpecific")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RequiresApproval")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("SalaryPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LeaveTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "leave-annual",
+                            AutoRenewDate = "07-01",
+                            DisplayName = "الإجازة الاعتيادية",
+                            IsAnnualBasedOnService = true,
+                            IsCasual = false,
+                            IsGenderSpecific = false,
+                            MaxDays = 50,
+                            Name = "Annual",
+                            RequiresApproval = true,
+                            SalaryPercentage = 100m
+                        },
+                        new
+                        {
+                            Id = "leave-casual",
+                            AutoRenewDate = "07-01",
+                            DisplayName = "الإجازة العارضة",
+                            IsAnnualBasedOnService = false,
+                            IsCasual = true,
+                            IsGenderSpecific = false,
+                            MaxDays = 2,
+                            Name = "Casual",
+                            RequiresApproval = false,
+                            SalaryPercentage = 100m
+                        },
+                        new
+                        {
+                            Id = "leave-sick",
+                            DisplayName = "الإجازة المرضية",
+                            IsAnnualBasedOnService = false,
+                            IsCasual = false,
+                            IsGenderSpecific = false,
+                            MaxDays = 180,
+                            Name = "Sick",
+                            RequiresApproval = true,
+                            SalaryPercentage = 100m
+                        },
+                        new
+                        {
+                            Id = "leave-maternity",
+                            DisplayName = "إجازة الوضع",
+                            IsAnnualBasedOnService = false,
+                            IsCasual = false,
+                            IsGenderSpecific = true,
+                            MaxDays = 120,
+                            Name = "Maternity",
+                            RequiresApproval = true,
+                            SalaryPercentage = 100m
+                        });
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.Permission", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LegalDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LegalReference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.RolePermission", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PermissionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.ServicePeriodAddition", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Days")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DocumentPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Months")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PeriodType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Years")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("ServicePeriodAdditions");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.TerminationRequest", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ReasonType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ServicePeriodAdditionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TerminationDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ServicePeriodAdditionId");
+
+                    b.ToTable("TerminationRequests");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.UserPermission", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PermissionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("UserPermissions");
+                });
+
+            modelBuilder.Entity("erp_kfs.Host.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AnnualLeaveBalance")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("erp_kfs.Host.Models.Department", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ManagerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManagerId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Departments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "governorate",
+                            Name = "ديوان عام المحافظة",
+                            Type = "General"
+                        },
+                        new
+                        {
+                            Id = "hr",
+                            Name = "الإدارة العامة للشئون الوظيفية",
+                            Type = "General"
+                        },
+                        new
+                        {
+                            Id = "finance",
+                            Name = "الإدارة العامة للشئون المالية",
+                            Type = "General"
+                        },
+                        new
+                        {
+                            Id = "engineering",
+                            Name = "الشئون الهندسية",
+                            Type = "General"
+                        },
+                        new
+                        {
+                            Id = "it",
+                            Name = "الإدارة العامة لنظم المعلومات والتحول الرقمي",
+                            Type = "General"
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -2093,7 +2717,7 @@ namespace MyERP.Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("erp_kfs.Host.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2102,7 +2726,7 @@ namespace MyERP.Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("erp_kfs.Host.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2117,7 +2741,7 @@ namespace MyERP.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("erp_kfs.Host.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2126,7 +2750,7 @@ namespace MyERP.Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("erp_kfs.Host.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2186,21 +2810,33 @@ namespace MyERP.Web.Migrations
             modelBuilder.Entity("MyERP.Web.Areas.HR.Models.AcademicIncentiveRequest", b =>
                 {
                     b.HasOne("MyERP.Web.Areas.Admin.Models.AcademicIncentiveType", "AcademicIncentiveType")
-                        .WithMany("AcademicIncentiveRequests")
+                        .WithMany()
                         .HasForeignKey("AcademicIncentiveTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("MyERP.Web.Areas.Admin.Models.AcademicIncentiveType", null)
+                        .WithMany("AcademicIncentiveRequests")
+                        .HasForeignKey("AcademicIncentiveTypeId1");
 
                     b.HasOne("MyERP.Web.Areas.HR.Models.Employee", "Employee")
-                        .WithMany("AcademicIncentiveRequests")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("MyERP.Web.Areas.HR.Models.EmployeeQualification", "Qualification")
+                    b.HasOne("MyERP.Web.Areas.HR.Models.Employee", null)
                         .WithMany("AcademicIncentiveRequests")
+                        .HasForeignKey("EmployeeId1");
+
+                    b.HasOne("MyERP.Web.Areas.HR.Models.EmployeeQualification", null)
+                        .WithMany("AcademicIncentiveRequests")
+                        .HasForeignKey("EmployeeQualificationId");
+
+                    b.HasOne("MyERP.Web.Areas.HR.Models.EmployeeQualification", "Qualification")
+                        .WithMany()
                         .HasForeignKey("QualificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AcademicIncentiveType");
@@ -2436,14 +3072,22 @@ namespace MyERP.Web.Migrations
 
             modelBuilder.Entity("MyERP.Web.Models.Common.Notification", b =>
                 {
-                    b.HasOne("MyERP.Web.Areas.HR.Models.Employee", "SentByEmployee")
+                    b.HasOne("MyERP.Web.Areas.HR.Models.Employee", null)
+                        .WithMany("NotificationsReceived")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("MyERP.Web.Areas.HR.Models.Employee", null)
                         .WithMany("NotificationsSent")
+                        .HasForeignKey("EmployeeId1");
+
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "SentByEmployee")
+                        .WithMany()
                         .HasForeignKey("SentBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MyERP.Web.Areas.HR.Models.Employee", "SentToEmployee")
-                        .WithMany("NotificationsReceived")
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "SentToEmployee")
+                        .WithMany()
                         .HasForeignKey("SentTo")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2455,7 +3099,7 @@ namespace MyERP.Web.Migrations
 
             modelBuilder.Entity("MyERP.Web.Models.Common.Review", b =>
                 {
-                    b.HasOne("MyERP.Web.Areas.HR.Models.Employee", "Reviewer")
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "Reviewer")
                         .WithMany()
                         .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2477,6 +3121,161 @@ namespace MyERP.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("LocalUnit");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.EmployeeAdmin", b =>
+                {
+                    b.HasOne("erp_kfs.Host.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("erp_kfs.Host.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("SelectedDepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.GlobalLeadershipPosition", b =>
+                {
+                    b.HasOne("erp_kfs.Host.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.LeadershipAssignment", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyERP.Web.Models.GlobalLeadershipPosition", null)
+                        .WithMany("Assignments")
+                        .HasForeignKey("GlobalLeadershipPositionId");
+
+                    b.HasOne("MyERP.Web.Models.GlobalLeadershipPosition", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Position");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.LeaveRequest", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "Employee")
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyERP.Web.Models.LeaveType", "LeaveType")
+                        .WithMany()
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("MyERP.Web.Models.LeaveType", null)
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("LeaveTypeId1");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.RolePermission", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.Permission", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.ServicePeriodAddition", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.TerminationRequest", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MyERP.Web.Models.ServicePeriodAddition", "ServicePeriodAddition")
+                        .WithMany()
+                        .HasForeignKey("ServicePeriodAdditionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("ServicePeriodAddition");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.UserPermission", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.Permission", "Permission")
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("erp_kfs.Host.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("erp_kfs.Host.Models.Department", b =>
+                {
+                    b.HasOne("MyERP.Web.Models.EmployeeAdmin", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("erp_kfs.Host.Models.Department", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Manager");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("MyERP.Web.Areas.Admin.Models.AcademicIncentiveType", b =>
@@ -2574,6 +3373,26 @@ namespace MyERP.Web.Migrations
             modelBuilder.Entity("MyERP.Web.Models.Common.LocalUnit", b =>
                 {
                     b.Navigation("Villages");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.EmployeeAdmin", b =>
+                {
+                    b.Navigation("LeaveRequests");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.GlobalLeadershipPosition", b =>
+                {
+                    b.Navigation("Assignments");
+                });
+
+            modelBuilder.Entity("MyERP.Web.Models.LeaveType", b =>
+                {
+                    b.Navigation("LeaveRequests");
+                });
+
+            modelBuilder.Entity("erp_kfs.Host.Models.Department", b =>
+                {
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }

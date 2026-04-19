@@ -10,19 +10,19 @@ namespace MyERP.Web.Models.Common
         public int Id { get; set; }
 
         [Required]
-        public int SentTo { get; set; }
+        public string SentTo { get; set; }
 
         [Required]
-        public int SentBy { get; set; }
+        public string SentBy { get; set; }
 
         [Required]
         public string Text { get; set; }
 
       // Navigation
         [ForeignKey(nameof(SentTo))]
-        public Employee SentToEmployee { get; set; }
+        public EmployeeAdmin SentToEmployee { get; set; }
 
-        [ForeignKey(nameof(SentBy))]
-        public Employee SentByEmployee { get; set; }
+        [ForeignKey("SentBy")]
+        public EmployeeAdmin SentByEmployee { get; set; }
     }
 }

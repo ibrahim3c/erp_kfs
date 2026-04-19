@@ -1,0 +1,200 @@
+﻿@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "لوحة تحكم الموظف";
+}
+
+<style>
+    /* --- تنسيقات احترافية مخصصة للوحة الموظف --- */
+    .employee-welcome-card {
+        background: linear-gradient(135deg, #007c92 0%, #004a58 100%);
+        border-radius: 15px;
+        color: white;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 124, 146, 0.15);
+        border: none;
+    }
+
+        /* تأثيرات جمالية في الخلفية */
+        .employee-welcome-card::after {
+            content: '\f0b1'; /* أيقونة حقيبة العمل من FontAwesome */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: -20px;
+            bottom: -40px;
+            font-size: 10rem;
+            color: rgba(255, 255, 255, 0.05);
+            transform: rotate(-15deg);
+        }
+
+    .module-widget {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        text-decoration: none !important;
+        color: #343a40 !important;
+        height: 100%;
+    }
+
+        .module-widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+            border-color: #007c92;
+        }
+
+    .widget-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-left: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    /* ألوان الأيقونات لكل قسم */
+    .icon-hr {
+        background-color: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .icon-finance {
+        background-color: #dcfce7;
+        color: #16a34a;
+    }
+
+    .icon-eng {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+
+    .icon-it {
+        background-color: #f3e8ff;
+        color: #9333ea;
+    }
+
+    .widget-info h4 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+
+    .widget-info p {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+</style>
+
+<section class="content pt-4">
+    <div class="container-fluid">
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="employee-welcome-card">
+                    <h2 class="font-weight-bold mb-2">مرحباً بك، @User.Identity.Name</h2>
+                    <p class="mb-0 text-white-50" style="font-size: 1.1rem;">
+                        هذه هي مساحة العمل الخاصة بك. فيما يلي نعرض لك الأنظمة المتاحة لك بناءً على الصلاحيات الممنوحة لك من إدارة النظام.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="font-weight-bold mb-3 text-dark"><i class="fas fa-th-large ml-2 text-info"></i> مساحات العمل المتاحة</h4>
+
+        <div class="row">
+            @{
+                bool hasAnyRole = false;
+            }
+
+            @if (User.IsInRole("HR"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <a href="/HR" class="module-widget">
+                        <div class="widget-icon icon-hr">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="widget-info">
+                            <h4>الموارد البشرية</h4>
+                            <p>شؤون العاملين، الحضور والانصراف</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("Finance"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <a href="/Accounting" class="module-widget">
+                        <div class="widget-icon icon-finance">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="widget-info">
+                            <h4>الشئون المالية</h4>
+                            <p>إدارة الحسابات، الرواتب والموازنة</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("Engineering"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <a href="/Projects" class="module-widget">
+                        <div class="widget-icon icon-eng">
+                            <i class="fas fa-hard-hat"></i>
+                        </div>
+                        <div class="widget-info">
+                            <h4>المشاريع الهندسية</h4>
+                            <p>متابعة الخطة الاستثمارية والمقاولات</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("IT"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <a href="/Admin" class="module-widget">
+                        <div class="widget-icon icon-it">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div class="widget-info">
+                            <h4>نظم المعلومات</h4>
+                            <p>إدارة النظام، الصلاحيات والدعم الفني</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @if (!hasAnyRole)
+            {
+                <div class="col-12">
+                    <div class="bg-white rounded-lg shadow-sm border p-5 text-center mt-2">
+                        <div class="mb-4">
+                            <i class="fas fa-user-lock text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
+                        </div>
+                        <h3 class="text-danger font-weight-bold mb-3">لا توجد صلاحيات نشطة</h3>
+                        <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                            عفواً، حسابك غير مرتبط بأي مجالات عمل أو إدارات في الوقت الحالي. يرجى التواصل مع مسؤول النظام أو إدارة الموارد البشرية لتفعيل صلاحياتك.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</section>

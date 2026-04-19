@@ -1,0 +1,178 @@
+@model MyERP.Web.ViewComponents.EmployeeSidebarModel
+@{
+    bool HasPerm(string permName) => Model.Permissions.Any(p => p.Name == permName);
+}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <div class="sidebar">
+        <!-- User Panel -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="~/image/icons/7.png" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="/Employees/MyProfile" class="d-block">@Model.FullName</a>
+                @if (Model.IsAdmin)
+                {
+                    <small class="badge badge-danger mt-1">مدير النظام</small>
+                }
+                else if (Model.IsHR)
+                {
+                    <small class="badge badge-success mt-1">مدير الموارد البشرية</small>
+                }
+                else
+                {
+                    <small class="badge badge-info mt-1">موظف</small>
+                }
+            </div>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ✅ طلباتي (تظهر للجميع) -->
+                <!-- ══════════════════════════════════════════ -->
+                <li class="nav-header">طلباتي</li>
+                
+                <li class="nav-item">
+                    <a href="/LeaveRequests/MyRequests" class="nav-link">
+                        <i class="nav-icon fas fa-umbrella-beach"></i>
+                        <p>الإجازات</p>
+                    </a>
+                </li>
+                
+                @if (HasPerm("ServiceTerm.Manage") || Model.IsHR || Model.IsAdmin)
+                {
+                    <li class="nav-item">
+                        <a href="/ServicePeriods/MyRequests" class="nav-link">
+                            <i class="nav-icon fas fa-clock"></i>
+                            <p>ضم المدة الوظيفية</p>
+                        </a>
+                    </li>
+                }
+                
+                @if (HasPerm("Terminations.View") || Model.IsHR || Model.IsAdmin)
+                {
+                    <li class="nav-item">
+                        <a href="/Terminations/MyRequests" class="nav-link">
+                            <i class="nav-icon fas fa-door-open"></i>
+                            <p>إنهاء الخدمة</p>
+                        </a>
+                    </li>
+                }
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ✅ الموارد البشرية (لـ HR وAdmin فقط) -->
+                <!-- ══════════════════════════════════════════ -->
+                @if (Model.IsHR || Model.IsAdmin)
+                {
+                    <li class="nav-header mt-3">الموارد البشرية</li>
+                    
+                    <li class="nav-item">
+                        <a href="/ServicePeriods/PendingRequests" class="nav-link">
+                            <i class="nav-icon fas fa-clock"></i>
+                            <p>طلبات ضم المدة</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/Terminations/PendingRequests" class="nav-link">
+                            <i class="nav-icon fas fa-door-open"></i>
+                            <p>طلبات إنهاء الخدمة</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/LeaveRequests/ManagerPending" class="nav-link">
+                            <i class="nav-icon fas fa-check-circle"></i>
+                            <p>الإجازات بانتظار الموافقة</p>
+                        </a>
+                    </li>
+                }
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ✅ الإدارة (لـ Admin فقط) -->
+                <!-- ══════════════════════════════════════════ -->
+                @if (Model.IsAdmin)
+                {
+                    <li class="nav-header mt-3">الإدارة</li>
+                    
+                    <li class="nav-item">
+                        <a href="/Employees" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>الموظفين</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/Departments" class="nav-link">
+                            <i class="nav-icon fas fa-building"></i>
+                            <p>الإدارات</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/Admin/Leadership" class="nav-link">
+                            <i class="nav-icon fas fa-sitemap"></i>
+                            <p>الهيكل القيادي</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/Admin/Permissions" class="nav-link">
+                            <i class="nav-icon fas fa-shield-alt"></i>
+                            <p>صلاحيات الأدوار</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="/Admin/UserPermissions" class="nav-link">
+                            <i class="nav-icon fas fa-tasks"></i>
+                            <p>مهام الموظفين</p>
+                        </a>
+                    </li>
+                }
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ✅ الخدمات (تظهر للجميع) -->
+                <!-- ══════════════════════════════════════════ -->
+                <li class="nav-header mt-3">الخدمات</li>
+                
+                <li class="nav-item">
+                    <a href="/Employees/EmploymentStatement" class="nav-link">
+                        <i class="nav-icon fas fa-file-contract"></i>
+                        <p>بيان الحالة</p>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-toggle="collapse" data-target="#settings">
+                        <i class="nav-icon fas fa-cog"></i>
+                        <p>الإعدادات <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul id="settings" class="nav nav-treeview collapse">
+                        <li class="nav-item">
+                            <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>تغيير كلمة المرور</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- زر الخروج -->
+                <li class="nav-item mt-4">
+                    <form asp-area="Identity" asp-page="/Account/Manage/Logout"
+                          asp-route-returnUrl="@Url.Page("/Account/Login", new { area = "Identity" })"
+                          method="post" class="nav-link p-0">
+                        <button type="submit" class="btn btn-link text-white w-100 text-left">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>تسجيل الخروج</p>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>

@@ -1,0 +1,145 @@
+@using MyERP.Web.Areas.Admin.Models
+@model AdminDashboardViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "لوحة التحكم الإدارية";
+}
+
+<section class="content-header pb-3">
+    <div class="container-fluid">
+        <div class="row mb-2 align-items-center">
+            <div class="col-sm-6">
+                <h1 class="m-0 fw-bold text-dark">نظرة عامة على النظام</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-left" style="background: transparent; margin: 0; padding: 0;">
+                    <li class="breadcrumb-item"><a href="#">الرئيسية</a></li>
+                    <li class="breadcrumb-item active">لوحة التحكم</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content container-fluid">
+    <div class="row">
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>@Model.TotalEmployees</h3>
+                    <p>إجمالي الموظفين</p>
+                </div>
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <a asp-area="HR" asp-controller="Employees" asp-action="Index" class="small-box-footer">
+                    عرض التفاصيل <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>@Model.PendingLeaveRequests</h3>
+                    <p>طلبات إجازات (للمدير)</p>
+                </div>
+                <div class="icon"><i class="fas fa-ambulance"></i></div>
+                <a asp-controller="LeaveRequests" asp-action="ManagerPending" class="small-box-footer">
+                    مراجعة الطلبات <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>@Model.PendingHRRequests</h3>
+                    <p>طلبات إجازات (لـ HR)</p>
+                </div>
+                <div class="icon"><i class="fas fa-user-check"></i></div>
+                <a asp-controller="LeaveRequests" asp-action="HRPending" class="small-box-footer">
+                    مراجعة الطلبات <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-purple">
+                <div class="inner">
+                    <h3>@Model.DepartmentsWithoutManagers</h3>
+                    <p>إدارات بدون مديرين</p>
+                </div>
+                <div class="icon"><i class="fas fa-user-slash"></i></div>
+                <a asp-controller="Department" asp-action="Index" class="small-box-footer">
+                    تعيين مديرين <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-maroon">
+                <div class="inner">
+                    <h3>القيادات</h3>
+                    <p>تسكين القيادات</p>
+                </div>
+                <div class="icon"><i class="fas fa-user-tie"></i></div>
+                <a asp-area="Admin" asp-controller="Leadership" asp-action="Index" class="small-box-footer">
+                    إدارة القيادات <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-teal">
+                <div class="inner">
+                    <h3>المستخدمين</h3>
+                    <p>إدارة الحسابات</p>
+                </div>
+                <div class="icon"><i class="fas fa-user-shield"></i></div>
+                <a asp-area="Admin" asp-controller="UserPermissions" asp-action="SelectEmployee" class="small-box-footer">
+                    إعدادات الحسابات <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-olive">
+                <div class="inner">
+                    <h3>الأدوار</h3>
+                    <p>مجموعات الصلاحيات</p>
+                </div>
+                <div class="icon"><i class="fas fa-user-tag"></i></div>
+                <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="small-box-footer">
+                    إدارة الأدوار <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-indigo">
+                <div class="inner">
+                    <h3>الصلاحيات</h3>
+                    <p>قواعد النظام</p>
+                </div>
+                <div class="icon"><i class="fas fa-key"></i></div>
+                <a asp-area="Admin" asp-controller="PermissionsManage" asp-action="Index" class="small-box-footer">
+                    إدارة الصلاحيات <i class="fas fa-arrow-circle-left ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+            <div class="small-box bg-navy">
+                <div class="inner">
+                    <h3>التقارير</h3>
+                    <p>تحليل البيانات</p>
+                </div>
+                <div class="icon"><i class="fas fa-chart-line"></i></div>
+                <a href="#" class="small-box-footer">
+                    قيد العمل <i class="fas fa-lock ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>

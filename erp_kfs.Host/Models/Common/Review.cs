@@ -10,7 +10,7 @@ namespace MyERP.Web.Models.Common
         public int Id { get; set; }
 
         [Required]
-        public int ReviewerId { get; set; }
+        public string ReviewerId { get; set; }
 
         [Required, MaxLength(100)]
         public string ModelType { get; set; } // Document, EmployeeDocuments, Decision
@@ -29,6 +29,6 @@ namespace MyERP.Web.Models.Common
 
         // Navigation
         [ForeignKey(nameof(ReviewerId))]
-        public Employee Reviewer { get; set; }
+        public virtual EmployeeAdmin Reviewer { get; set; }
     }
 }

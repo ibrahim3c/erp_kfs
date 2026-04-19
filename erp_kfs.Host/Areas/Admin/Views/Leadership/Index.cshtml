@@ -1,0 +1,97 @@
+@model List<MyERP.Web.Models.LeadershipAssignment>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "الهيكل القيادي";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1><i class="fas fa-sitemap mr-2"></i> الهيكل القيادي</h1>
+            </div>
+            <div class="col-sm-6 text-left">
+                <a asp-action="Create" asp-area="Admin" class="btn btn-success">
+                    <i class="fas fa-plus mr-1"></i> تعيين قيادة جديدة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle mr-1"></i> لا توجد تكليفات قيادية حالياً.
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">الهيكل القيادي الحالي</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover table-bordered">
+                        <thead class="bg-gradient-info">
+                            <tr>
+                                <th>المنصب</th>
+                                <th>الموظف</th>
+                                <th>الإدارة</th>
+                                <th>تاريخ التعيين</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Where(x => x.Position != null).OrderBy(x => x.Position.Level))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge badge-info">@item.Position.Level</span>
+                                        @item.Position.DisplayName
+                                    </td>
+                                    <td>@item.Employee?.FullName</td>
+                                    <td>@item.Position.Department?.Name</td>
+                                    <td>
+                                        @item.AssignedDate.ToString("dd/MM/yyyy")
+                                        @if (!string.IsNullOrEmpty(item.HijriDate))
+                                        {
+                                            <br /><small class="text-muted">هـ: @item.HijriDate</small>
+                                        }
+                                    </td>
+                                    <td class="text-nowrap">
+                                        <a asp-action="Edit" asp-area="Admin" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        @if (item.IsCurrent)
+                                        {
+                                            <form asp-action="EndAssignment" asp-area="Admin" method="post"
+                                                  style="display:inline;"
+                                                  onsubmit="return confirm('هل أنت متأكد من إنهاء هذا التكليف؟');">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-stop-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</section>
