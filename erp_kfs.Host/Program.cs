@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using HR.Infrastructure;
+using HR.Application;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Modules.Shared.Application;
-using Modules.Shared.Infrastructure;
 using MyERP.Web.Data;
 
 namespace erp_kfs.Host
@@ -22,15 +22,16 @@ namespace erp_kfs.Host
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
-                options.Password.RequireDigit = false; // (اختياري) تسهيل الباسورد أثناء التطوير
+                options.Password.RequireDigit = false; 
                 options.Password.RequiredLength = 6;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            // add dependancies
             builder.Services.AddHRInfrastructure(builder.Configuration);
             builder.Services.AddHRApplication(); 
-            #endregion
+  
 
             var app = builder.Build();
 
@@ -42,19 +43,19 @@ namespace erp_kfs.Host
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
-           app.UseStaticFiles();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
             app.MapRazorPages();
+
+
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
             // ---------------------------------------------------------
             // 2. المسار الافتراضي (الصفحة الرئيسية للمشروع ككل)
             // ---------------------------------------------------------
