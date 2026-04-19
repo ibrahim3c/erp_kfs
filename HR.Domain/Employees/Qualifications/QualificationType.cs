@@ -1,9 +1,7 @@
-﻿namespace HR.Domain.Employees.Qualifications
-{
-    using Modules.Shared.Domain;
+﻿using Modules.Shared.Domain;
 
-    namespace HR.Domain.Employees
-    {
+namespace HR.Domain.Employees.Qualifications
+{
         public sealed class QualificationType : Entity
         {
             private QualificationType() { }
@@ -66,5 +64,3 @@
             }
         }
     }
-
-}

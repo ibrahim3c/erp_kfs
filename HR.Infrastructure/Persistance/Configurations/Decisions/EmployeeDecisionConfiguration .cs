@@ -36,10 +36,8 @@ namespace HR.Infrastructure.Persistance.Configurations.Decisions
                 .HasMaxLength(20)
                 .IsRequired();
 
-            builder.Property(d => d.IsActive)
-                .HasComputedColumnSql(
-                    "CASE WHEN Status = 'Active' AND (ValidTo IS NULL OR ValidTo > GETUTCDATE()) THEN 1 ELSE 0 END"
-                );
+            builder.Ignore(d => d.IsActive);
+
 
             // 4. Foreign Keys
 
@@ -53,13 +51,13 @@ namespace HR.Infrastructure.Persistance.Configurations.Decisions
 
             // Employee (1 → Many EmployeeDecisions)
             builder.HasOne<Employee>()
-                .WithMany()
+                .WithMany(e=>e.EmployeeDecisions)
                 .HasForeignKey(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Decision (Lookup table)
             builder.HasOne<Decision>()
-                .WithMany()
+                .WithMany(e=>e.EmployeeDecisions)
                 .HasForeignKey(d => d.DecisionId)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -1,5 +1,5 @@
-﻿using Modules.Shared.Application.Database;
-using Npgsql;
+﻿using Microsoft.Data.SqlClient;
+using Modules.Shared.Application.Database;
 using System.Data;
 
 namespace Modules.Shared.Infrastructure.Database
@@ -15,7 +15,8 @@ namespace Modules.Shared.Infrastructure.Database
 
         public IDbConnection CreateConnection()
         {
-            var connection = new NpgsqlConnection(_connectionFactory);
+            //var connection = new NpgsqlConnection(_connectionFactory);
+            var connection = new SqlConnection(_connectionFactory);
             connection.Open();
 
             return connection;

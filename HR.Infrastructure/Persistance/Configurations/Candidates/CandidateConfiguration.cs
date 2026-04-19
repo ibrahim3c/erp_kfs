@@ -30,15 +30,21 @@ namespace HR.Infrastructure.Persistance.Configurations.Candidates
             builder.Property(c => c.Email)
                    .HasMaxLength(150);
 
-            // إعداد العلاقة مع ملفات الترشيح (One-to-Many)
-            // استخدام Metadata لتعريف EF Core بالمتغير المخفي _nominationFiles
-            builder.HasMany(c => c.NominationFiles)
-                   .WithOne() // لا يوجد Navigation Property للـ Candidate داخل NominationFile
-                   .HasForeignKey(nf => nf.CandidateId)
-                   .OnDelete(DeleteBehavior.Cascade); // عند حذف المرشح تُحذف ملفاته
+            // 1. تعريفهم كحقول عادية (Soft References) بدون HasOne و WithMany
+            builder.Property(e => e.CityCenterId).IsRequired(false);
+            builder.Property(e => e.VillageId).IsRequired(false);
 
-            builder.Metadata.FindNavigation(nameof(Candidate.NominationFiles))
-                   ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+
+            //// إعداد العلاقة مع ملفات الترشيح (One-to-Many)
+            //// استخدام Metadata لتعريف EF Core بالمتغير المخفي _nominationFiles
+            //builder.HasMany(c => c.NominationFiles)
+            //       .WithOne() // لا يوجد Navigation Property للـ Candidate داخل NominationFile
+            //       .HasForeignKey(nf => nf.CandidateId)
+            //       .OnDelete(DeleteBehavior.Cascade); // عند حذف المرشح تُحذف ملفاته
+
+            //builder.Metadata.FindNavigation(nameof(Candidate.NominationFiles))
+            //       ?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }
