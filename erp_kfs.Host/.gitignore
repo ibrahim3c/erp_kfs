@@ -7,3 +7,9 @@ obj/
 */[Oo]bj/
 *.user
 
+
+# Secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+secrets.json
