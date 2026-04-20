@@ -1,7 +1,5 @@
 ﻿using erp_kfs.Host.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using MyERP.Web.Data;
 using System.Security.Claims;
 
 public static class IdentitySeeder
