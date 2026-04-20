@@ -1,4 +1,6 @@
-﻿namespace Identity.Domain.Constants
+﻿using Identity.Domain.Constants;
+
+namespace Identity.Domain.Constants
 {
     public static class Roles
     {

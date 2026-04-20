@@ -24,7 +24,7 @@ namespace Identity.Infrastructure.Services
             if (user == null)
             {
                 // أمنياً: نعطي رسالة موحدة حتى لا يعرف المخترق ما إذا كان الإيميل موجوداً أم لا
-                return Result<bool>.Failure("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+                return Result<bool>.Failure(IdentityErrors.InvalidCredentials);
             }
 
             // 2. محاولة تسجيل الدخول وإنشاء الـ Cookie
@@ -45,15 +45,15 @@ namespace Identity.Infrastructure.Services
             // التعامل مع الحالات الخاصة (Best Practice)
             if (result.IsLockedOut)
             {
-                return Result<bool>.Failure("تم قفل الحساب مؤقتاً بسبب كثرة المحاولات الفاشلة. يرجى المحاولة لاحقاً.");
+                return Result<bool>.Failure(IdentityErrors.AccountLockedOut);
             }
 
             if (result.IsNotAllowed)
             {
-                return Result<bool>.Failure("غير مسموح لك بتسجيل الدخول (تأكد من تفعيل البريد الإلكتروني).");
+                return Result<bool>.Failure(IdentityErrors.NotAllowedToLogin);
             }
 
-            return Result<bool>.Failure("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+            return Result<bool>.Failure(IdentityErrors.InvalidCredentials);
         }
 
         public async Task<Result<bool>> LogoutAsync()

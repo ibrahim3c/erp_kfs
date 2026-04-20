@@ -28,6 +28,16 @@ namespace Identity.Domain
         public static readonly Error PasswordChangeFailed =
             new("User.PasswordChangeFailed", "Password change failed");
 
+        // Auth 
+        public static readonly Error InvalidCredentials =
+            new("Auth.InvalidCredentials", "Invalid email or password");
+        
+        public static readonly Error AccountLockedOut =
+            new("Auth.AccountLockedOut", "Your account has been temporarily locked due to multiple failed login attempts. Please try again later.");
+
+        public static readonly Error NotAllowedToLogin =
+            new("Auth.NotAllowedToLogin", "غير مسموح لك بتسجيل الدخول (تأكد من تفعيل البريد الإلكتروني).");
+
     }
 
 }

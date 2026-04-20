@@ -2,10 +2,6 @@
 using HR.Application;
 using Modules.Shared.Infrastructure;
 using Modules.Shared.Application;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using MyERP.Web.Data;
-using erp_kfs.Host.Models;
 using Identity.Infrastructure;
 
 namespace erp_kfs.Host
@@ -42,8 +38,8 @@ namespace erp_kfs.Host
 
             // add dependancies
             builder.Services.AddSharedInfrastructure(builder.Configuration);
-            builder.Services.AddSharedApplication();
-            builder.Services.AddHRInfrastructure(builder.Configuration);
+            builder.Services.AddSharedApplication(); 
+            builder.Services.AddHRInfrastructure(builder.Configuration); 
             builder.Services.AddHRApplication(); 
             builder.Services.AddIdentityInfrastructure(builder.Configuration); 
   
