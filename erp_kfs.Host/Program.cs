@@ -3,6 +3,11 @@ using HR.Application;
 using Modules.Shared.Infrastructure;
 using Modules.Shared.Application;
 using Identity.Infrastructure;
+using erp_kfs.Host.Extensions;
+using MyERP.Web.Data;
+using Microsoft.AspNetCore.Identity;
+using erp_kfs.Host.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace erp_kfs.Host
@@ -16,7 +21,6 @@ namespace erp_kfs.Host
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
-
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //options.UseSqlServer(
             //    builder.Configuration.GetConnectionString("DefaultConnection")
@@ -25,12 +29,13 @@ namespace erp_kfs.Host
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             //{
             //    options.SignIn.RequireConfirmedAccount = true;
-            //    options.Password.RequireDigit = false;
+            //    options.Password.RequireDigit = false; 
             //    options.Password.RequiredLength = 6;
             //})
             //.AddEntityFrameworkStores<ApplicationDbContext>()
             //.AddDefaultTokenProviders();
 
+            #region my part
             //// policy and permission handlers
             //builder.Services.AddAuthorization(options =>
             //{
@@ -38,13 +43,14 @@ namespace erp_kfs.Host
             //        policy.RequireClaim("Permission", "Leadership.Manage"));
             //});
 
-            // add dependancies
-            builder.Services.AddSharedInfrastructure(builder.Configuration);
-            builder.Services.AddSharedApplication(); 
-            builder.Services.AddHRInfrastructure(builder.Configuration); 
-            builder.Services.AddHRApplication(); 
-            builder.Services.AddIdentityInfrastructure(builder.Configuration); 
-  
+            //// add dependancies
+            //builder.Services.AddSharedInfrastructure(builder.Configuration);
+            //builder.Services.AddSharedApplication();
+            //builder.Services.AddHRInfrastructure(builder.Configuration);
+            //builder.Services.AddHRApplication();
+            //builder.Services.AddIdentityInfrastructure(builder.Configuration);
+
+            #endregion
 
             var app = builder.Build();
 
@@ -53,6 +59,12 @@ namespace erp_kfs.Host
             {
                 await IdentitySeeder.SeedAsync(scope.ServiceProvider);
             }
+
+            #region my part
+            //// Data Seeding
+            //await app.SeedIdentityAsync();
+
+            #endregion
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
