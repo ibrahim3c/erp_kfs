@@ -363,5 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 
-erp_kfs.Host/appsettings.Development.json
-erp_kfs.Host/appsettings.json
+/erp_kfs.Host/appsettings.Development.json
+/erp_kfs.Host/appsettings.json

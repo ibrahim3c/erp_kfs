@@ -9,6 +9,7 @@ obj/
 
 
 # Secrets
+appsettings.json
 appsettings.Development.json
 appsettings.Local.json
 appsettings.*.local.json
