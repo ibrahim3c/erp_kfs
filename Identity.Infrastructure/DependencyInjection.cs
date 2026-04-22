@@ -1,5 +1,6 @@
 ﻿using Identity.Application.IServices;
 using Identity.Domain;
+using Identity.Domain.Constants;
 using Identity.Infrastructure.Database;
 using Identity.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -31,7 +32,8 @@ namespace Identity.Infrastructure
                 // إعدادات كلمة المرور
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
 
                 // إعدادات القفل بعد المحاولات الفاشلة
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -39,6 +41,16 @@ namespace Identity.Infrastructure
             })
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
+
+            // Permission policies
+            services.AddAuthorization(options =>
+            {
+                foreach (var permission in Permissions.AllPermissions)
+                {
+                    options.AddPolicy($"Permission.{permission}", policy =>
+                        policy.RequireClaim("Permission", permission));
+                }
+            });
 
             // 3. إعدادات الـ Cookie الخاص بـ MVC
             services.ConfigureApplicationCookie(options =>
