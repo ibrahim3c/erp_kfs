@@ -4,6 +4,7 @@ using Modules.Shared.Infrastructure;
 using Modules.Shared.Application;
 using Identity.Infrastructure;
 
+
 namespace erp_kfs.Host
 {
     public class Program
@@ -15,6 +16,7 @@ namespace erp_kfs.Host
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+
             //builder.Services.AddDbContext<ApplicationDbContext>(options =>
             //options.UseSqlServer(
             //    builder.Configuration.GetConnectionString("DefaultConnection")
@@ -23,7 +25,7 @@ namespace erp_kfs.Host
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             //{
             //    options.SignIn.RequireConfirmedAccount = true;
-            //    options.Password.RequireDigit = false; 
+            //    options.Password.RequireDigit = false;
             //    options.Password.RequiredLength = 6;
             //})
             //.AddEntityFrameworkStores<ApplicationDbContext>()
@@ -46,6 +48,7 @@ namespace erp_kfs.Host
 
             var app = builder.Build();
 
+            // Seed initial data (roles and admin user)
             using (var scope = app.Services.CreateScope())
             {
                 await IdentitySeeder.SeedAsync(scope.ServiceProvider);
