@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyERP.Web.Models;
 using erp_kfs.Host.Models;
+using Identity.Domain;
 
 namespace MyERP.Web.Controllers;
 
@@ -10,9 +11,11 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
+    //private readonly UserManager<AppUser> _userManager;
 
     public HomeController(
         ILogger<HomeController> logger,
+        //UserManager<AppUser> userManager)
         UserManager<ApplicationUser> userManager)
     {
         _logger = logger;

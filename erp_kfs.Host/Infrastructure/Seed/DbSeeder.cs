@@ -157,11 +157,11 @@ namespace erp_kfs.Host.Infrastructure.Seed
             if (adminRole != null)
             {
                 var allPermissions = await context.Permissions.ToListAsync();
-                      var existingPermissionIds = (await context.RolePermissions
-                .Where(rp => rp.RoleId == adminRole.Id)
-                .Select(rp => rp.PermissionId)
-                .ToListAsync())
-                .ToHashSet();
+                var existingPermissionIds = (await context.RolePermissions
+          .Where(rp => rp.RoleId == adminRole.Id)
+          .Select(rp => rp.PermissionId)
+          .ToListAsync())
+          .ToHashSet();
 
                 bool anyAdded = false;
                 foreach (var perm in allPermissions)
@@ -230,11 +230,11 @@ namespace erp_kfs.Host.Infrastructure.Seed
                     "Employees.View"
                 };
 
-             var existingPermissionIds = (await context.RolePermissions
-                    .Where(rp => rp.RoleId == recruiterRole.Id)
-                    .Select(rp => rp.PermissionId)
-                    .ToListAsync())
-                    .ToHashSet();
+                var existingPermissionIds = (await context.RolePermissions
+                       .Where(rp => rp.RoleId == recruiterRole.Id)
+                       .Select(rp => rp.PermissionId)
+                       .ToListAsync())
+                       .ToHashSet();
 
                 bool anyAdded = false;
                 foreach (var permName in recruiterPermissionNames)

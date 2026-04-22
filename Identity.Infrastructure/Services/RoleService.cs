@@ -1,9 +1,11 @@
 ﻿using Identity.Application.Dtos;
 using Identity.Application.IServices;
 using Identity.Domain;
+using Identity.Domain.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Domain;
+using System.Security.Claims;
 
 namespace Identity.Infrastructure.Services
 {
@@ -72,6 +74,75 @@ namespace Identity.Infrastructure.Services
             if (result.Succeeded) return Result.Success();
 
             return Result.Failure(new Error("Role.CannotDeleted", result.Errors.Select(e => e.Description).ToArray().ToString()));
+        }
+
+        public async Task<Result<IEnumerable<string>>> GetRolePermissionsAsync(string roleName)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null) return Result<IEnumerable<string>>.Failure(IdentityErrors.RoleNotFound);
+
+            var claims = await _roleManager.GetClaimsAsync(role);
+            var permissions = claims
+                .Where(c => c.Type == "Permission")
+                .Select(c => c.Value)
+                .ToList();
+
+            return Result<IEnumerable<string>>.Success(permissions);
+        }
+
+        public async Task<Result> AssignPermissionToRoleAsync(string roleName, string permission)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null) return Result.Failure(IdentityErrors.RoleNotFound);
+
+            var claims = await _roleManager.GetClaimsAsync(role);
+            var hasPermission = claims.Any(c => c.Type == "Permission" && c.Value == permission);
+            if (hasPermission) return Result.Success();
+
+            var result = await _roleManager.AddClaimAsync(role, new Claim("Permission", permission));
+
+            if (result.Succeeded) return Result.Success();
+
+            return Result.Failure(new Error("Permission.CannotAssign", result.Errors.Select(e => e.Description).ToString()));
+        }
+
+        public async Task<Result> RemovePermissionFromRoleAsync(string roleName, string permission)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null) return Result.Failure(IdentityErrors.RoleNotFound);
+
+            var claim = (await _roleManager.GetClaimsAsync(role))
+                .FirstOrDefault(c => c.Type == "Permission" && c.Value == permission);
+
+            if (claim == null) return Result.Success();
+
+            var result = await _roleManager.RemoveClaimAsync(role, claim);
+
+            if (result.Succeeded) return Result.Success();
+
+            return Result.Failure(new Error("Permission.CannotRemove", result.Errors.Select(e => e.Description).ToString()));
+        }
+
+        public async Task<Result> AssignPermissionsToRoleAsync(string roleName, IEnumerable<string> permissions)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null) return Result.Failure(IdentityErrors.RoleNotFound);
+
+            var existingClaims = await _roleManager.GetClaimsAsync(role);
+            var existingPermissions = existingClaims
+                .Where(c => c.Type == "Permission")
+                .Select(c => c.Value)
+                .ToHashSet();
+
+            foreach (var permission in permissions)
+            {
+                if (!existingPermissions.Contains(permission))
+                {
+                    await _roleManager.AddClaimAsync(role, new Claim("Permission", permission));
+                }
+            }
+
+            return Result.Success();
         }
     }
 }
