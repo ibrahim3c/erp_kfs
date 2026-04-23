@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using erp_kfs.Host.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace erp_kfs.Host
 {
     public class Program
@@ -34,15 +35,13 @@ namespace erp_kfs.Host
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-
-
             #region my part
-            //// policy and permission handlers
-            //builder.Services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("Permission.Leadership.Manage", policy =>
-            //        policy.RequireClaim("Permission", "Leadership.Manage"));
-            //});
+            // policy and permission handlers
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Permission.Leadership.Manage", policy =>
+                    policy.RequireClaim("Permission", "Leadership.Manage"));
+            });
 
             //// add dependancies
             //builder.Services.AddSharedInfrastructure(builder.Configuration);
@@ -55,6 +54,7 @@ namespace erp_kfs.Host
 
             var app = builder.Build();
 
+            // Seed initial data (roles and admin user)
             using (var scope = app.Services.CreateScope())
             {
                 await IdentitySeeder.SeedAsync(scope.ServiceProvider);

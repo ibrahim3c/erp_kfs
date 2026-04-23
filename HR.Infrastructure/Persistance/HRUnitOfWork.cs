@@ -7,13 +7,14 @@ using HR.Domain.JobStructures;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
+using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
 
 namespace HR.Infrastructure.Persistance
 {
-    public class HRUnitOfWork  : IHRUnitOfWork
+    public class HRUnitOfWork : IHRUnitOfWork
     {
         private readonly HRDbContext _dbContext;
 
@@ -37,6 +38,10 @@ namespace HR.Infrastructure.Persistance
 
         public IPenaltyRepository PenaltyRepository { get; private set; }
 
+        public IPermissionRepository PermissionRepository { get; private set; }
+
+        public ILateEntryRepository LateEntryRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -50,6 +55,8 @@ namespace HR.Infrastructure.Persistance
             PayrollRepository = new PayrollRepository(_dbContext);
             InsurancePurchaseRepository = new InsurancePurchaseRepository(_dbContext);
             PenaltyRepository = new PenaltyRepository(_dbContext);
+            PermissionRepository = new PermissionRepository(_dbContext);
+            LateEntryRepository = new LateEntryRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

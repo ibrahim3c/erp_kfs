@@ -8,6 +8,8 @@ namespace Identity.Infrastructure.Seeders
 {
     public class RolePermissionSeeder
     {
+        // one role can have multiple permissions, and one permission can be assigned to multiple roles (many-to-many),
+        // and permissions and role are stored as claims in the database, so we need to seed the permissions for each role in the database
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();

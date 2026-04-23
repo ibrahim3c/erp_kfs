@@ -8,6 +8,7 @@ using HR.Domain.JobStructures;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
+using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance;
 using HR.Infrastructure.Persistance.Database;
@@ -41,10 +42,12 @@ namespace HR.Infrastructure
             services.AddScoped<IPayrollRepository, PayrollRepository>();
             services.AddScoped<IInsurancePurchaseRepository, InsurancePurchaseRepository>();
             services.AddScoped<IPenaltyRepository, PenaltyRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<ILateEntryRepository, LateEntryRepository>();
 
 
             // 3. تسجيل الـ UnitOfWork
-             services.AddScoped<IHRUnitOfWork, HRUnitOfWork>();
+            services.AddScoped<IHRUnitOfWork, HRUnitOfWork>();
 
             // تسجيل services in application layer
             services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();

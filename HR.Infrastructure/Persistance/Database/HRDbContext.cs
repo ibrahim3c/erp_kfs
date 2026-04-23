@@ -4,6 +4,7 @@ using HR.Domain.JobStructures;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
+using HR.Domain.Permissions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Infrastructure.Database;
 using System.Reflection;
@@ -35,7 +36,10 @@ public class HRDbContext : DbContext
         public DbSet<PayrollAdjustment> PayrollAdjustments  { get; set; }
         public DbSet<PayrollCycle> PayrollCycles { get; set; }
         public DbSet<PayrollEntry> PayrollEntries { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+    // permissions 
+    public DbSet<PermissionRequest> PermissionRequests { get; set; }
+    public DbSet<LateEntry> LateEntries { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
         // تحديد الـ Schema الافتراضية

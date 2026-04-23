@@ -6,6 +6,7 @@ using HR.Domain.JobStructures;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
+using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 namespace HR.Domain
 {
@@ -23,7 +24,8 @@ namespace HR.Domain
         IPayrollRepository PayrollRepository { get; }
         IInsurancePurchaseRepository InsurancePurchaseRepository { get; }
         IPenaltyRepository PenaltyRepository { get; }
-
+        IPermissionRepository PermissionRepository { get; }
+        ILateEntryRepository LateEntryRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

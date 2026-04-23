@@ -76,6 +76,7 @@ namespace Identity.Infrastructure.Services
             return Result.Failure(new Error("Role.CannotDeleted", result.Errors.Select(e => e.Description).ToArray().ToString()));
         }
 
+        // i got claims by role , and i got permissions by claims , so i can get permissions by role
         public async Task<Result<IEnumerable<string>>> GetRolePermissionsAsync(string roleName)
         {
             var role = await _roleManager.FindByNameAsync(roleName);
