@@ -2,6 +2,7 @@
 using HR.Domain.Employees.Qualifications;
 using HR.Domain.Incentives;
 using HR.Domain.Loans;
+using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 using Modules.Shared.Domain;
 
@@ -62,6 +63,8 @@ namespace HR.Domain.Employees
         public IReadOnlyCollection<Loan> Loans => _loans.AsReadOnly();
         private readonly List<InsurancePeriodPurchase> _insurancePeriodPurchases = new();
         public IReadOnlyCollection<InsurancePeriodPurchase> InsurancePeriodPurchases => _insurancePeriodPurchases.AsReadOnly();
+        private readonly List<PermissionRequest> _permissionRequests = new();
+        public IReadOnlyCollection<PermissionRequest> PermissionRequests => _permissionRequests.AsReadOnly();
 
         //private readonly List<Notification> _notificationsReceived = new();
         //public IReadOnlyCollection<Notification> NotificationsReceived => _notificationsReceived.AsReadOnly();

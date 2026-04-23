@@ -21,27 +21,27 @@ namespace erp_kfs.Host
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //options.UseSqlServer(
-            //    builder.Configuration.GetConnectionString("DefaultConnection")
-            //));
-            //// --- Configure Identity ---
-            //builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            //{
-            //    options.SignIn.RequireConfirmedAccount = true;
-            //    options.Password.RequireDigit = false; 
-            //    options.Password.RequiredLength = 6;
-            //})
-            //.AddEntityFrameworkStores<ApplicationDbContext>()
-            //.AddDefaultTokenProviders();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection")
+            ));
+            // --- Configure Identity ---
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
             #region my part
-            //// policy and permission handlers
-            //builder.Services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("Permission.Leadership.Manage", policy =>
-            //        policy.RequireClaim("Permission", "Leadership.Manage"));
-            //});
+            // policy and permission handlers
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Permission.Leadership.Manage", policy =>
+                    policy.RequireClaim("Permission", "Leadership.Manage"));
+            });
 
             //// add dependancies
             //builder.Services.AddSharedInfrastructure(builder.Configuration);
