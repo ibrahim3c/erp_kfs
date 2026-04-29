@@ -330,6 +330,9 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Property<Guid?>("JobTitleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("LeadershipPositionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("MaritalStatus")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -363,14 +366,6 @@ namespace HR.Infrastructure.Persistance.Migrations
 
                     b.HasIndex("Code")
                         .IsUnique();
-
-                    b.HasIndex("EmploymentTypeId");
-
-                    b.HasIndex("FunctionalGroupId");
-
-                    b.HasIndex("JobGradeId");
-
-                    b.HasIndex("JobTitleId");
 
                     b.HasIndex("NationalId")
                         .IsUnique();
@@ -677,144 +672,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.ToTable("AcademicIncentiveRequests", "HR");
                 });
 
-            modelBuilder.Entity("HR.Domain.JobStructures.FunctionalGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<Guid>("QualitativeGroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QualitativeGroupId");
-
-                    b.ToTable("FunctionalGroups", "HR");
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.JobGrade", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("GradeLevel")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("YearsNo")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JobGrades", "HR");
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.JobTitle", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid>("FunctionalGroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FunctionalGroupId");
-
-                    b.ToTable("JobTitles", "HR");
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.QualitativeGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QualitativeGroups", "HR");
-                });
-
             modelBuilder.Entity("HR.Domain.Loans.InsurancePeriodPurchase", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1108,6 +965,90 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.ToTable("PenaltyRecords", "HR");
                 });
 
+            modelBuilder.Entity("HR.Domain.Permissions.LateEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("ActualArrivalTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsTransferredToPenalty")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("LateMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId", "Date");
+
+                    b.HasIndex("EmployeeId", "IsTransferredToPenalty");
+
+                    b.ToTable("LateEntries", "HR");
+                });
+
+            modelBuilder.Entity("HR.Domain.Permissions.PermissionRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EmployeeId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("FromTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PermissionType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<TimeSpan>("ToTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId1");
+
+                    b.HasIndex("EmployeeId", "Date");
+
+                    b.ToTable("PermissionRequests", "HR");
+                });
+
             modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1234,29 +1175,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HR.Domain.Employees.Employee", b =>
-                {
-                    b.HasOne("HR.Domain.Employees.EmploymentType", null)
-                        .WithMany()
-                        .HasForeignKey("EmploymentTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HR.Domain.JobStructures.FunctionalGroup", null)
-                        .WithMany()
-                        .HasForeignKey("FunctionalGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HR.Domain.JobStructures.JobGrade", null)
-                        .WithMany()
-                        .HasForeignKey("JobGradeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("HR.Domain.JobStructures.JobTitle", null)
-                        .WithMany()
-                        .HasForeignKey("JobTitleId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("HR.Domain.Employees.EmployeeFamily", b =>
                 {
                     b.HasOne("HR.Domain.Employees.Employee", null)
@@ -1308,28 +1226,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.FunctionalGroup", b =>
-                {
-                    b.HasOne("HR.Domain.JobStructures.QualitativeGroup", "QualitativeGroup")
-                        .WithMany("FunctionalGroups")
-                        .HasForeignKey("QualitativeGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("QualitativeGroup");
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.JobTitle", b =>
-                {
-                    b.HasOne("HR.Domain.JobStructures.FunctionalGroup", "FunctionalGroup")
-                        .WithMany("JobTitles")
-                        .HasForeignKey("FunctionalGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FunctionalGroup");
                 });
 
             modelBuilder.Entity("HR.Domain.Loans.InsurancePeriodPurchase", b =>
@@ -1413,6 +1309,32 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("HR.Domain.Permissions.LateEntry", b =>
+                {
+                    b.HasOne("HR.Domain.Employees.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("HR.Domain.Permissions.PermissionRequest", b =>
+                {
+                    b.HasOne("HR.Domain.Employees.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HR.Domain.Employees.Employee", null)
+                        .WithMany("PermissionRequests")
+                        .HasForeignKey("EmployeeId1");
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
                 {
                     b.HasOne("HR.Domain.Employees.Employee", null)
@@ -1462,22 +1384,14 @@ namespace HR.Infrastructure.Persistance.Migrations
 
                     b.Navigation("Loans");
 
+                    b.Navigation("PermissionRequests");
+
                     b.Navigation("ServiceTerminationRequests");
                 });
 
             modelBuilder.Entity("HR.Domain.Employees.EmploymentType", b =>
                 {
                     b.Navigation("PayrollCycles");
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.FunctionalGroup", b =>
-                {
-                    b.Navigation("JobTitles");
-                });
-
-            modelBuilder.Entity("HR.Domain.JobStructures.QualitativeGroup", b =>
-                {
-                    b.Navigation("FunctionalGroups");
                 });
 
             modelBuilder.Entity("HR.Domain.Loans.Loan", b =>

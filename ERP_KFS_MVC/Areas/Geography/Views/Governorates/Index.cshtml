@@ -1,0 +1,62 @@
+@model IEnumerable<Geography.Application.Dtos.Governorate.GovernorateDto>
+
+@{
+    ViewData["Title"] = "المحافظات";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-map text-secondary me-2"></i> إدارة المحافظ</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">قائمة المحافظ</h3>
+                <div class="card-tools">
+                    <a asp-action="Create" class="btn btn-xs btn-primary"><i class="fas fa-plus"></i> إضافة محافظة</a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Code</td>
+                                <td>@item.Name</td>
+                                <td>
+                                   
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('هل أنت متأكد من الحذف؟')"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">لا توجد بيانات</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

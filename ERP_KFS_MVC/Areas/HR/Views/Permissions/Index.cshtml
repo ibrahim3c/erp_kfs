@@ -1,0 +1,268 @@
+﻿@{
+    ViewData["Title"] = "الأذونات وساعات التأخير";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">متابعة الأذونات والتأخيرات</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">الأذونات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. إحصائيات سريعة (للشهر الحالي) -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-purple"><i class="fas fa-running"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">إجمالي الأذونات (هذا الشهر)</span>
+                        <span class="info-box-number">45 <small>ساعة</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">دقائق التأخير (للجميع)</span>
+                        <span class="info-box-number text-danger">320 <small>دقيقة</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-danger"><i class="fas fa-file-invoice-dollar"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">تجاوز الحد المسموح (جزاءات)</span>
+                        <span class="info-box-number">8 <small>موظفين</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. منطقة التسجيل (Tabbed Form) -->
+        <div class="card card-primary card-tabs">
+            <div class="card-header p-0 pt-1">
+                <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tab-permission" data-bs-toggle="pill" href="#content-permission" role="tab">
+                            <i class="fas fa-plus-circle me-1"></i> تسجيل طلب إذن خروج
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab-late" data-bs-toggle="pill" href="#content-late" role="tab">
+                            <i class="fas fa-user-clock me-1"></i> تسجيل تأخير (من البصمة)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+
+                    <!-- TAB 1: تسجيل إذن (Permission) -->
+                    <div class="tab-pane fade show active" id="content-permission" role="tabpanel">
+                        <form method="post">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label>اسم الموظف</label>
+                                    <select class="form-select select2" style="width:100%">
+                                        <option>ابحث عن الموظف...</option>
+                                        <option>فاطمة الشرباني</option>
+                                        <option>محمد فؤاد</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label>نوع الإذن</label>
+                                    <select class="form-select">
+                                        <option>إذن شخصي (يخصم من الرصيد)</option>
+                                        <option>إذن مأمورية عمل (لا يخصم)</option>
+                                        <option>إذن مرضي (عيادة)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label>التاريخ</label>
+                                    <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                </div>
+
+                                <div class="col-md-3 mb-3">
+                                    <label>وقت الخروج (من)</label>
+                                    <input type="time" class="form-control" id="permFrom" onchange="calcDuration()">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>وقت العودة (إلى)</label>
+                                    <input type="time" class="form-control" id="permTo" onchange="calcDuration()">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label>المدة المحسوبة</label>
+                                    <input type="text" readonly class="form-control bg-light text-primary fw-bold" id="permTotal">
+                                </div>
+                                <div class="col-md-4 pt-4 text-end">
+                                    <button class="btn btn-primary"><i class="fas fa-save me-1"></i> تسجيل الإذن</button>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-danger">* الحد الأقصى للأذونات الشخصية 4 ساعات شهرياً أو مرتين في الشهر.</small>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TAB 2: تسجيل تأخير (Late Entry) -->
+                    <div class="tab-pane fade" id="content-late" role="tabpanel">
+                        <form method="post">
+                            <div class="alert alert-light border border-warning">
+                                <i class="fas fa-info-circle text-warning me-2"></i> يتم تجميع دقائق التأخير شهرياً، وكل 180 دقيقة تأخير (3 ساعات) تحتسب يوم جزاء (أو حسب اللائحة).
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label>اسم الموظف</label>
+                                    <select class="form-select select2" style="width:100%">
+                                        <option>رانيا ابو النصر</option>
+                                        <option>بهجت إبراهيم</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>تاريخ التأخير</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>ميعاد الحضور الفعلي</label>
+                                    <input type="time" class="form-control" value="09:15">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label>دقائق التأخير</label>
+                                    <input type="number" class="form-control border-danger text-danger fw-bold" value="75">
+                                    <small class="text-muted">الدوام الرسمي 8:00 ص</small>
+                                </div>
+
+                                <div class="col-12 text-end">
+                                    <button class="btn btn-warning"><i class="fas fa-exclamation-triangle me-1"></i> حفظ في سجل التأخيرات</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. الجدول التجميعي (Log) -->
+        <div class="card card-outline card-secondary">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">سجل حركة الأذونات والتأخير (الشهر الحالي)</h3>
+                <div class="card-tools">
+                    <button class="btn btn-success btn-sm"><i class="fas fa-file-excel me-1"></i> Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="permTable" class="table table-bordered table-hover text-center table-striped">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>الموظف</th>
+                            <th>النوع</th>
+                            <th>التوقيت</th>
+                            <th>المدة (دقيقة)</th>
+                            <th>ملاحظات</th>
+                            <th>الحالة</th>
+                            <th>خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- سجل إذن -->
+                        <tr>
+                            <td>12/06/2024</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td><span class="badge bg-primary">إذن شخصي</span></td>
+                            <td>10:00 ص : 12:00 م</td>
+                            <td>120 دقيقة</td>
+                            <td>ظرف عائلي</td>
+                            <td><span class="badge bg-light text-dark border">مخصوم من الرصيد</span></td>
+                            <td><button class="btn btn-sm btn-default"><i class="fas fa-times text-danger"></i></button></td>
+                        </tr>
+
+                        <!-- سجل تأخير -->
+                        <tr>
+                            <td>14/06/2024</td>
+                            <td class="text-end fw-bold">محمد فؤاد</td>
+                            <td><span class="badge bg-warning text-dark">تأخير صباحي</span></td>
+                            <td>حضور 08:45 ص</td>
+                            <td class="text-danger fw-bold">45 دقيقة</td>
+                            <td>مواصلات</td>
+                            <td><span class="badge bg-danger">مرحل للجزاء</span></td>
+                            <td><button class="btn btn-sm btn-default"><i class="fas fa-edit text-info"></i></button></td>
+                        </tr>
+
+                        <!-- سجل مأمورية -->
+                        <tr>
+                            <td>15/06/2024</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td><span class="badge bg-info">مأمورية عمل</span></td>
+                            <td>08:00 ص : 10:00 ص</td>
+                            <td>120 دقيقة</td>
+                            <td>الشهر العقاري</td>
+                            <td><span class="badge bg-success">عمل رسمي</span></td>
+                            <td><button class="btn btn-sm btn-default"><i class="fas fa-print"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <script>
+        $(function () {
+            // تفعيل البحث في القوائم
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
+
+            // تفعيل الجدول
+            $("#permTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false,
+                "lengthChange": false,
+                 "pageLength": 5
+            });
+        });
+
+        // دالة بسيطة لحساب مدة الإذن
+        function calcDuration() {
+            var startTime = document.getElementById("permFrom").value;
+            var endTime = document.getElementById("permTo").value;
+
+            if (startTime && endTime) {
+                // تحويل الوقت لتاريخ وهمي للحساب
+                var start = new Date("2000-01-01 " + startTime);
+                var end = new Date("2000-01-01 " + endTime);
+
+                var diffMs = end - start; // الفرق بالملي ثانية
+
+                // لو الفرق بالسالب (يعني وقت النهاية قبل البداية خطأ)
+                if(diffMs < 0) {
+                     document.getElementById("permTotal").value = "خطأ!";
+                     return;
+                }
+
+                var diffMins = Math.round(diffMs / 60000); // تحويل لدقائق
+                var hours = Math.floor(diffMins / 60);
+                var minutes = diffMins % 60;
+
+                // تنسيق العرض (ساعات ودقائق)
+                document.getElementById("permTotal").value = hours + "س " + minutes + "د";
+            }
+        }
+    </script>

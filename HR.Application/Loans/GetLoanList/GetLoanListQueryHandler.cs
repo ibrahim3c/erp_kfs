@@ -43,7 +43,7 @@ namespace HR.Application.Loans.GetLoanList
             using var connection = sqlConnectionFactory.CreateConnection();
             var sql = """
                 SELECT 
-                    l."Id" AS LoanId,
+                    l."Id" AS Id,
                     e."Name" AS EmployeeName, 
                     l."StartDate" AS StartDate,
                     l."Amount" AS Amount,

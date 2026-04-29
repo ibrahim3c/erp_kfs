@@ -1,0 +1,321 @@
+﻿@{
+    ViewData["Title"] = "حركة النقل والندب (الداخلي والخارجي)";
+}
+
+<!-- DataTables & Plugins -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-random text-purple me-2"></i> حركات النقل والندب</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">شئون العاملين</a></li>
+                    <li class="breadcrumb-item active">التنقلات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-primary card-outline card-tabs">
+            <div class="card-header p-0 pt-1 border-bottom-0">
+                <ul class="nav nav-tabs" id="transferTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="internal-tab" data-bs-toggle="pill" href="#internal" role="tab">
+                            <i class="fas fa-building me-1"></i> النقل الداخلي (بين الإدارات)
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="external-tab" data-bs-toggle="pill" href="#external" role="tab">
+                            <i class="fas fa-globe me-1"></i> النقل الخارجي / الندب (جهات أخرى)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="tab-content" id="transferTabsContent">
+
+                    <!-- TAB 1: النقل الداخلي -->
+                    <div class="tab-pane fade show active" id="internal" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <div class="alert alert-light border border-info">
+                                    <i class="fas fa-info-circle text-info"></i> يتم النقل الداخلي بناءً على حاجة العمل أو طلب الموظف بعد موافقة مديري الإدارتين.
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#internalModal">
+                                    <i class="fas fa-plus-circle"></i> قرار نقل داخلي جديد
+                                </button>
+                            </div>
+                        </div>
+
+                        <table id="tableInternal" class="table table-bordered table-striped text-center">
+                            <thead class="bg-dark text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>الموظف</th>
+                                    <th>من إدارة</th>
+                                    <th>إلى إدارة</th>
+                                    <th>السبب</th>
+                                    <th>تاريخ التنفيذ</th>
+                                    <th>الموقف</th>
+                                    <th>الإجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
+                                    <td>المخازن</td>
+                                    <td class="text-primary fw-bold">التخطيط العمراني</td>
+                                    <td>حاجة العمل</td>
+                                    <td>01/01/2024</td>
+                                    <td><span class="badge bg-success">تم النقل</span></td>
+                                    <td><button class="btn btn-sm btn-default" title="عرض القرار"><i class="fas fa-file-alt"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td class="text-end fw-bold">أمنة جمعة</td>
+                                    <td>خدمة المواطنين</td>
+                                    <td class="text-primary fw-bold">الشئون الإدارية</td>
+                                    <td>طلب شخصي</td>
+                                    <td>15/06/2024</td>
+                                    <td><span class="badge bg-warning text-dark">بانتظار المدير</span></td>
+                                    <td><button class="btn btn-sm btn-success" title="اعتماد"><i class="fas fa-check"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TAB 2: النقل الخارجي والندب -->
+                    <div class="tab-pane fade" id="external" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <div class="alert alert-light border border-warning">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i> يشترط للنقل الخارجي أو الندب موافقة "السلطة المختصة" في الجهتين وإنهاء إخلاء الطرف.
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#externalModal">
+                                    <i class="fas fa-file-export"></i> طلب نقل / ندب خارجي
+                                </button>
+                            </div>
+                        </div>
+
+                        <table id="tableExternal" class="table table-bordered table-hover text-center">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>الموظف</th>
+                                    <th>نوع الحركة</th>
+                                    <th>الجهة (من / إلى)</th>
+                                    <th>المدة (للندب)</th>
+                                    <th>حالة الموافقات</th>
+                                    <th>المرفقات</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- حالة ندب -->
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">رانيا أبو النصر</td>
+                                    <td><span class="badge bg-info">ندب خارجي (صادر)</span></td>
+                                    <td>إلى: وزارة العدل</td>
+                                    <td>1 سنة</td>
+                                    <td><span class="badge bg-success">سارية</span></td>
+                                    <td><i class="fas fa-paperclip"></i></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger" title="إنهاء الندب"><i class="fas fa-stop-circle"></i></button>
+                                        <button class="btn btn-sm btn-outline-success" title="تجديد"><i class="fas fa-sync-alt"></i></button>
+                                    </td>
+                                </tr>
+
+                                <!-- حالة نقل نهائي -->
+                                <tr>
+                                    <td>2</td>
+                                    <td class="text-end fw-bold">موظف جديد</td>
+                                    <td><span class="badge bg-purple">نقل (وارد)</span></td>
+                                    <td>من: مديرية الصحة</td>
+                                    <td>-</td>
+                                    <td><span class="badge bg-primary">تم الاستلام</span></td>
+                                    <td><i class="fas fa-paperclip"></i></td>
+                                    <td><button class="btn btn-sm btn-default"><i class="fas fa-print"></i> خطاب استلام</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- 1. مودال النقل الداخلي -->
+<div class="modal fade" id="internalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CreateInternal" method="post">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">تسجيل حركة تنقلات داخلية</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف</label>
+                        <select class="form-select select2 select2-modal" style="width:100%">
+                            <option>ابحث بالاسم...</option>
+                            <option>محمد فؤاد ابراهيم</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">منقول إلى إدارة (الجهة المستهدفة)</label>
+                        <select class="form-select">
+                            <option>التخطيط العمراني</option>
+                            <option>مركز استدامة</option>
+                            <option>الحسابات</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">تاريخ التنفيذ</label>
+                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">المسمي الوظيفي الجديد</label>
+                            <input type="text" class="form-control" placeholder="(اختياري)">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">مرفق (طلب النقل / التأشيرة)</label>
+                        <input type="file" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ واعتماد</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 2. مودال النقل الخارجي/الندب -->
+<div class="modal fade" id="externalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-action="CreateExternal" method="post">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">تسجيل حركة خارجية (ندب / نقل)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">نوع الحركة</label>
+                            <select class="form-select" id="moveType" onchange="toggleDuration()">
+                                <option value="Transfer">نقل نهائي (Transfer)</option>
+                                <option value="Secondment">ندب / إعارة (Secondment)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الاتجاه</label>
+                            <select class="form-select">
+                                <option>صادر (خارج من عندنا)</option>
+                                <option>وارد (جاي من برة)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الموظف</label>
+                            <select class="form-select select2 select2-modal" style="width:100%">
+                                <option>أمنة جمعة</option>
+                                <option>موظف جديد (غير مسجل)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">اسم الجهة الأخرى</label>
+                            <input type="text" class="form-control" placeholder="مثال: مديرية التنظيم والإدارة">
+                        </div>
+
+                        <!-- الحقول الخاصة بالندب -->
+                        <div class="col-md-4 mb-3 secondment-only" style="display:none">
+                            <label class="form-label">تاريخ البداية</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3 secondment-only" style="display:none">
+                            <label class="form-label">تاريخ النهاية</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3 secondment-only" style="display:none">
+                            <label class="form-label">من يتحمل الراتب؟</label>
+                            <select class="form-select">
+                                <option>جهتنا (نحن)</option>
+                                <option>الجهة المستعيرة</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12"><hr /></div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">المرفقات المطلوبة (موافقة الجهتين)</label>
+                            <input type="file" class="form-control" multiple>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-check-double"></i> حفظ الحركة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        $(function () {
+            // تفعيل الجداول
+            $('#tableInternal').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+            $('#tableExternal').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+
+            // Select2 Fix in Modal
+            $('.select2-modal').select2({
+                theme: 'bootstrap4',
+                dropdownParent: $('.modal') // Generic for any modal
+            });
+        });
+
+        // إظهار حقول الندب فقط عند اختيار "ندب"
+        function toggleDuration() {
+            var type = document.getElementById("moveType").value;
+            var fields = document.querySelectorAll(".secondment-only");
+
+            fields.forEach(el => {
+                if (type === "Secondment") {
+                    el.style.display = "block";
+                } else {
+                    el.style.display = "none";
+                }
+            });
+        }
+    </script>

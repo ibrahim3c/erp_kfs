@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Modules.Shared.Infrastructure\Modules.Shared.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Persistance\Configurations\JobStructures\" />
-  </ItemGroup>
-
 </Project>

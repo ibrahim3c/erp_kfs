@@ -7,6 +7,7 @@ namespace Geography.Domain.Repositories
     {
         public VillageRepository(GeographyDbContext dbContext) : base(dbContext)
         {
+           
         }
     }
 }

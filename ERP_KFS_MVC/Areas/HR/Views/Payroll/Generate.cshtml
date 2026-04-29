@@ -1,0 +1,272 @@
+﻿@{
+    ViewData["Title"] = "مسير الرواتب والأجور";
+}
+
+<!-- Styles -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-file-invoice-dollar text-success me-2"></i> مسير الرواتب الشهري</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">الرواتب</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. لوحة التشغيل (Payroll Engine) -->
+        <div class="card card-outline card-success">
+            <div class="card-header">
+                <h3 class="card-title text-bold">إعداد وحساب الدورة المستندية</h3>
+            </div>
+            <div class="card-body bg-light">
+                <form method="post" asp-action="CalculateCycle" id="calcForm">
+                    <div class="row align-items-end">
+                        <!-- اختيار الشهر والسنة -->
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">الشهر</label>
+                            <select class="form-select fw-bold">
+                                <option value="1">يناير</option>
+                                <option value="2">فبراير</option>
+                                <option value="3">مارس</option>
+                                <option value="4">أبريل</option>
+                                <option value="5">مايو</option>
+                                <option value="6" selected>يونيو</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">السنة</label>
+                            <input type="number" class="form-control fw-bold" value="2024">
+                        </div>
+
+                        <!-- فلاتر الحساب -->
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">فئة الموظفين</label>
+                            <select class="form-select">
+                                <option>الكل (شامل)</option>
+                                <option>الدائمين (موازنة)</option>
+                                <option>المؤقتين (صناديق)</option>
+                            </select>
+                        </div>
+
+                        <!-- زرار التشغيل -->
+                        <div class="col-md-5 mb-3 text-end">
+                            <button type="button" onclick="startCalculation()" class="btn btn-app bg-success text-white border-0 shadow-sm mb-0">
+                                <i class="fas fa-calculator" style="font-size: 1.2rem;"></i> حساب الرواتب
+                            </button>
+                            <button type="button" class="btn btn-app bg-secondary text-white border-0 shadow-sm mb-0">
+                                <i class="fas fa-envelope" style="font-size: 1.2rem;"></i> إرسال مفردات
+                            </button>
+                            <button type="button" class="btn btn-app bg-danger text-white border-0 shadow-sm mb-0">
+                                <i class="fas fa-lock" style="font-size: 1.2rem;"></i> إقفال الشهر
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. ملخص الأرقام (Dashboard) -->
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">عدد الموظفين</span>
+                        <span class="info-box-number">142</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-minus-circle text-white"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">إجمالي الاستقطاعات</span>
+                        <span class="info-box-number">45,200 <small>جم</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-success elevation-1"><i class="fas fa-money-bill-wave"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">صافي مستحق للصرف</span>
+                        <span class="info-box-number text-success" style="font-size:1.2rem">320,500 <small>جم</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-purple elevation-1"><i class="fas fa-check-double"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">حالة المسير</span>
+                        <span class="info-box-number"><span class="badge bg-warning text-dark">قيد المراجعة</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. جدول تفاصيل المرتبات (Review) -->
+        <div class="card card-outline card-secondary">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-list me-1"></i> كشف استحقاقات الموظفين (للمراجعة)</h3>
+                <div class="card-tools">
+                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-file-excel"></i> تصدير للبنك</button>
+                    <button class="btn btn-sm btn-outline-dark"><i class="fas fa-print"></i> كشف التوقيع</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="payrollTable" class="table table-bordered table-hover text-center table-striped" style="font-size:0.9rem">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الاسم</th>
+                            <th class="bg-gradient-gray">الأجر الوظيفي</th>
+                            <th>الحوافز (مكمل)</th>
+                            <th>بدلات / مكافآت</th>
+                            <th>إجمالي الاستحقاق</th>
+                            <th class="bg-danger text-white">الاستقطاعات</th>
+                            <th class="bg-success text-white">صافي الراتب</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td class="text-bold">3,200</td>
+                            <td>1,500</td>
+                            <td>300</td>
+                            <td class="text-primary fw-bold">5,000</td>
+                            <td class="text-danger fw-bold text-center">
+                                500
+                                <br><small class="text-muted text-xs">(تأمينات + ضرائب)</small>
+                            </td>
+                            <td class="bg-gradient-success fw-bold text-lg">4,500</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-info" title="مفردات مرتب"><i class="fas fa-file-invoice"></i></button>
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#adjustModal"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
+                            <td class="text-bold">2,800</td>
+                            <td>1,200</td>
+                            <td>0</td>
+                            <td class="text-primary fw-bold">4,000</td>
+                            <td class="text-danger fw-bold text-center">
+                                200
+                                <br><small class="text-danger text-xs">(شامل 3 أيام جزاء)</small>
+                            </td>
+                            <td class="bg-gradient-success fw-bold text-lg">3,800</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-info" title="مفردات مرتب"><i class="fas fa-file-invoice"></i></button>
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#adjustModal"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: التعديل اليدوي (استدراك) -->
+<div class="modal fade" id="adjustModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title"><i class="fas fa-sliders-h me-2"></i> تسوية يدوية (إضافة / خصم)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">نوع التسوية</label>
+                        <select class="form-select" id="adjType">
+                            <option value="plus">إضافة مبلغ (مكافأة بأثر رجعي)</option>
+                            <option value="minus">خصم مبلغ (غرامة / سلفة)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">المبلغ</label>
+                        <input type="number" class="form-control fw-bold" placeholder="0.00">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">السبب / الملاحظات</label>
+                        <textarea class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary">تحديث صافي الراتب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/plugins/jszip/jszip.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        $(function () {
+            // تفعيل الجدول مع أزرار التصدير
+            $("#payrollTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "buttons": [
+                    { extend: 'excel', text: 'Excel البنك', className: 'btn-success' },
+                    { extend: 'print', text: 'طباعة' }
+                ]
+            }).buttons().container().appendTo('#payrollTable_wrapper .col-md-6:eq(0)');
+        });
+
+        // محاكاة عملية الحساب (تظهر لودينج)
+        function startCalculation() {
+            Swal.fire({
+                title: 'جاري تجميع وحساب الرواتب...',
+                html: 'يتم احتساب الجزاءات، الأذونات، والتأمينات الاجتماعية.<br>يرجى الانتظار...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+                timer: 2000 // محاكاة وقت المعالجة
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الانتهاء بنجاح',
+                        text: 'تم حساب رواتب عدد (142) موظف وجاهز للمراجعة.'
+                    });
+                }
+            });
+        }
+    </script>

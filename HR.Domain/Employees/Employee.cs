@@ -30,7 +30,7 @@ namespace HR.Domain.Employees
         //public Guid? QualificationTypeId { get; private set; }
         //public string Specialization { get; private set; }
         public Guid? EmploymentTypeId { get; private set; }
-
+        public Guid? LeadershipPositionId { get; private set; }
         public Guid? JobTitleId { get; private set; }
         public Guid? JobGradeId { get; private set; }
         public Guid? FunctionalGroupId { get; private set; }
@@ -320,6 +320,20 @@ namespace HR.Domain.Employees
 
             FinancialInfo = financialResult.Value;
             return Result.Success();
+        }
+        // abdallah added here
+        public Result AssignLeadershipPosition(Guid positionId)
+        {
+            if (positionId == Guid.Empty)
+                return Result.Failure(new Error("Employee.InvalidPosition", "رقم المنصب غير صحيح."));
+
+            LeadershipPositionId = positionId;
+            return Result.Success();
+        }
+
+        public void RemoveLeadershipPosition()
+        {
+            LeadershipPositionId = null;
         }
     }
 

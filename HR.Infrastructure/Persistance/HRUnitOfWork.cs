@@ -3,7 +3,6 @@ using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
 using HR.Domain.Incentives;
-using HR.Domain.JobStructures;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -18,28 +17,16 @@ namespace HR.Infrastructure.Persistance
     {
         private readonly HRDbContext _dbContext;
 
-        public ICandidateRepository CandidateRepository { get;private set; }
-
+        public ICandidateRepository CandidateRepository { get; private set; }
         public IEmployeeRepository EmployeeRepository { get; private set; }
-
         public IDecisionRepository DecisionRepository { get; private set; }
-
         public IAcademicIncentiveRepository AcademicIncentiveRepository { get; private set; }
-
         public ITerminationRepository TerminationRepository { get; private set; }
-
-        public IJobStructureRepository JobStructureRepository { get; private set; }
-
         public ILoanRepository LoanRepository { get; private set; }
-
         public IPayrollRepository PayrollRepository { get; private set; }
-
         public IInsurancePurchaseRepository InsurancePurchaseRepository { get; private set; }
-
         public IPenaltyRepository PenaltyRepository { get; private set; }
-
         public IPermissionRepository PermissionRepository { get; private set; }
-
         public ILateEntryRepository LateEntryRepository { get; private set; }
 
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
@@ -50,7 +37,6 @@ namespace HR.Infrastructure.Persistance
             DecisionRepository = new DecisionRepository(_dbContext);
             AcademicIncentiveRepository = new IncentiveRepository(_dbContext);
             TerminationRepository = new TerminationRepository(_dbContext);
-            JobStructureRepository = new JobStructureRepository(_dbContext);
             LoanRepository = new LoanRepository(_dbContext);
             PayrollRepository = new PayrollRepository(_dbContext);
             InsurancePurchaseRepository = new InsurancePurchaseRepository(_dbContext);

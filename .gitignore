@@ -365,3 +365,6 @@ FodyWeavers.xsd
 
 /erp_kfs.Host/appsettings.Development.json
 /erp_kfs.Host/appsettings.json
+/ERP_KFS_MVC/appsettings.Development.json
+/ERP_KFS_MVC/appsettings.json
+!erp_kfs.Host/appsettings.example.json

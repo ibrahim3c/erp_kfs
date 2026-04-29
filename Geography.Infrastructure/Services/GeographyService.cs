@@ -285,6 +285,23 @@ namespace Geography.Infrastructure.Services
 
             return Result<bool>.Success(true);
         }
+        public async Task<Result<List<VillageDto>>> GetVillagesByCityCenterIdAsync(Guid cityCenterId)
+        {
+            var includes = new[] { nameof(Village.LocalUnit) };
+
+            // استخدام FindAllAsync وتمرير الشرط مع الـ includes
+            var villages = await _uOW.VillageRepository.FindAllAsync(
+                x => x.LocalUnit.CityCenterId == cityCenterId,
+                includes);
+
+            var dtos = villages.Select(v => new VillageDto(
+                v.Id,
+                v.LocalUnitId,
+                v.LocalUnit?.Name,
+                v.Name)).ToList(); // ضفنا ToList() عشان نحولها لـ List<VillageDto>
+
+            return Result<List<VillageDto>>.Success(dtos);
+        }
         #endregion
     }
 }

@@ -1,0 +1,193 @@
+@model ERP_KFS_MVC.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    Layout = "_LoginLayout";
+}
+
+<style>
+    .input-group-custom {
+        margin-bottom: 1.2rem;
+    }
+
+        .input-group-custom label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 16px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 45px 12px 16px;
+            font-size: 0.95rem;
+            color: #1e293b;
+            background-color: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+            .input-wrapper input:focus {
+                background-color: #ffffff;
+                border-color: #007c92;
+                box-shadow: 0 0 0 4px rgba(0, 124, 146, 0.1);
+                outline: none;
+            }
+
+        .input-wrapper:focus-within i {
+            color: #007c92;
+        }
+
+    .remember-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 1.5rem;
+        padding-right: 4px;
+    }
+
+        .remember-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #007c92;
+            margin: 0;
+        }
+
+        .remember-wrapper label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            margin: 0;
+        }
+
+    .btn-primary-custom {
+        width: 100%;
+        background: linear-gradient(135deg, #007c92 0%, #005f73 100%);
+        color: white;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 124, 146, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 124, 146, 0.3);
+            color: white;
+        }
+
+    .btn-outline-custom {
+        width: 100%;
+        background: transparent;
+        color: #64748b;
+        padding: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        margin-top: 12px;
+    }
+
+        .btn-outline-custom:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+
+    .alert-custom {
+        background-color: #fef2f2;
+        border-left: 4px solid #ef4444;
+        border-radius: 8px;
+        padding: 10px 15px;
+        color: #b91c1c;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<form asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert-custom">
+            <div asp-validation-summary="All" class="m-0 p-0" style="list-style-type: none;"></div>
+        </div>
+    }
+
+    <div class="input-group-custom">
+        <label asp-for="Email">البريد الإلكتروني</label>
+        <div class="input-wrapper">
+            <i class="fas fa-envelope"></i>
+            <input asp-for="Email" placeholder="name@gov.eg" dir="ltr" />
+        </div>
+        <span asp-validation-for="Email" class="text-danger mt-1 d-block" style="font-size: 0.75rem;"></span>
+    </div>
+
+    <div class="input-group-custom">
+        <label asp-for="Password">كلمة المرور</label>
+        <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input asp-for="Password" type="password" placeholder="••••••••" dir="ltr" />
+        </div>
+        <span asp-validation-for="Password" class="text-danger mt-1 d-block" style="font-size: 0.75rem;"></span>
+    </div>
+
+    <div class="remember-wrapper">
+        <input asp-for="RememberMe" id="rememberMe" />
+        <label asp-for="RememberMe" for="rememberMe">تذكرني على هذا الجهاز</label>
+    </div>
+
+    <button type="submit" class="btn-primary-custom">
+        <span>تسجيل الدخول</span>
+        <i class="fas fa-sign-in-alt me-2"></i>
+    </button>
+
+    <a asp-controller="Account" asp-action="Register" asp-area="Admin" class="btn-outline-custom">
+        <i class="fas fa-user-plus"></i>
+        <span>إنشاء حساب جديد</span>
+    </a>
+
+    <a asp-controller="Home" asp-action="Index" asp-area="" class="btn-outline-custom">
+        <i class="fas fa-home"></i>
+        <span>العودة للرئيسية</span>
+    </a>
+</form>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+}

@@ -1,0 +1,281 @@
+﻿@{
+    ViewData["Title"] = "الأجازات الاعتيادية والعارضة";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">منظومة الأجازات (اعتيادي / عارضة)</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">الأجازات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. شريط أرصدة الموظف (يظهر للموظف الحالي أو عند اختيار موظف) -->
+        @*<div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-info"><i class="fas fa-calendar-check"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">رصيد اعتيادي متبقي</span>
+                        <span class="info-box-number text-lg">21 <small>يوم</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-warning"><i class="fas fa-user-clock"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">رصيد عارضة متبقي</span>
+                        <span class="info-box-number text-lg">3 <small>أيام</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-success"><i class="fas fa-history"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">أجازات مستهلكة</span>
+                        <span class="info-box-number text-lg">9 <small>أيام</small></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="info-box shadow-sm">
+                    <span class="info-box-icon bg-danger"><i class="fas fa-umbrella-beach"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">مرحل من سنوات سابقة</span>
+                        <span class="info-box-number text-lg">15 <small>يوم</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+        <!-- 2. أدوات التحكم وجدول الطلبات -->
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title text-bold"><i class="fas fa-list mr-1"></i> سجل طلبات الأجازات</h3>
+                <div class="card-tools">
+                    <!-- زرار فتح المودال -->
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#leaveModal">
+                        <i class="fas fa-plus-circle"></i> تقديم طلب أجازة
+                    </button>
+                    <button class="btn btn-info btn-sm">
+                        <i class="fas fa-print"></i> تقرير الأرصدة
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="leavesTable" class="table table-bordered table-striped table-hover text-center">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>اسم الموظف</th>
+                            <th>نوع الأجازة</th>
+                            <th>من تاريخ</th>
+                            <th>إلى تاريخ</th>
+                            <th>المدة</th>
+                            <th>القائم بالعمل (البديل)</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- مثال 1: أجازة معتمدة -->
+                        <tr>
+                            <td>1015</td>
+                            <td class="font-weight-bold text-end">محمد فؤاد ابراهيم</td>
+                            <td><span class="badge bg-primary">اعتيادي</span></td>
+                            <td>01/05/2024</td>
+                            <td>05/05/2024</td>
+                            <td>5 أيام</td>
+                            <td>أحمد محمود</td>
+                            <td><span class="badge bg-success">معتمدة</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-default border" title="طباعة النموزج"><i class="fas fa-print"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- مثال 2: عارضة قيد الانتظار -->
+                        <tr>
+                            <td>1016</td>
+                            <td class="font-weight-bold text-end">رانيا أبو النصر</td>
+                            <td><span class="badge bg-warning text-dark">عارضة</span></td>
+                            <td>10/05/2024</td>
+                            <td>11/05/2024</td>
+                            <td>2 يوم</td>
+                            <td>فاطمة الشرباني</td>
+                            <td><span class="badge bg-warning text-dark">قيد الموافقة</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle border" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item text-success" href="#"><i class="fas fa-check"></i> موافقة</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-times"></i> رفض</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-eye"></i> التفاصيل</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- مثال 3: مرفوضة -->
+                        <tr>
+                            <td>1017</td>
+                            <td class="font-weight-bold text-end">بهجت إبراهيم</td>
+                            <td><span class="badge bg-primary">اعتيادي</span></td>
+                            <td>20/05/2024</td>
+                            <td>25/05/2024</td>
+                            <td>6 أيام</td>
+                            <td>لا يوجد</td>
+                            <td><span class="badge bg-danger">مرفوضة</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-default border" disabled><i class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: طلب أجازة جديد -->
+<div class="modal fade" id="leaveModal" tabindex="-1" aria-labelledby="leaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-action="CreateRegularRequest">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="leaveModalLabel"><i class="fas fa-pen-alt me-2"></i> طلب أجازة جديد</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- اسم الموظف -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الموظف مقدم الطلب</label>
+                            <select class="form-select select2" style="width:100%">
+                                <option>محمد فؤاد ابراهيم</option>
+                                <option>فاطمة الشرباني</option>
+                                <option>رانيا ابو النصر</option>
+                            </select>
+                        </div>
+
+                        <!-- نوع الأجازة -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">نوع الأجازة</label>
+                            <div class="d-flex gap-3 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="LeaveType" id="typeRegular" value="Regular" checked>
+                                    <label class="form-check-label" for="typeRegular">
+                                        اعتيادي
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="LeaveType" id="typeCasual" value="Casual">
+                                    <label class="form-check-label" for="typeCasual">
+                                        عارضة
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- التواريخ -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">من تاريخ</label>
+                            <input type="date" class="form-control" id="startDate" onchange="calculateDays()">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">إلى تاريخ</label>
+                            <input type="date" class="form-control" id="endDate" onchange="calculateDays()">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">عدد الأيام المطلوبة</label>
+                            <input type="text" class="form-control bg-light" id="daysCount" readonly value="0">
+                        </div>
+
+                        <!-- الموظف البديل (إجباري في الحكومة) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">القائم بالعمل (الموظف البديل)</label>
+                            <select class="form-select select2" style="width:100%">
+                                <option>-- اختر زميل --</option>
+                                <option>بهجت إبراهيم</option>
+                                <option>أمنة جمعة</option>
+                            </select>
+                            <small class="text-muted">الموظف المسئول عن العمل أثناء الغياب.</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">بيانات الاتصال أثناء الأجازة</label>
+                            <input type="text" class="form-control" placeholder="رقم تليفون / عنوان...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i> إرسال الطلب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+    <script>
+        $(function () {
+             // 1. تفعيل الـ Select2 (عشان البحث عن الأسماء)
+             $('.select2').select2({
+                 theme: 'bootstrap4',
+                 dropdownParent: $('#leaveModal') // مهم عشان البحث يشتغل جوه المودال
+             });
+
+            // 2. تفعيل الجدول
+            $("#leavesTable").DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json"
+                },
+                 "lengthChange": false,
+                 "autoWidth": false,
+                 "buttons": ["print", "excel"]
+            }).buttons().container().appendTo('#leavesTable_wrapper .col-md-6:eq(0)');
+        });
+
+        // 3. دالة حساب الأيام تلقائياً
+        function calculateDays() {
+            var start = document.getElementById("startDate").value;
+            var end = document.getElementById("endDate").value;
+
+            if(start && end) {
+                var d1 = new Date(start);
+                var d2 = new Date(end);
+
+                var timeDiff = d2.getTime() - d1.getTime();
+                var dayDiff = timeDiff / (1000 * 3600 * 24);
+
+                // إضافة 1 عشان نحسب اليوم الأول
+                var total = dayDiff + 1;
+
+                if (total > 0) {
+                    document.getElementById("daysCount").value = total;
+                } else {
+                     document.getElementById("daysCount").value = "خطأ في التاريخ";
+                }
+            }
+        }
+    </script>

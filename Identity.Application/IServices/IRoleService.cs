@@ -8,8 +8,8 @@ namespace Identity.Application.IServices
         Task<Result<RoleDto>> GetRoleByIdAsync(Guid id);
         Task<Result<IEnumerable<RoleDto>>> GetAllRolesAsync();
         Task<Result<Guid>> CreateRoleAsync(string roleName);
-        Task<Result> UpdateRoleAsync(Guid id, string newRoleName);
-        Task<Result> DeleteRoleAsync(Guid id);
+        Task<Result<Guid>> UpdateRoleAsync(Guid id, string newRoleName);
+        Task<Result<Guid>> DeleteRoleAsync(Guid id);
 
         Task<Result<IEnumerable<string>>> GetRolePermissionsAsync(string roleName);
         Task<Result> AssignPermissionToRoleAsync(string roleName, string permission);

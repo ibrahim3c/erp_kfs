@@ -19,15 +19,13 @@ namespace HR.Application.Employees.GetEmployeeForDelete
             using var connection = _sqlConnectionFactory.CreateConnection();
 
             const string sql = """
-                SELECT 
+               SELECT 
                     Id AS Id,
                     Name AS Name,
                     Code AS Code,
                     Email AS Email
-                FROM 
-                    Employees
-                WHERE 
-                    Id = @EmployeeId
+               FROM HR.Employees 
+               WHERE Id = @EmployeeId
             """;
 
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeForDeleteResponse>(sql, new { request.EmployeeId });

@@ -1,0 +1,357 @@
+﻿@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "لوحة تحكم الموظف";
+}
+
+<style>
+    .welcome-strip {
+        background: #ffffff;
+        border: 1px solid #e8edf2;
+        border-radius: 14px;
+        padding: 22px 26px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 6px;
+    }
+
+    .welcome-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #007c92 0%, #004a58 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: white;
+        font-size: 1.3rem;
+    }
+
+    .welcome-text h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 3px;
+    }
+
+    .welcome-text p {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin: 0;
+    }
+
+    /* modules section */
+    .modules-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #94a3b8;
+        letter-spacing: 0.1em;
+        margin: 22px 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .modules-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+    /* module card */
+    .module-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e8edf2;
+        padding: 22px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-decoration: none !important;
+        color: inherit !important;
+        transition: all 0.22s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            opacity: 0.04;
+            transition: opacity 0.2s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            border-color: transparent;
+            text-decoration: none !important;
+        }
+
+            .module-card:hover::before {
+                opacity: 0.07;
+            }
+
+    .mc-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .mc-hr {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .mc-finance {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .mc-eng {
+        background: #fff7ed;
+        color: #d97706;
+    }
+
+    .mc-it {
+        background: #f3e8ff;
+        color: #9333ea;
+    }
+
+    .mc-org {
+        background: #e0f2fe;
+        color: #0891b2;
+    }
+
+    .mc-geo {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .mc-hr::before {
+        background: #0284c7;
+    }
+
+    .mc-finance::before {
+        background: #16a34a;
+    }
+
+    .mc-eng::before {
+        background: #d97706;
+    }
+
+    .mc-it::before {
+        background: #9333ea;
+    }
+
+    .mc-org::before {
+        background: #0891b2;
+    }
+
+    .mc-geo::before {
+        background: #d97706;
+    }
+
+    .mc-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mc-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 3px;
+    }
+
+    .mc-sub {
+        font-size: 0.77rem;
+        color: #94a3b8;
+        line-height: 1.4;
+    }
+
+    .mc-arrow {
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        transition: color 0.2s, transform 0.2s;
+        flex-shrink: 0;
+    }
+
+    .module-card:hover .mc-arrow {
+        color: #007c92;
+        transform: translateX(-3px);
+    }
+
+    /* empty state */
+    .empty-state {
+        background: #ffffff;
+        border: 1px solid #e8edf2;
+        border-radius: 14px;
+        padding: 52px 24px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        font-size: 1.8rem;
+        color: #cbd5e1;
+    }
+
+    .empty-state h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #dc2626;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        font-size: 0.83rem;
+        color: #94a3b8;
+        max-width: 480px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+</style>
+
+<section class="content pt-3">
+    <div class="container-fluid">
+
+        <!-- Welcome -->
+        <div class="welcome-strip">
+            <div class="welcome-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="welcome-text">
+                <h2>مرحباً بك، @User.Identity.Name</h2>
+                <p>فيما يلي الأنظمة المتاحة لك بناءً على الصلاحيات الممنوحة من إدارة النظام</p>
+            </div>
+        </div>
+
+        <!-- Modules -->
+        <div class="modules-title">مساحات العمل المتاحة</div>
+
+        <div class="row">
+            @{
+                bool hasAnyRole = false;
+            }
+
+            @if (User.IsInRole("HR"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <a href="/HR" class="module-card">
+                        <div class="mc-icon mc-hr"><i class="fas fa-users"></i></div>
+                        <div class="mc-body">
+                            <div class="mc-title">الموارد البشرية</div>
+                            <div class="mc-sub">شؤون العاملين والحضور والانصراف</div>
+                        </div>
+                        <i class="fas fa-chevron-left mc-arrow"></i>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("Finance"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <a href="/Accounting" class="module-card">
+                        <div class="mc-icon mc-finance"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="mc-body">
+                            <div class="mc-title">الشئون المالية</div>
+                            <div class="mc-sub">إدارة الحسابات والرواتب والموازنة</div>
+                        </div>
+                        <i class="fas fa-chevron-left mc-arrow"></i>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("Engineering"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <a href="/Projects" class="module-card">
+                        <div class="mc-icon mc-eng"><i class="fas fa-hard-hat"></i></div>
+                        <div class="mc-body">
+                            <div class="mc-title">المشاريع الهندسية</div>
+                            <div class="mc-sub">متابعة الخطة الاستثمارية والمقاولات</div>
+                        </div>
+                        <i class="fas fa-chevron-left mc-arrow"></i>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("IT"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <a href="/Admin" class="module-card">
+                        <div class="mc-icon mc-it"><i class="fas fa-laptop-code"></i></div>
+                        <div class="mc-body">
+                            <div class="mc-title">نظم المعلومات</div>
+                            <div class="mc-sub">إدارة النظام والصلاحيات والدعم الفني</div>
+                        </div>
+                        <i class="fas fa-chevron-left mc-arrow"></i>
+                    </a>
+                </div>
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+            {
+                hasAnyRole = true;
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <a href="/Organization/OrgUnits" class="module-card">
+                        <div class="mc-icon mc-org"><i class="fas fa-sitemap"></i></div>
+                        <div class="mc-body">
+                            <div class="mc-title">الشئون التنظيمية</div>
+                            <div class="mc-sub">الهيكل التنظيمي والمناصب القيادية</div>
+                        </div>
+                        <i class="fas fa-chevron-left mc-arrow"></i>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <a href="/Geography/Governorates" class="module-card">
+                        <div class="mc-icon mc-geo"><i class="fas fa-map"></i></div>
+                        <div class="mc-body">
+                            <div class="mc-title">البيانات الجغرافية</div>
+                            <div class="mc-sub">المحافظات والمراكز والقرى</div>
+                        </div>
+                        <i class="fas fa-chevron-left mc-arrow"></i>
+                    </a>
+                </div>
+            }
+
+            @if (!hasAnyRole)
+            {
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-user-lock"></i></div>
+                        <h3>لا توجد صلاحيات نشطة</h3>
+                        <p>حسابك غير مرتبط بأي مجالات عمل حالياً. يرجى التواصل مع مسؤول النظام أو إدارة الموارد البشرية لتفعيل صلاحياتك.</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</section>

@@ -21,20 +21,17 @@ namespace HR.Application.Employees.GetEmployeeDetails
 
             // Note: Adjust the table name ("Employees") and column names if they differ in your actual database schema
             const string sql = """
-                SELECT 
-                    Id AS Id,
-                    Name AS Name,
-                    Code AS Code,
-                    Email AS Email,
-                    Phone AS Phone,
-                    HireDate AS HireDate,
-                    IsActive AS IsActive,
-                    CreatedAt AS CreatedAt
-                FROM 
-                    Employees
-                WHERE 
-                    Id = @EmployeeId
-            """;
+                        SELECT 
+                            Id,
+                            Name,
+                            Code,
+                            Email,
+                            Phone,
+                            HireDate,
+                            IsActive
+                        FROM HR.Employees 
+                        WHERE Id = @EmployeeId
+                    """;
 
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeDetailsResponse>(sql, new { request.EmployeeId });
 

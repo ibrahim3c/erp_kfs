@@ -36,5 +36,6 @@ namespace Geography.Application.IServices
         Task<Result<Guid>> CreateVillageAsync(CreateVillageDto dto);
         Task<Result<bool>> UpdateVillageAsync(UpdateVillageDto dto);
         Task<Result<bool>> DeleteVillageAsync(Guid id);
+        Task<Result<List<VillageDto>>> GetVillagesByCityCenterIdAsync(Guid cityCenterId);
     }
 }

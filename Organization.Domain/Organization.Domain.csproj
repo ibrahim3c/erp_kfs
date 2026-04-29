@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Geography.Domain\Geography.Domain.csproj" />
     <ProjectReference Include="..\Modules.Shared.Domain\Modules.Shared.Domain.csproj" />
   </ItemGroup>
 

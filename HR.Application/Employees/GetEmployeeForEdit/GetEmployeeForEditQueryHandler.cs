@@ -27,11 +27,9 @@ namespace HR.Application.Employees.GetEmployeeForEdit
                     Phone AS Phone,
                     HireDate AS HireDate,
                     IsActive AS IsActive,
-                    CreatedAt AS CreatedAt
-                FROM 
-                    Employees
-                WHERE 
-                    Id = @EmployeeId
+                    
+                FROM HR.Employees 
+                WHERE Id = @EmployeeId
             """;
 
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeForEditResponse>(sql, new { request.EmployeeId });

@@ -1,0 +1,270 @@
+﻿@{
+    ViewData["Title"] = "قرارات إنهاء الخدمة والفصل";
+}
+
+<!-- Styles -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-user-times text-danger me-2"></i> إنهاء الخدمة والفصل</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">إنهاء الخدمة</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. إحصائيات الأسباب -->
+        <div class="row">
+            <div class="col-md-3 col-6">
+                <div class="small-box bg-white">
+                    <div class="inner">
+                        <h3>5</h3>
+                        <p>استقالات (بناءً على طلبهم)</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-walking text-warning"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="small-box bg-white">
+                    <div class="inner">
+                        <h3 class="text-danger">1</h3>
+                        <p class="text-danger fw-bold">فصل تأديبي / حكم قضائي</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-gavel text-danger"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="small-box bg-white">
+                    <div class="inner">
+                        <h3>2</h3>
+                        <p>انقطاع عن العمل (غياب)</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-user-clock text-secondary"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="small-box bg-white">
+                    <div class="inner">
+                        <h3>1</h3>
+                        <p>وفاة أثناء الخدمة</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-procedures text-dark"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. جدول القرارات -->
+        <div class="card card-outline card-danger">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">سجل القرارات التنفيذية</h3>
+                <div class="card-tools">
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#terminateModal">
+                        <i class="fas fa-ban me-1"></i> تسجيل قرار إنهاء خدمة
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table id="termTable" class="table table-bordered table-striped text-center align-middle">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>رقم القرار</th>
+                            <th>الموظف</th>
+                            <th>سبب الإنهاء</th>
+                            <th>تاريخ القرار</th>
+                            <th>تاريخ آخر يوم عمل</th>
+                            <th>المرفقات</th>
+                            <th>حالة النظام</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: استقالة -->
+                        <tr>
+                            <td class="fw-bold">55/2024</td>
+                            <td class="text-end fw-bold">أمنة جمعة</td>
+                            <td><span class="badge bg-warning text-dark p-2">استقالة</span></td>
+                            <td>01/06/2024</td>
+                            <td class="text-danger fw-bold">30/06/2024</td>
+                            <td><i class="fas fa-file-pdf"></i> الطلب</td>
+                            <td><span class="badge bg-secondary">تم الإيقاف</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" title="إخطار المعاشات"><i class="fas fa-envelope"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: فصل -->
+                        <tr class="bg-white border-left-danger" style="border-left: 5px solid #dc3545;">
+                            <td class="fw-bold text-danger">90/2024</td>
+                            <td class="text-end fw-bold">محمد (موظف مفصول)</td>
+                            <td><span class="badge bg-danger p-2">فصل (انقطاع عمل)</span></td>
+                            <td>15/06/2024</td>
+                            <td class="text-danger fw-bold">15/06/2024</td>
+                            <td><i class="fas fa-file-contract"></i> الإنذارات</td>
+                            <td><span class="badge bg-danger">مفصول</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" title="طباعة القرار"><i class="fas fa-print"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 3: عدم اللياقة -->
+                        <tr>
+                            <td class="fw-bold">22/2024</td>
+                            <td class="text-end fw-bold">موظف سابق</td>
+                            <td><span class="badge bg-info text-dark p-2">عدم اللياقة الصحية (عجز)</span></td>
+                            <td>01/02/2024</td>
+                            <td>01/02/2024</td>
+                            <td><i class="fas fa-user-md"></i> اللجنة</td>
+                            <td><span class="badge bg-secondary">تم التسوية</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-success" title="مستحقات"><i class="fas fa-money-check"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: تسجيل قرار إنهاء -->
+<div class="modal fade" id="terminateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-file-excel me-2"></i> قرار إنهاء خدمة (خروج من الخدمة)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-action="CreateDecision">
+                <div class="modal-body">
+                    <div class="alert alert-warning text-sm">
+                        <i class="fas fa-exclamation-triangle me-1"></i> <strong>تحذير:</strong> هذا الإجراء سيؤدي إلى إيقاف راتب الموظف وإغلاق حسابه على النظام نهائياً، وتحويل ملفه للأرشيف.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الموظف</label>
+                            <select class="form-select select2 select2-modal" style="width:100%">
+                                <option>بحث بالاسم...</option>
+                                <option>محمد فؤاد ابراهيم</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">سبب الإنهاء</label>
+                            <select class="form-select border-danger text-danger fw-bold" id="reasonSelect" onchange="checkReason()">
+                                <option value="Resignation">استقالة مكتوبة</option>
+                                <option value="Dismissal">فصل (تأديبي / قضائي)</option>
+                                <option value="Absence">فصل للانقطاع (غياب متصل/منفصل)</option>
+                                <option value="Death">الوفاة</option>
+                                <option value="Medical">عدم اللياقة الصحية (عجز كلي)</option>
+                                <option value="Contract">انتهاء مدة العقد (عدم التجديد)</option>
+                            </select>
+                        </div>
+
+                        <!-- رقم وتاريخ القرار -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">رقم القرار التنفيذي</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">تاريخ صدور القرار</label>
+                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label text-danger">تاريخ آخر يوم عمل (فعلي)</label>
+                            <input type="date" class="form-control is-invalid">
+                            <small class="text-danger">يتوقف الراتب بعد هذا اليوم.</small>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">السند القانوني / الحيثيات</label>
+                            <textarea class="form-control" rows="2" placeholder="بناءً على الحكم رقم... / بناءً على طلب الموظف المقدم بتاريخ..."></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">المرفقات الإلزامية</label>
+                            <input type="file" class="form-control" multiple>
+                            <small class="text-muted" id="attachHint">(مطلوب: أصل الاستقالة + إخلاء الطرف)</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmTerminate()">
+                        <i class="fas fa-ban me-1"></i> اعتماد وتنفيذ الإيقاف
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#termTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "lengthChange": false,
+                "autoWidth": false
+            });
+
+            $('.select2-modal').select2({ theme: 'bootstrap4', dropdownParent: $('.modal') });
+        });
+
+        // تغيير الملاحظات حسب السبب
+        function checkReason() {
+            var reason = document.getElementById("reasonSelect").value;
+            var hint = document.getElementById("attachHint");
+
+            if (reason === "Death") {
+                hint.innerText = "(مطلوب: شهادة الوفاة + إعلام الوراثة إن وجد)";
+            } else if (reason === "Dismissal") {
+                hint.innerText = "(مطلوب: منطوق الحكم القضائي أو قرار الجزاء)";
+            } else if (reason === "Resignation") {
+                hint.innerText = "(مطلوب: طلب الاستقالة الموقع + إخلاء الطرف)";
+            }
+        }
+
+        // تأكيد أخير قبل الحذف (لأن ده قرار خطير)
+        function confirmTerminate() {
+            Swal.fire({
+                title: 'تحذير شديد!',
+                text: "أنت على وشك فصل موظف من النظام. لن يتم صرف أي رواتب له بعد الآن. هل أنت متأكد؟",
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، قم بالإنهاء',
+                cancelButtonText: 'تراجع'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // هنا يتم عمل Submit للفورم
+                    Swal.fire(
+                        'تم التنفيذ',
+                        'تم تحويل حالة الموظف إلى (منتهية خدمته).',
+                        'success'
+                    );
+                }
+            })
+        }
+    </script>

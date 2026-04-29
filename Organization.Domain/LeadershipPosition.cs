@@ -25,6 +25,10 @@ namespace Organization.Domain
         public string Description { get; private set; }
         public bool IsActive { get; private set; }
 
+        // Navigation Properties
+        public OrgUnit? OrgUnit { get; private set; }
+        public JobTitle? JobTitle { get; private set; }
+
         //private readonly List<LeadershipPositionHistory> _histories = new();
         //public IReadOnlyCollection<LeadershipPositionHistory> LeadershipPositionHistories => _histories.AsReadOnly();
 
