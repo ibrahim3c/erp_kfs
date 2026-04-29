@@ -1,0 +1,239 @@
+﻿@{
+    ViewData["Title"] = "تقارير تقويم الأداء السنوية";
+}
+
+<!-- DataTables Styles -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- Ion Slider (للتقييم بالأرقام) -->
+<link rel="stylesheet" href="~/plugins/ion-rangeslider/css/ion.rangeSlider.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-star-half-alt text-warning me-2"></i> تقارير الكفاءة السنوية</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">تقويم الأداء</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. فلتر السنة المالية -->
+        <div class="card bg-light">
+            <div class="card-body py-2">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <label class="mb-0">العام المالي:</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select fw-bold text-primary">
+                            <option>2023 - 2024</option>
+                            <option>2022 - 2023</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="text-muted"><i class="fas fa-info-circle"></i> يتم تحرير التقارير في شهر يوليو من كل عام.</span>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#evaluationModal">
+                            <i class="fas fa-plus-circle me-1"></i> تحرير تقرير جديد
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. جدول التقارير -->
+        <div class="card card-outline card-warning">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">سجل التقارير المحررة</h3>
+            </div>
+            <div class="card-body">
+                <table id="evalTable" class="table table-bordered table-striped text-center align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الموظف</th>
+                            <th>الدرجة</th>
+                            <th>درجة التقييم (رقمية)</th>
+                            <th>المرتبة (التقدير)</th>
+                            <th>المقيم (المدير)</th>
+                            <th>الحالة</th>
+                            <th>خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: ممتاز -->
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td>الأولى (أ)</td>
+                            <td><h5 class="m-0"><span class="badge bg-success">96</span></h5></td>
+                            <td><span class="badge bg-success fw-normal p-2">ممتاز (Excellent)</span></td>
+                            <td>المهندس/ مدير التنظيم</td>
+                            <td><span class="badge bg-primary">معتمد نهائي</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" title="طباعة الاستمارة"><i class="fas fa-print"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: كفء (يحق له التظلم لو كان يطمح للممتاز) -->
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
+                            <td>الثانية (ب)</td>
+                            <td><h5 class="m-0"><span class="badge bg-warning text-dark">85</span></h5></td>
+                            <td><span class="badge bg-warning text-dark fw-normal p-2">كفء (Very Good)</span></td>
+                            <td>مدير عام الموارد البشرية</td>
+                            <td><span class="badge bg-secondary">تم الإخطار</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-eye text-primary"></i> التفاصيل</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="alert('فتح صفحة التظلمات...')"><i class="fas fa-exclamation-circle"></i> تسجيل تظلم</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 3: ضعيف (خطر) -->
+                        <tr class="table-danger">
+                            <td>3</td>
+                            <td class="text-end fw-bold">موظف منقطع</td>
+                            <td>الثالثة (ج)</td>
+                            <td><h5 class="m-0"><span class="badge bg-danger">40</span></h5></td>
+                            <td><span class="badge bg-danger fw-normal p-2">ضعيف (Weak)</span></td>
+                            <td>لجنة الموارد البشرية</td>
+                            <td><span class="badge bg-danger">حرمان من العلاوة</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-dark" title="ملف التأديب"><i class="fas fa-gavel"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: تحرير تقرير جديد -->
+<div class="modal fade" id="evaluationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i> استمارة تقويم الأداء الوظيفي</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- بيانات أساسية -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">اسم الموظف</label>
+                            <select class="form-select select2" style="width:100%">
+                                <option>بهجت إبراهيم</option>
+                                <option>فاطمة الشرباني</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">القائم بالتقويم (الرئيس المباشر)</label>
+                            <input type="text" class="form-control" value="@User.Identity?.Name" readonly>
+                        </div>
+
+                        <div class="col-12"><hr /></div>
+
+                        <!-- عناصر التقييم (بسيط وسريع) -->
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label text-primary h6">1. الكفاءة والجودة في العمل (30 درجة)</label>
+                            <input type="range" class="form-range" min="0" max="30" step="1" id="score1" oninput="calcTotal()">
+                            <div class="text-end fw-bold" id="val1">0</div>
+                        </div>
+
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label text-primary h6">2. الالتزام والسلوك والانضباط (30 درجة)</label>
+                            <input type="range" class="form-range" min="0" max="30" step="1" id="score2" oninput="calcTotal()">
+                            <div class="text-end fw-bold" id="val2">0</div>
+                        </div>
+
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label text-primary h6">3. الإنجاز والمبادرة والتعاون (40 درجة)</label>
+                            <input type="range" class="form-range" min="0" max="40" step="1" id="score3" oninput="calcTotal()">
+                            <div class="text-end fw-bold" id="val3">0</div>
+                        </div>
+
+                        <div class="col-12"><hr class="my-1" /></div>
+
+                        <!-- النتيجة النهائية (أوتوماتيك) -->
+                        <div class="col-md-12 text-center bg-light p-3 rounded">
+                            <h4>المجموع الكلي: <span id="totalScore" class="text-primary display-6 fw-bold">0</span> / 100</h4>
+                            <h3>التقدير العام: <span id="totalGrade" class="badge bg-secondary">غير محدد</span></h3>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <label class="form-label">ملاحظات / نقاط قوة وضعف</label>
+                            <textarea class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-save me-1"></i> حفظ وإرسال للاعتماد</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#evalTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false
+            });
+        });
+
+        // دالة حساب التقدير تلقائياً أثناء تحريك المؤشر
+        function calcTotal() {
+            var s1 = parseInt(document.getElementById('score1').value) || 0;
+            var s2 = parseInt(document.getElementById('score2').value) || 0;
+            var s3 = parseInt(document.getElementById('score3').value) || 0;
+
+            document.getElementById('val1').innerText = s1;
+            document.getElementById('val2').innerText = s2;
+            document.getElementById('val3').innerText = s3;
+
+            var total = s1 + s2 + s3;
+            document.getElementById('totalScore').innerText = total;
+
+            var gradeEl = document.getElementById('totalGrade');
+            var gradeText = "";
+            var gradeClass = "";
+
+            if (total >= 90) { gradeText = "ممتاز"; gradeClass = "bg-success"; }
+            else if (total >= 80) { gradeText = "كفء"; gradeClass = "bg-primary"; }
+            else if (total >= 65) { gradeText = "فوق المتوسط"; gradeClass = "bg-info"; }
+            else if (total >= 50) { gradeText = "متوسط"; gradeClass = "bg-warning text-dark"; }
+            else { gradeText = "ضعيف"; gradeClass = "bg-danger"; }
+
+            gradeEl.innerText = gradeText;
+            gradeEl.className = "badge " + gradeClass;
+        }
+    </script>

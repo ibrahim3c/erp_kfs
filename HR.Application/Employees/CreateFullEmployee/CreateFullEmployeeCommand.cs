@@ -41,4 +41,3 @@ namespace HR.Application.Employees.CreateFullEmployee
         bool HasMedicalFund // التكافل
     ) : ICommand<Guid>;
 }
-

@@ -28,7 +28,7 @@ namespace Identity.Infrastructure.Services
                 userDtos.Add(new UserDto(
                     user.Id,
                     user.Email,
-                    user.UserName,
+                    user.FullName,
                     roles));
             }
 
@@ -47,7 +47,7 @@ namespace Identity.Infrastructure.Services
             var userDto = new UserDto(
                 user.Id,
                 user.Email,
-                user.UserName,
+                user.FullName,
                 roles);
 
             return Result<UserDto>.Success(userDto);
@@ -65,7 +65,7 @@ namespace Identity.Infrastructure.Services
             var userDto = new UserDto(
                 user.Id,
                 user.Email,
-                user.UserName,
+                user.FullName,
                 roles);
 
             return Result<UserDto>.Success(userDto);
@@ -82,7 +82,8 @@ namespace Identity.Infrastructure.Services
             {
                 UserName = dto.UserName,
                 Email = dto.Email,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);

@@ -1,0 +1,316 @@
+﻿@{
+    ViewData["Title"] = "صناديق الزمالة والتكافل الاجتماعي";
+}
+
+<!-- DataTables & Select2 CSS -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-hand-holding-heart text-danger me-2"></i> الصناديق الخاصة والتكافل</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">صناديق الزمالة</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. إحصائيات مالية للصندوق -->
+        <div class="row">
+            <div class="col-md-4 col-sm-6">
+                <div class="info-box bg-primary">
+                    <span class="info-box-icon"><i class="fas fa-users"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">إجمالي المشتركين</span>
+                        <span class="info-box-number">85 موظف</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="info-box bg-success">
+                    <span class="info-box-icon"><i class="fas fa-money-check-alt"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">قيمة الاشتراك الشهري (يونيو)</span>
+                        <span class="info-box-number">8,500 جم</span>
+                        <span class="progress-description text-sm">يتم تحويله لحساب الصندوق</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="info-box bg-warning text-dark">
+                    <span class="info-box-icon"><i class="fas fa-hand-holding-usd"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">طلبات صرف مستحقات (واردة)</span>
+                        <span class="info-box-number">2 حالات</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. الهيكل الرئيسي (إدارة الاشتراكات والطلبات) -->
+        <div class="card card-outline card-secondary card-tabs">
+            <div class="card-header p-0 pt-1 border-bottom-0">
+                <ul class="nav nav-tabs" id="fundsTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="members-tab" data-bs-toggle="pill" href="#members" role="tab">
+                            <i class="fas fa-list me-1"></i> سجل المشتركين
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="requests-tab" data-bs-toggle="pill" href="#requests" role="tab">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> طلبات صرف المستحقات
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+
+                    <!-- TAB 1: المشتركين -->
+                    <div class="tab-pane fade show active" id="members" role="tabpanel">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <h5 class="text-secondary">قائمة الموظفين المشتركين بالخصم المباشر</h5>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#subscriptionModal">
+                                    <i class="fas fa-user-plus"></i> إضافة مشترك جديد
+                                </button>
+                                <button class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> كشف استقطاعات للبنك
+                                </button>
+                            </div>
+                        </div>
+
+                        <table id="membersTable" class="table table-bordered table-striped text-center align-middle">
+                            <thead class="bg-dark text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>الموظف</th>
+                                    <th>تاريخ الاشتراك</th>
+                                    <th>نوع الاشتراك</th>
+                                    <th>قيمة الخصم</th>
+                                    <th>إجمالي المسدد (تقريبي)</th>
+                                    <th>الحالة</th>
+                                    <th>خيارات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
+                                    <td>01/01/2020</td>
+                                    <td>زمالة (فقط)</td>
+                                    <td>100 جم / شهر</td>
+                                    <td class="text-success fw-bold">4,800 جم</td>
+                                    <td><span class="badge bg-success">نشط</span></td>
+                                    <td><button class="btn btn-sm btn-default" title="كشف حساب"><i class="fas fa-list-alt"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td class="text-end fw-bold">رانيا ابو النصر</td>
+                                    <td>01/03/2024</td>
+                                    <td>زمالة + تكافل</td>
+                                    <td>150 جم / شهر</td>
+                                    <td>450 جم</td>
+                                    <td><span class="badge bg-success">نشط</span></td>
+                                    <td><button class="btn btn-sm btn-default"><i class="fas fa-list-alt"></i></button></td>
+                                </tr>
+                                <tr class="text-muted">
+                                    <td>3</td>
+                                    <td class="text-end text-decoration-line-through">بهجت ابراهيم</td>
+                                    <td>--</td>
+                                    <td>انسحاب</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td><span class="badge bg-danger">غير مشترك</span></td>
+                                    <td><button class="btn btn-sm btn-default border" title="إعادة اشتراك"><i class="fas fa-undo"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- TAB 2: طلبات الصرف (الخروج) -->
+                    <div class="tab-pane fade" id="requests" role="tabpanel">
+                        <div class="alert alert-warning border border-warning">
+                            <i class="fas fa-exclamation-circle me-1"></i> يتم صرف المستحقات بناءً على لائحة الصندوق (حالات: بلوغ السن القانوني، الوفاة، الزواج، أو الحالات المرضية الحرجة).
+                        </div>
+
+                        <div class="text-end mb-3">
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#claimModal">
+                                <i class="fas fa-hand-holding-usd"></i> تسجيل مطالبة مالية
+                            </button>
+                        </div>
+
+                        <table class="table table-bordered table-hover text-center align-middle">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>مقدم الطلب</th>
+                                    <th>سبب الصرف</th>
+                                    <th>تاريخ الواقعة</th>
+                                    <th>المبلغ المطلوب</th>
+                                    <th>المرفقات</th>
+                                    <th>حالة اللجنة</th>
+                                    <th>أمر الصرف</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
+                                    <td>منحة زواج</td>
+                                    <td>01/06/2024</td>
+                                    <td class="fw-bold">5,000 جم</td>
+                                    <td><a href="#">وثيقة الزواج.pdf</a></td>
+                                    <td><span class="badge bg-success">تمت الموافقة</span></td>
+                                    <td><button class="btn btn-sm btn-outline-success"><i class="fas fa-money-check"></i> إصدار شيك</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td class="text-end fw-bold">ورثة/ موظف متوفي</td>
+                                    <td>مصاريف جنازة (عاجلة)</td>
+                                    <td>15/06/2024</td>
+                                    <td class="fw-bold">2,000 جم</td>
+                                    <td><a href="#" class="text-danger">شهادة الوفاة</a></td>
+                                    <td><span class="badge bg-warning text-dark">تحت المراجعة</span></td>
+                                    <td>--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal 1: اشتراك جديد -->
+<div class="modal fade" id="subscriptionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="AddMember">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">اشتراك جديد في الصناديق</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف</label>
+                        <select class="form-select select2 select2-modal" style="width:100%">
+                            <option>بحث...</option>
+                            <option>بهجت ابراهيم</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ بدء الخصم</label>
+                        <input type="month" class="form-control" value="@DateTime.Now.ToString("yyyy-MM")">
+                    </div>
+                    <div class="card p-2 bg-light mb-3">
+                        <label class="form-label text-primary fw-bold">حدد الصناديق:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="check1" checked>
+                            <label class="form-check-label" for="check1">صندوق الزمالة (خصم 1% من الأساسي)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="check2">
+                            <label class="form-check-label" for="check2">التكافل الاجتماعي (خصم مبلغ ثابت 50ج)</label>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="agreement" required>
+                        <label class="form-check-label small" for="agreement">الموظف وافق كتابياً على الخصم من الراتب (تفويض بنكي).</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-primary">تأكيد الاشتراك</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: طلب صرف مستحقات -->
+<div class="modal fade" id="claimModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">طلب صرف منحة / تعويض</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">الموظف</label>
+                    <select class="form-select select2 select2-modal" style="width:100%">
+                        <option>بحث...</option>
+                        <option>محمد فؤاد ابراهيم</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">نوع المطالبة</label>
+                    <select class="form-select">
+                        <option>مكافأة نهاية خدمة (بلوغ السن)</option>
+                        <option>منحة زواج</option>
+                        <option>منحة مولود</option>
+                        <option>عملية جراحية (حالة مرضية)</option>
+                        <option>مصاريف جنازة</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">تاريخ الحدث</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">المبلغ المطلوب (إن وجد)</label>
+                        <input type="number" class="form-control" placeholder="اختياري">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">مستند الإثبات</label>
+                    <input type="file" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="submit" class="btn btn-warning text-dark"><i class="fas fa-check"></i> تسجيل الطلب</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            // Select2 inside modals
+            $('.select2-modal').select2({
+                theme: 'bootstrap4',
+                dropdownParent: $('.modal')
+            });
+
+            // Table Init
+            $("#membersTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "lengthChange": false,
+                "autoWidth": false
+            });
+        });
+    </script>

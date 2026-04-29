@@ -1,0 +1,73 @@
+@model ERP_KFS_MVC.Areas.Identity.ViewModels.AssignPermissionsViewModel
+
+@{
+    ViewData["Title"] = "صلاحيات الدور: " + Model.RoleName;
+    var groupedPermissions = Model.Permissions.GroupBy(p => p.Category).OrderBy(g => g.Key);
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1><i class="fas fa-key mr-2"></i> صلاحيات الدور: @Model.RoleName</h1>
+            </div>
+            <div class="col-sm-6 text-left">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right mr-1"></i> رجوع
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="AssignPermissions" method="post">
+            <input type="hidden" asp-for="RoleId" />
+            <input type="hidden" asp-for="RoleName" />
+            
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">اختر الصلاحيات المطلوبة</h3>
+                </div>
+                <div class="card-body">
+                    @foreach (var group in groupedPermissions)
+                    {
+                        <div class="mb-4">
+                            <h5 class="bg-info p-2 rounded">
+                                <i class="fas fa-folder mr-1"></i> @group.Key
+                            </h5>
+                            <div class="row">
+                                @foreach (var perm in group.OrderBy(p => p.Name))
+                                {
+                                    <div class="col-md-4 col-sm-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   name="SelectedPermissionIds" 
+                                                   value="@perm.Id" 
+                                                   id="perm_@perm.Id.Replace(".", "_")"
+                                                   @(perm.IsSelected ? "checked" : "") />
+                                            <label class="form-check-label" for="perm_@perm.Id.Replace(".", "_")">
+                                                @perm.Name
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> حفظ الصلاحيات
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> إلغاء
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

@@ -1,0 +1,293 @@
+﻿@{
+    ViewData["Title"] = "تجهيز وتسليم ملفات المعاشات";
+}
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- Stepper (تصميم المراحل) -->
+<style>
+    .bs-stepper .step-trigger {
+        padding: 20px;
+        font-size: 1.1rem;
+    }
+
+    .step-active {
+        background-color: #007bff;
+        color: white !important;
+    }
+</style>
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-file-archive text-secondary me-2"></i> مراجعة ملفات نهاية الخدمة
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item active">ملفات المعاشات</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. لوحة المهام (Kanban Style بسيط) -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="small-box bg-white border-left-primary shadow-sm" style="border-left: 5px solid #007bff;">
+                    <div class="inner">
+                        <h3 class="text-primary">2</h3>
+                        <p class="font-weight-bold">تحت المراجعة المالية</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-calculator text-black-50"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="small-box bg-white border-left-warning shadow-sm" style="border-left: 5px solid #ffc107;">
+                    <div class="inner">
+                        <h3 class="text-warning">1</h3>
+                        <p class="font-weight-bold">في انتظار التوقيعات</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-pen-nib text-black-50"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="small-box bg-white border-left-success shadow-sm" style="border-left: 5px solid #28a745;">
+                    <div class="inner">
+                        <h3 class="text-success">5</h3>
+                        <p class="font-weight-bold">تم التسليم للهيئة</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-truck text-black-50"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="small-box bg-white border-left-danger shadow-sm" style="border-left: 5px solid #dc3545;">
+                    <div class="inner">
+                        <h3 class="text-danger">0</h3>
+                        <p class="font-weight-bold">ملفات مرتدة (أخطاء)</p>
+                    </div>
+                    <div class="icon"><i class="fas fa-exclamation-circle text-black-50"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. جدول المتابعة -->
+        <div class="card card-outline card-purple">
+            <div class="card-header border-0">
+                <h3 class="card-title text-bold">متابعة موقف الملفات الجارية</h3>
+            </div>
+            <div class="card-body p-0">
+                <table id="filesTable" class="table table-bordered table-striped text-center align-middle">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الموظف المحال</th>
+                            <th>تاريخ الإحالة</th>
+                            <th>سبب الانهاء</th>
+                            <th>المرحلة الحالية</th>
+                            <th>تاريخ آخر تحديث</th>
+                            <th>المسئول</th>
+                            <th>الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- حالة 1: جاري المراجعة -->
+                        <tr>
+                            <td>1</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td class="text-danger">01/08/2024</td>
+                            <td>بلوغ السن القانوني</td>
+                            <td><span class="badge bg-warning text-dark p-2">مراجعة التدرج الوظيفي</span></td>
+                            <td>منذ يومين</td>
+                            <td>أ/ أحمد (شئون عاملين)</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="openReviewModal('فاطمة الشرباني')">
+                                    <i class="fas fa-edit me-1"></i> استكمال الإجراءات
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 2: وفاة (استعجال) -->
+                        <tr>
+                            <td>2</td>
+                            <td class="text-end fw-bold">موظف (متوفي)</td>
+                            <td>10/06/2024</td>
+                            <td>الوفاة أثناء الخدمة</td>
+                            <td><span class="badge bg-info text-dark p-2">صرف مصاريف جنازة</span></td>
+                            <td>اليوم</td>
+                            <td>أ/ محمد (حسابات)</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="openReviewModal('المرحوم/ ...')">
+                                    <i class="fas fa-edit me-1"></i> استكمال الإجراءات
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- حالة 3: تم التسليم (أرشيف) -->
+                        <tr class="text-muted bg-light">
+                            <td>3</td>
+                            <td class="text-end">موظف سابق</td>
+                            <td>01/01/2024</td>
+                            <td>استقالة</td>
+                            <td><span class="badge bg-success">تم تسليم الملف (أرشيف)</span></td>
+                            <td>05/01/2024</td>
+                            <td>المندوب</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-secondary" title="إيصال الاستلام"><i class="fas fa-receipt"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: شاشة المراجعة والتجهيز (Wizard) -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-clipboard-check me-2"></i> تجهيز ملف المعاش - <span id="empNameTitle" class="text-warning"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- تبويبات الخطوات (Nav Tabs) -->
+                <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold" id="step1-tab" data-bs-toggle="pill" data-bs-target="#step1" type="button">1. مراجعة التدرج</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold" id="step2-tab" data-bs-toggle="pill" data-bs-target="#step2" type="button">2. البيانات المالية</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold" id="step3-tab" data-bs-toggle="pill" data-bs-target="#step3" type="button">3. الطباعة والتسليم</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content border p-3 rounded bg-light" id="pills-tabContent">
+
+                    <!-- الخطوة 1: مراجعة التدرج الوظيفي -->
+                    <div class="tab-pane fade show active" id="step1" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-primary">أ. بيانات التعيين والضم</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked disabled>
+                                    <label class="form-check-label">قرار التعيين موجود (بتاريخ 2002)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="chkJoin">
+                                    <label class="form-check-label" for="chkJoin">تم ضم جميع مدد الخدمة السابقة (قرار ضم)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-primary">ب. التسويات والأجازات</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="chkLeaves">
+                                    <label class="form-check-label" for="chkLeaves">تم مراجعة الأجازات الخاصة (بدون أجر)</label>
+                                </div>
+                                <small class="text-danger ms-4">هام: يتم استبعاد مدة الأجازات الخاصة من حساب المعاش.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- الخطوة 2: البيانات المالية (الخمس علاوات) -->
+                    <div class="tab-pane fade" id="step2" role="tabpanel">
+                        <div class="alert alert-info py-1">
+                            <i class="fas fa-info-circle me-1"></i> يرجى التأكد من قيم الأجر الأساسي والمتغير للخمس سنوات الأخيرة (استمارة الدخل).
+                        </div>
+                        <table class="table table-sm table-bordered text-center bg-white">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>السنة</th>
+                                    <th>2020</th>
+                                    <th>2021</th>
+                                    <th>2022</th>
+                                    <th>2023</th>
+                                    <th>2024</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold bg-light">أساسي تأميني</td>
+                                    <td><input type="number" class="form-control form-control-sm text-center" value="1200"></td>
+                                    <td><input type="number" class="form-control form-control-sm text-center" value="1350"></td>
+                                    <td><input type="number" class="form-control form-control-sm text-center" value="1500"></td>
+                                    <td><input type="number" class="form-control form-control-sm text-center" value="1750"></td>
+                                    <td><input type="number" class="form-control form-control-sm text-center" value="2100"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- الخطوة 3: التسليم -->
+                    <div class="tab-pane fade" id="step3" role="tabpanel">
+                        <div class="text-center py-4">
+                            <h5><i class="fas fa-check-circle text-success fa-3x mb-3"></i></h5>
+                            <p class="lead">الملف جاهز للإرسال.</p>
+
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <button class="btn btn-outline-dark"><i class="fas fa-print me-1"></i> طباعة خطاب التسليم (نموذج 103)</button>
+                                <button class="btn btn-success" onclick="closeFile()"><i class="fas fa-archive me-1"></i> حفظ وتغيير الحالة إلى "تم التسليم"</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <small class="text-muted">آخر تحديث: @DateTime.Now.ToShortDateString()</small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق (حفظ كمسودة)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#filesTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "lengthChange": false,
+                "autoWidth": false
+            });
+        });
+
+        // فتح نافذة المراجعة باسم الموظف
+        function openReviewModal(name) {
+            document.getElementById('empNameTitle').innerText = name;
+            var myModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            myModal.show();
+        }
+
+        // محاكاة إغلاق الملف
+        function closeFile() {
+            Swal.fire(
+                'تمت العملية!',
+                'تم تحويل حالة الملف إلى "تم التسليم للأرشيف".',
+                'success'
+            );
+            // Close modal after delay
+            setTimeout(() => {
+                var el = document.getElementById('reviewModal');
+                var modal = bootstrap.Modal.getInstance(el);
+                modal.hide();
+            }, 2000);
+        }
+    </script>

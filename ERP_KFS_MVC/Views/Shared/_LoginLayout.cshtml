@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - نظام ERP ديوان عام محافظة كفر الشيخ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+            body {
+                /* خلفية مؤسسية احترافية */
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                font-family: 'Tajawal', sans-serif !important;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden; /* يمنع السكرول نهائياً */
+            }
+
+                /* إضافة إضاءة خفيفة في الخلفية للمسة عصرية */
+                body::before {
+                    content: '';
+                    position: absolute;
+                    width: 500px;
+                    height: 500px;
+                    background: radial-gradient(circle, rgba(0,124,146,0.15) 0%, rgba(0,0,0,0) 70%);
+                    top: -100px;
+                    right: -100px;
+                    z-index: 0;
+                }
+
+            .login-wrapper {
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                max-width: 440px;
+                padding: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .login-card {
+                background: #ffffff;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+                overflow: hidden;
+                position: relative;
+                min-width: 700px;
+            }
+
+                /* خط علوي مميز للكارت */
+                .login-card::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 5px;
+                    background: linear-gradient(90deg, #007c92, #00c9d8);
+                }
+
+            .login-header {
+                padding: 40px 30px 20px;
+                text-align: center;
+            }
+
+                .login-header img {
+                    width: 85px;
+                    height: 85px;
+                    border-radius: 50%;
+                    background: #f8fafc;
+                    padding: 8px;
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+                    margin-bottom: 20px;
+                    border: 1px solid #f1f5f9;
+                    object-fit: contain;
+                }
+
+            .system-badge {
+                display: inline-block;
+                background: #e0f2fe;
+                color: #0369a1;
+                font-size: 0.75rem;
+                font-weight: 700;
+                padding: 5px 12px;
+                border-radius: 20px;
+                margin-bottom: 12px;
+                letter-spacing: 0.5px;
+            }
+
+            .login-header h1 {
+                font-size: 1.4rem;
+                font-weight: 800;
+                color: #0f172a;
+                margin-bottom: 8px;
+            }
+
+            .login-header p {
+                font-size: 0.95rem;
+                color: #64748b;
+                margin: 0;
+                font-weight: 500;
+            }
+
+            .login-body {
+                padding: 0 30px 40px;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="~/image/kfs-logo (2).png" alt="شعار المحافظة">
+                <div class="system-badge">نظام ERP الموحد</div>
+                <h1>نظام إدارة المؤسسة</h1>
+                <p>ديوان عام محافظة كفر الشيخ</p>
+            </div>
+            <div class="login-body">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        // عمل Focus تلقائي لأول حقل لسهولة الاستخدام
+        $('form').find('input[type="text"], input[type="email"], input[type="password"]').first().focus();
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

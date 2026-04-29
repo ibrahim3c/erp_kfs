@@ -48,32 +48,32 @@ namespace Identity.Infrastructure.Services
             return Result<Guid>.Failure(new Error("Role.CannotCreated", result.Errors.Select(e => e.Description).ToArray().ToString()));
         }
 
-        public async Task<Result> UpdateRoleAsync(Guid id, string newRoleName)
+        public async Task<Result<Guid>> UpdateRoleAsync(Guid id, string newRoleName)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
-            if (role == null) return Result.Failure(IdentityErrors.RoleNotFound);
+            if (role == null) return Result<Guid>.Failure(IdentityErrors.RoleNotFound);
 
             if (role.Name != newRoleName && await _roleManager.RoleExistsAsync(newRoleName))
-                return Result.Failure(IdentityErrors.RoleAlreadyExists);
+                return Result<Guid>.Failure(IdentityErrors.RoleAlreadyExists);
 
             role.Name = newRoleName;
             var result = await _roleManager.UpdateAsync(role);
 
-            if (result.Succeeded) return Result.Success();
+            if (result.Succeeded) return Result<Guid>.Success(role.Id);
 
-            return Result.Failure( new Error("Role.CannotUpdated",result.Errors.Select(e => e.Description).ToArray().ToString()));
+            return Result<Guid>.Failure(new Error("Role.CannotUpdated", result.Errors.Select(e => e.Description).ToArray().ToString()));
         }
 
-        public async Task<Result> DeleteRoleAsync(Guid id)
+        public async Task<Result<Guid>> DeleteRoleAsync(Guid id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
-            if (role == null) return Result.Failure(IdentityErrors.RoleNotFound);
+            if (role == null) return Result<Guid>.Failure(IdentityErrors.RoleNotFound);
 
             var result = await _roleManager.DeleteAsync(role);
 
-            if (result.Succeeded) return Result.Success();
+            if (result.Succeeded) return Result<Guid>.Success(role.Id);
 
-            return Result.Failure(new Error("Role.CannotDeleted", result.Errors.Select(e => e.Description).ToArray().ToString()));
+            return Result<Guid>.Failure(new Error("Role.CannotDeleted", result.Errors.Select(e => e.Description).ToArray().ToString()));
         }
 
         // i got claims by role , and i got permissions by claims , so i can get permissions by role

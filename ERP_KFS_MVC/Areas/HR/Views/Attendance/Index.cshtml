@@ -1,0 +1,310 @@
+﻿@{
+    ViewData["Title"] = "سجل الحضور والانصراف اليومي";
+}
+
+<!-- DataTables Styles -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">دفتر الحضور والانصراف</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">سجل الحضور</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- 1. شريط الإحصائيات (Widgets) -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>150</h3>
+                        <p>قوة العمل بالكامل</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>120</h3>
+                        <p>حضور اليوم</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>15</h3>
+                        <p>تأخير / أذن</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>15</h3>
+                        <p>غياب / أجازة</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. الفلترة وأدوات التحكم -->
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-search mr-1"></i> البحث والتحكم
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row align-items-end">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ اليوم</label>
+                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">القسم / الإدارة</label>
+                            <select class="form-select select2">
+                                <option>-- الكل --</option>
+                                <option>نظم المعلومات</option>
+                                <option>الشئون الهندسية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">حالة الحضور</label>
+                            <select class="form-select">
+                                <option>الكل</option>
+                                <option>حضور</option>
+                                <option>غياب</option>
+                                <option>تأخير</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3 d-grid gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> عرض</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 3. جدول البيانات -->
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title text-bold">سجلات الموظفين</h3>
+                    <div class="btn-group">
+                        <!-- زرار Modal التسجيل اليدوي -->
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#manualEntryModal">
+                            <i class="fas fa-fingerprint"></i> تسجيل يدوي
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm">
+                            <i class="fas fa-file-upload"></i> استيراد من الماكينة
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-print"></i> تقرير الغياب
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <table id="attendanceTable" class="table table-bordered table-striped text-center">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>م</th>
+                            <th>الموظف</th>
+                            <th>الإدارة</th>
+                            <th>الدخول (IN)</th>
+                            <th>الخروج (OUT)</th>
+                            <th>ساعات العمل</th>
+                            <th>التأخير</th>
+                            <th>الحالة</th>
+                            <th>خيارات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- مثال 1: حضور منتظم -->
+                        <tr>
+                            <td>1</td>
+                            <td class="font-weight-bold text-end">محمد فؤاد ابراهيم</td>
+                            <td>نظم المعلومات</td>
+                            <td class="text-success">08:00 ص</td>
+                            <td class="text-danger">04:00 م</td>
+                            <td>8 س</td>
+                            <td>-</td>
+                            <td><span class="badge bg-success">حضور منتظم</span></td>
+                            <td>
+                                <button class="btn btn-outline-secondary btn-sm" title="تفاصيل"><i class="fas fa-list"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- مثال 2: تأخير -->
+                        <tr>
+                            <td>2</td>
+                            <td class="font-weight-bold text-end">فاطمة الشرباني</td>
+                            <td>التخطيط</td>
+                            <td class="text-warning font-weight-bold">08:45 ص</td>
+                            <td>04:00 م</td>
+                            <td>7.15 س</td>
+                            <td class="text-danger font-weight-bold">45 د</td>
+                            <td><span class="badge bg-warning text-dark">تأخير</span></td>
+                            <td>
+                                <!-- Dropdown BS5 -->
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#">احتساب أذن</a></li>
+                                        <li><a class="dropdown-item" href="#">تعديل الموعد</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- مثال 3: غياب -->
+                        <tr class="bg-light">
+                            <td>3</td>
+                            <td class="font-weight-bold text-end">بهجت ابراهيم</td>
+                            <td>الحدائق</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>0</td>
+                            <td>-</td>
+                            <td><span class="badge bg-danger">غياب</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#">تحويل لأجازة اعتيادي</a></li>
+                                        <li><a class="dropdown-item" href="#">تحويل لمرضي</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#">توقيع جزاء</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- مثال 4: مأمورية -->
+                        <tr>
+                            <td>4</td>
+                            <td class="font-weight-bold text-end">رانيا أبو النصر</td>
+                            <td>القانونية</td>
+                            <td>08:00 ص</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><span class="badge bg-info text-dark">مأمورية خارجية</span></td>
+                            <td>
+                                <button class="btn btn-outline-secondary btn-sm" title="عرض خط السير"><i class="fas fa-car"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal: تسجيل حضور يدوي -->
+<div class="modal fade" id="manualEntryModal" tabindex="-1" aria-labelledby="manualEntryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="manualEntryModalLabel"><i class="fas fa-edit me-2"></i> تسجيل حضور/انصراف يدوي</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف</label>
+                        <select class="form-select select2-modal" style="width:100%">
+                            <option>ابحث عن الموظف...</option>
+                            <option>محمد فؤاد</option>
+                            <option>فاطمة الشرباني</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">التاريخ</label>
+                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">نوع الحركة</label>
+                            <select class="form-select">
+                                <option>دخول (Check In)</option>
+                                <option>خروج (Check Out)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الوقت</label>
+                        <input type="time" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظات / سبب التعديل</label>
+                        <textarea class="form-control" rows="2" placeholder="مثال: البصمة لم تعمل، مأمورية..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-success">حفظ السجل</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        $(function () {
+            // تهيئة الجدول
+            $("#attendanceTable").DataTable({
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "buttons": [
+                    { extend: 'copy', text: 'نسخ' },
+                    { extend: 'excel', text: 'Excel', className: 'btn-success' },
+                    { extend: 'print', text: 'طباعة' }
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json"
+                }
+            }).buttons().container().appendTo('#attendanceTable_wrapper .col-md-6:eq(0)');
+        });
+    </script>

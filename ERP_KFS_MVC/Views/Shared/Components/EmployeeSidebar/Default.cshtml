@@ -1,0 +1,232 @@
+@using Identity.Domain
+@using Microsoft.AspNetCore.Identity
+@model ERP_KFS_MVC.ViewComponents.EmployeeSidebarModel
+@inject UserManager<AppUser> UserManager
+@{
+    bool HasPerm(string permName) => Model.PermissionsList?.Contains(permName) ?? false;
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <div class="sidebar">
+        <div class="user-panel mt-2 pb-2 mb-2 d-flex">
+            <div class="image">
+                <img src="~/image/icons/7.png" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="/HR/Employee/MyProfile" class="d-block">@currentUser?.FullName</a>
+                @if (Model.IsAdmin)
+                {
+                    <small class="badge badge-danger mt-1">مدير النظام</small>
+                }
+                else if (Model.IsHR)
+                {
+                    <small class="badge badge-success mt-1">مدير الموارد البشرية</small>
+                }
+                else
+                {
+                    <small class="badge badge-info mt-1">موظف</small>
+                }
+            </div>
+        </div>
+
+        <nav class="mt-1">
+            <ul class="nav nav-pills nav-sidebar flex-column nav-compact" data-widget="treeview" role="menu" data-accordion="false">
+
+                <li class="nav-header">طلباتي</li>
+                <li class="nav-item">
+                    <a asp-area="HR" asp-controller="Leaves" asp-action="MyRequests" class="nav-link">
+                        <i class="nav-icon fas fa-umbrella-beach"></i>
+                        <p>الإجازات</p>
+                    </a>
+                </li>
+
+                @if (Model.IsHR || Model.IsAdmin)
+                {
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <p>
+                                الموارد البشرية
+                                <i class="right fas fa-angle-left" style="margin-right: 132px;"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a asp-area="HR" asp-controller="Employees" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>الموظفين</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="HR" asp-controller="Departments" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>الإدارات</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="HR" asp-controller="Lookups" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>بيانات النظام</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+
+                @if (Model.IsAdmin)
+                {
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>
+                                الإدارة
+                                <i class="right fas fa-angle-left" style="margin-right: 77px;"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>لوحة التحكم</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Identity" asp-controller="Users" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>إدارة المستخدمين</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Identity" asp-controller="Roles" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>الأدوار والصلاحيات</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="OrgUnits" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>الوحدات التنظيمية</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="OrgUnitTypes" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>أنواع الوحدات</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="LeadershipPositions" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>المناصب القيادية</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="QualitativeGroups" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>المجموعات الوظيفية</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="FunctionalGroups" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>المجموعات الفرعية</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="JobTitles" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>المسميات الوظيفية</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Organization" asp-controller="JobGrades" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>الدرجات الوظيفية</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+
+                @if (Model.IsAdmin)
+                {
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-globe"></i>
+                            <p>
+                                البيانات الجغرافية
+                                <i class="right fas fa-angle-left" style="margin-right: 147px;"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a asp-area="Geography" asp-controller="Governorates" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>المحافظات</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Geography" asp-controller="CityCenters" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>المراكز والمدن</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Geography" asp-controller="LocalUnits" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>الوحدات المحلية</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Geography" asp-controller="Villages" asp-action="Index" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>القرى</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+
+                <li class="nav-header pt-2">الخدمات</li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-file-contract"></i>
+                        <p>بيان الحالة الوظيفية</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-cog"></i>
+                        <p>
+                            الإعدادات
+                            <i class="right fas fa-angle-left" style="margin-right: 95px;"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" asp-area="Admin" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-link nav-link text-white w-100 text-left" style="margin: 0; padding: .5rem 1rem;">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>تسجيل الخروج من الإعدادات</p>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item mt-2">
+                    <form asp-controller="Account" asp-action="Logout" asp-area="Admin" method="post" class="nav-link p-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-link text-white w-100 text-left" style="margin: 0; padding: .5rem 1rem;">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>تسجيل الخروج</p>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>

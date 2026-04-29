@@ -1,0 +1,56 @@
+﻿@model ERP_KFS_MVC.Models.ErrorViewModel
+
+@{
+    ViewData["Title"] = "حدث خطأ";
+    // تقدر تخفي الـ Sidebar أو الـ Header لو حابب صفحة الخطأ تكون واخدة الشاشة كلها
+    // Layout = null;
+}
+
+<div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        إشعار النظام
+                    </h5>
+                </div>
+
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle text-danger" style="font-size: 5rem;"></i>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ErrorCode))
+                    {
+                        <h4 class="fw-bold text-dark mb-3">@Model.ErrorCode</h4>
+                        <p class="text-muted fs-5">@Model.ErrorMessage</p>
+                    }
+                    else
+                    {
+                        <h4 class="fw-bold text-danger mb-3">حدث خطأ غير متوقع</h4>
+                        <p class="text-muted">نعتذر، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى لاحقاً أو التواصل مع الدعم الفني.</p>
+
+                        @if (Model.ShowRequestId)
+                        {
+                            <div class="mt-4 p-3 bg-light rounded text-start border border-secondary" dir="ltr">
+                                <span class="text-muted fw-bold">Request ID:</span>
+                                <code class="text-dark">@Model.RequestId</code>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="card-footer bg-light text-center py-3">
+                    <button onclick="history.back()" class="btn btn-outline-dark px-4 me-2">
+                        <i class="fas fa-undo me-1"></i> رجوع للخلف
+                    </button>
+                    <a href="/" class="btn btn-primary px-4">
+                        <i class="fas fa-home me-1"></i> الرئيسية
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

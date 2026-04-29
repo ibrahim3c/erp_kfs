@@ -1,0 +1,173 @@
+@model IEnumerable<HR.Application.Employees.GetAllEmployees.EmployeeListResponse>
+
+@{
+    ViewData["Title"] = "سجل الموظفين العام";
+}
+
+<link rel="stylesheet" href="~/css/global/hr-custom.css" asp-append-version="true">
+
+<div class="hr-page-container animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h5 font-weight-bold text-dark mb-1">سجل الموظفين العام</h1>
+            <p class="text-muted mb-0 small">إدارة ومتابعة بيانات العاملين بالمحافظة</p>
+        </div>
+        <a asp-action="Create" class="hr-btn hr-btn-primary">
+            <i class="fas fa-plus"></i> إضافة موظف جديد
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 mb-4">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="hr-card">
+        <div class="hr-card-header" data-bs-toggle="collapse" href="#filterCollapse" role="button" aria-expanded="false" style="cursor: pointer;">
+            <h3 class="hr-card-title">
+                <i class="fas fa-filter"></i> أدوات البحث والتصفية
+            </h3>
+            <i class="fas fa-chevron-down text-muted"></i>
+        </div>
+        <div class="collapse" id="filterCollapse">
+            <div class="hr-filter-section">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="hr-form-label">اسم الموظف</label>
+                        <input type="text" id="searchName" class="form-control hr-form-control" placeholder="بحث بالاسم...">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="hr-form-label">حالة الموظف</label>
+                        <select id="searchStatus" class="form-select hr-form-control">
+                            <option value="">-- الكل --</option>
+                            <option value="true">نشط</option>
+                            <option value="false">غير نشط</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hr-card mt-4">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title">
+                <i class="fas fa-list-ul"></i> قاعدة بيانات العاملين
+            </h3>
+        </div>
+        <div class="hr-table-wrapper">
+            <table id="employeesTable" class="table hr-table text-center mb-0" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>كود</th>
+                        <th>الاسم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الهاتف</th>
+                        <th>تاريخ التعيين</th>
+                        <th>الحالة</th>
+                        <th>الخيارات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int counter = 1;
+                    }
+                    @foreach (var emp in Model)
+                    {
+                        <tr>
+                            <td>@counter++</td>
+                            <td><span class="font-weight-bold text-primary">@emp.Code</span></td>
+                            <td class="text-right">@emp.Name</td>
+                            <td>@emp.Email</td>
+                            <td>@emp.Phone</td>
+                            <td>@emp.HireDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (emp.IsActive)
+                                {
+                                    <span class="hr-badge hr-badge-success">نشط</span>
+                                }
+                                else
+                                {
+                                    <span class="hr-badge hr-badge-danger">غير نشط</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-pill" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-h text-muted"></i>
+                                    </button>
+                                    <div class="dropdown-menu hr-dropdown-menu dropdown-menu-end shadow">
+                                        <a class="dropdown-item hr-dropdown-item"
+                                           asp-action="Details" asp-route-id="@emp.Id">
+                                            <i class="fas fa-eye text-primary"></i> عرض الملف
+                                        </a>
+                                        <a class="dropdown-item hr-dropdown-item"
+                                           asp-action="Edit" asp-route-id="@emp.Id">
+                                            <i class="fas fa-edit text-warning"></i> تعديل
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item hr-dropdown-item text-danger"
+                                           asp-action="Delete" asp-route-id="@emp.Id">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center text-muted p-5">
+                    <i class="fas fa-users fa-3x mb-3 opacity-50"></i>
+                    <p>لا توجد بيانات موظفين حالياً</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#employeesTable').DataTable({
+                "responsive": true,
+                "language": {
+                    "sProcessing": "جاري التحميل...",
+                    "sLengthMenu": "عرض _MENU_",
+                    "sZeroRecords": "لا توجد نتائج",
+                    "sEmptyTable": "لا توجد بيانات",
+                    "sInfo": "سجل _START_ - _END_ من _TOTAL_",
+                    "sInfoEmpty": "سجل 0 - 0 من 0",
+                    "sInfoFiltered": "(من _MAX_)",
+                    "sSearch": "",
+                    "searchPlaceholder": "بحث...",
+                    "oPaginate": {
+                        "sFirst": "الأول", "sLast": "الأخير",
+                        "sNext": "التالي", "sPrevious": "السابق"
+                    }
+                },
+                "dom": '<"hr-dt-top p-3 border-bottom w-100"B><"hr-dt-bottom p-3 d-flex align-items-center justify-content-between w-100"lf>rt<"p-3 d-flex flex-column align-items-center gap-2 w-100"pi>',
+                "buttons": [
+                    { extend: 'copy',   text: '<i class="fas fa-copy"></i> نسخ',         className: 'hr-btn-dt' },
+                    { extend: 'excel',  text: '<i class="fas fa-file-excel"></i> إكسيل', className: 'hr-btn-dt' },
+                    { extend: 'print',  text: '<i class="fas fa-print"></i> طباعة',      className: 'hr-btn-dt' },
+                    { extend: 'colvis', text: '<i class="fas fa-columns"></i> الأعمدة',  className: 'hr-btn-dt' }
+                ]
+            });
+        });
+    </script>
+}

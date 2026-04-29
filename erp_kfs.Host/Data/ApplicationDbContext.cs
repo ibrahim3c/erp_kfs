@@ -1,4 +1,5 @@
 ﻿using erp_kfs.Host.Models;
+using Identity.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MyERP.Web.Areas.Admin.Models;

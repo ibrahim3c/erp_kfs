@@ -32,6 +32,9 @@ public sealed class LeadershipPositionHistory : Entity
     public DateTime? DecisionDate { get; private set; }
     public string Notes { get; private set; }
 
+    // Navigation Properties
+    public LeadershipPosition? LeadershipPosition { get; private set; }
+
     // Factory method
     public static Result<LeadershipPositionHistory> Create(
         Guid leadershipPositionId,

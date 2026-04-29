@@ -75,7 +75,7 @@ namespace erp_kfs.Host
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthentication(); 
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapRazorPages();
 
@@ -94,4 +94,3 @@ namespace erp_kfs.Host
         }
     }
 }
-

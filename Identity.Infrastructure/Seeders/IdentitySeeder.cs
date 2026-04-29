@@ -35,7 +35,9 @@ namespace Identity.Infrastructure.Seeders
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    FullName = "System Administrator"
+
                 };
 
                 await userManager.CreateAsync(adminUser, "Admin@123");

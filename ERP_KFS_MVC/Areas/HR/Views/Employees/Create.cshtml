@@ -1,0 +1,292 @@
+@model HR.Application.Employees.CreateEmployee.CreateEmployeeCommand
+
+@{
+    ViewData["Title"] = "إضافة موظف جديد";
+}
+
+<link rel="stylesheet" href="~/css/global/hr-custom.css" asp-append-version="true">
+
+<div class="hr-page-container animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h5 font-weight-bold text-dark mb-1">فتح ملف موظف جديد</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index">سجل الموظفين</a></li>
+                    <li class="breadcrumb-item active">إضافة جديد</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-action="Index" class="hr-btn hr-btn-outline">
+            <i class="fas fa-arrow-right"></i> العودة للسجل
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post" id="createEmployeeForm">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4 mb-3"></div>
+
+        <div class="hr-card">
+            <ul class="nav nav-tabs hr-tabs border-0" id="employeeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-personal" data-bs-toggle="tab" href="#personal" role="tab">
+                        <i class="fas fa-user-circle"></i> البيانات الشخصية
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-job" data-bs-toggle="tab" href="#job" role="tab">
+                        <i class="fas fa-briefcase"></i> الوظيفة والدرجة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-contact" data-bs-toggle="tab" href="#contact" role="tab">
+                        <i class="fas fa-phone"></i> معلومات التواصل
+                    </a>
+                </li>
+            </ul>
+
+            <div class="hr-table-wrapper p-5">
+                <div class="tab-content" id="employeeTabsContent">
+
+                    <!-- 1. البيانات الشخصية -->
+                    <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="Name" class="hr-form-label">
+                                    الاسم الكامل <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Name" class="form-control hr-form-control"
+                                       placeholder="مثال: محمد أحمد السيد" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="NationalId" class="hr-form-label">
+                                    الرقم القومي (14 رقم) <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="NationalId" class="form-control hr-form-control"
+                                       maxlength="14" placeholder="2990901xxxxxxx"
+                                       id="nationalIdInput" />
+                                <small class="text-muted">سيتم استخراج تاريخ الميلاد والنوع تلقائياً</small>
+                                <span asp-validation-for="NationalId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="DateOfBirth" class="hr-form-label">تاريخ الميلاد</label>
+                                <input asp-for="DateOfBirth" type="date" id="dateOfBirthInput"
+                                       class="form-control hr-form-control" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="Gender" class="hr-form-label">النوع</label>
+                                <select asp-for="Gender" class="form-select hr-form-control" id="genderSelect">
+                                    <option value="">-- اختر --</option>
+                                    <option value="ذكر">ذكر</option>
+                                    <option value="أنثى">أنثى</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="MaritalStatus" class="hr-form-label">الحالة الاجتماعية</label>
+                                <select asp-for="MaritalStatus" class="form-select hr-form-control">
+                                    <option value="">-- اختر --</option>
+                                    <option value="أعزب">أعزب</option>
+                                    <option value="متزوج">متزوج</option>
+                                    <option value="مطلق">مطلق</option>
+                                    <option value="أرمل">أرمل</option>
+                                </select>
+                                <span asp-validation-for="MaritalStatus" class="text-danger small"></span>
+                            </div>
+
+                            <!-- المركز أولاً — القرية بتتفلتر منه -->
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="CityCenterId" class="hr-form-label">المدينة/المركز</label>
+                                <select asp-for="CityCenterId" id="cityCenterSelect"
+                                        class="form-select hr-form-control"
+                                        asp-items="ViewBag.CityCenterId">
+                                    <option value="">-- اختر المركز --</option>
+                                </select>
+                                <span asp-validation-for="CityCenterId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="VillageId" class="hr-form-label">القرية</label>
+                                <select asp-for="VillageId" id="villageSelect"
+                                        class="form-select hr-form-control" disabled>
+                                    <option value="">-- اختر المركز أولاً --</option>
+                                </select>
+                                <span asp-validation-for="VillageId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="Address" class="hr-form-label">العنوان بالتفصيل</label>
+                                <input asp-for="Address" class="form-control hr-form-control"
+                                       placeholder="الشارع - رقم المبنى" />
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. الوظيفة والدرجة -->
+                    <div class="tab-pane fade" id="job" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 hr-form-group">
+                                <label class="hr-form-label">كود الموظف</label>
+                                <input class="form-control hr-form-control" readonly
+                                       placeholder="يتم إنشاؤه تلقائياً" />
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="HireDate" class="hr-form-label">
+                                    تاريخ التعيين الفعلي <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="HireDate" type="date" class="form-control hr-form-control" />
+                                <span asp-validation-for="HireDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="EmploymentTypeId" class="hr-form-label">نوع التوظيف</label>
+                                <select asp-for="EmploymentTypeId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.EmploymentTypeId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                                <span asp-validation-for="EmploymentTypeId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="JobTitleId" class="hr-form-label">المسمى الوظيفي</label>
+                                <select asp-for="JobTitleId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.JobTitleId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                                <span asp-validation-for="JobTitleId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="JobGradeId" class="hr-form-label">الدرجة الوظيفية</label>
+                                <select asp-for="JobGradeId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.JobGradeId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                                <span asp-validation-for="JobGradeId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="FunctionalGroupId" class="hr-form-label">المجموعة الوظيفية</label>
+                                <select asp-for="FunctionalGroupId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.FunctionalGroupId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                                <span asp-validation-for="FunctionalGroupId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="OrgUnitId" class="hr-form-label">الوحدة التنظيمية / الإدارة</label>
+                                <select asp-for="OrgUnitId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.OrgUnitId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                                <span asp-validation-for="OrgUnitId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. معلومات التواصل -->
+                    <div class="tab-pane fade" id="contact" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="Phone" class="hr-form-label">رقم الموبايل</label>
+                                <input asp-for="Phone" type="tel" class="form-control hr-form-control"
+                                       placeholder="01x xxxx xxxx" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="Email" class="hr-form-label">البريد الإلكتروني</label>
+                                <input asp-for="Email" type="email" class="form-control hr-form-control"
+                                       placeholder="example@gov.eg" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="hr-card-footer bg-light p-4 d-flex justify-content-between align-items-center border-top">
+                <a asp-action="Index" class="text-muted font-weight-bold text-decoration-none">
+                    <i class="fas fa-times"></i> إلغاء العملية
+                </a>
+                <button type="submit" class="hr-btn hr-btn-primary px-5">
+                    <i class="fas fa-check-circle"></i> حفظ وتفعيل الملف
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // ─── 1. Cascading: المركز → القرية ───────────────────────
+        document.getElementById('cityCenterSelect').addEventListener('change', function () {
+            const cityCenterId = this.value;
+            const villageSelect = document.getElementById('villageSelect');
+
+            villageSelect.innerHTML = '<option value="">جاري التحميل...</option>';
+            villageSelect.disabled = true;
+
+            if (!cityCenterId) {
+                villageSelect.innerHTML = '<option value="">-- اختر المركز أولاً --</option>';
+                return;
+            }
+
+            fetch(`/api/geography/villages-by-city-center/${cityCenterId}`)
+                .then(res => res.json())
+                .then(data => {
+                    villageSelect.innerHTML = '<option value="">-- اختر القرية --</option>';
+                    data.forEach(v => {
+                        const opt = document.createElement('option');
+                        opt.value = v.id;
+                        opt.textContent = v.name;
+                        villageSelect.appendChild(opt);
+                    });
+                    villageSelect.disabled = false;
+                })
+                .catch(() => {
+                    villageSelect.innerHTML = '<option value="">حدث خطأ في التحميل</option>';
+                });
+        });
+
+        // ─── 2. استخراج البيانات من الرقم القومي ────────────────
+        document.getElementById('nationalIdInput').addEventListener('input', function () {
+            const id = this.value;
+            if (id.length !== 14) return;
+
+            // استخراج تاريخ الميلاد
+            // الرقم: [0] القرن (2=1900, 3=2000) [1-2] سنة [3-4] شهر [5-6] يوم
+            const century = id[0] === '2' ? '19' : '20';
+            const year  = century + id.substring(1, 3);
+            const month = id.substring(3, 5);
+            const day   = id.substring(5, 7);
+            const dob   = `${year}-${month}-${day}`;
+
+            const dobInput = document.getElementById('dateOfBirthInput');
+            if (dobInput) dobInput.value = dob;
+
+            // استخراج النوع: الرقم في الخانة 12 — فردي=ذكر، زوجي=أنثى
+            const genderDigit = parseInt(id[12]);
+            const genderSelect = document.getElementById('genderSelect');
+            if (genderSelect) {
+                genderSelect.value = genderDigit % 2 !== 0 ? 'ذكر' : 'أنثى';
+            }
+        });
+
+        // ─── 3. Tab indicator عند وجود validation errors ─────────
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(pane => {
+                const hasError = pane.querySelector('.text-danger:not(:empty)');
+                if (hasError) {
+                    const tabId = 'tab-' + pane.id;
+                    const tabLink = document.getElementById(tabId);
+                    if (tabLink) {
+                        tabLink.classList.add('text-danger');
+                        tabLink.innerHTML += ' <i class="fas fa-exclamation-circle text-danger small"></i>';
+                    }
+                }
+            });
+        });
+    </script>
+}

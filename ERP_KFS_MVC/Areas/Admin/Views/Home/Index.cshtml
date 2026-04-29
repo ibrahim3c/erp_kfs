@@ -1,0 +1,300 @@
+@model ERP_KFS_MVC.Areas.Admin.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "لوحة التحكم الإدارية";
+    Layout = "~/Views/Shared/_UserLayout.cshtml"; 
+}
+
+<style>
+    .dash-section {
+        padding: 20px 0 8px;
+    }
+
+    .dash-section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #94a3b8;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .dash-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+    /* stat cards */
+    .stat-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e8edf2;
+        padding: 20px 22px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.22s ease;
+        text-decoration: none !important;
+        color: inherit !important;
+        height: 100%;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            border-color: transparent;
+            text-decoration: none !important;
+        }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .si-teal {
+        background: #e0f7fa;
+        color: #007c92;
+    }
+
+    .si-amber {
+        background: #fff8e1;
+        color: #d97706;
+    }
+
+    .si-red {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .si-purple {
+        background: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    .si-maroon {
+        background: #fce8e8;
+        color: #b91c1c;
+    }
+
+    .si-green {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+
+    .si-olive {
+        background: #f7fee7;
+        color: #65a30d;
+    }
+
+    .si-indigo {
+        background: #eef2ff;
+        color: #4338ca;
+    }
+
+    .stat-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+        margin-bottom: 4px;
+        letter-spacing: -0.03em;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stat-arrow {
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        transition: color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover .stat-arrow {
+        color: #007c92;
+        transform: translateX(-3px);
+    }
+
+    /* nav cards (no number, just label) */
+    .nav-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e8edf2;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: all 0.22s ease;
+        text-decoration: none !important;
+        color: inherit !important;
+        height: 100%;
+    }
+
+        .nav-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            border-color: transparent;
+            text-decoration: none !important;
+        }
+
+    .nav-card-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .nav-card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 2px;
+    }
+
+    .nav-card-sub {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+</style>
+
+<section class="content-header pb-1">
+    <div class="container-fluid">
+        <div class="row mb-1 align-items-center">
+            <div class="col-sm-6">
+                <h1 class="m-0" style="font-size:1.1rem; font-weight:700; color:#1e293b;">نظرة عامة على النظام</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-left" style="background:transparent; margin:0; padding:0;">
+                    <li class="breadcrumb-item"><a href="#" style="color:#007c92;">الرئيسية</a></li>
+                    <li class="breadcrumb-item active" style="color:#94a3b8;">لوحة التحكم</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content container-fluid">
+
+    <!-- stats -->
+    <div class="dash-section">
+        <div class="dash-section-title">الإحصائيات الرئيسية</div>
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                <a asp-area="HR" asp-controller="Employees" asp-action="Index" class="stat-card">
+                    <div class="stat-icon si-teal"><i class="fas fa-users"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-value">@Model.TotalEmployees</div>
+                        <div class="stat-label">إجمالي الموظفين</div>
+                    </div>
+                    <i class="fas fa-chevron-left stat-arrow"></i>
+                </a>
+            </div>
+            @if (User.IsInRole("Admin") || User.IsInRole("HRManager"))
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                <a asp-area="HR" asp-controller="Leaves" asp-action="ManagerPending" class="stat-card">
+                    <div class="stat-icon si-amber"><i class="fas fa-clock"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-value">@Model.PendingLeaveRequests</div>
+                        <div class="stat-label">طلبات إجازة (مدير)</div>
+                    </div>
+                    <i class="fas fa-chevron-left stat-arrow"></i>
+                </a>
+            </div>
+            }
+            @if (User.IsInRole("HR"))
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                <a asp-area="HR" asp-controller="Leaves" asp-action="HRPending" class="stat-card">
+                    <div class="stat-icon si-red"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-value">@Model.PendingHRRequests</div>
+                        <div class="stat-label">طلبات إجازة (HR)</div>
+                    </div>
+                    <i class="fas fa-chevron-left stat-arrow"></i>
+                </a>
+            </div>
+            }
+        </div>
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <!-- quick nav -->
+        <div class="dash-section">
+            <div class="dash-section-title">الوحدات الإدارية</div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                    <a asp-area="Identity" asp-controller="Users" asp-action="Index" class="nav-card">
+                        <div class="stat-icon si-purple"><i class="fas fa-user-shield"></i></div>
+                        <div class="nav-card-body">
+                            <div class="nav-card-title">المستخدمين</div>
+                            <div class="nav-card-sub">إدارة الحسابات والصلاحيات</div>
+                        </div>
+                        <i class="fas fa-chevron-left stat-arrow"></i>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                    <a asp-area="Identity" asp-controller="Roles" asp-action="Index" class="nav-card">
+                        <div class="stat-icon si-maroon"><i class="fas fa-user-tag"></i></div>
+                        <div class="nav-card-body">
+                            <div class="nav-card-title">الأدوار</div>
+                            <div class="nav-card-sub">مجموعات الصلاحيات</div>
+                        </div>
+                        <i class="fas fa-chevron-left stat-arrow"></i>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                    <a asp-area="Organization" asp-controller="OrgUnits" asp-action="Index" class="nav-card">
+                        <div class="stat-icon si-teal"><i class="fas fa-sitemap"></i></div>
+                        <div class="nav-card-body">
+                            <div class="nav-card-title">الهيكل التنظيمي</div>
+                            <div class="nav-card-sub">الوحدات الإدارية</div>
+                        </div>
+                        <i class="fas fa-chevron-left stat-arrow"></i>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                    <a asp-area="Geography" asp-controller="Governorates" asp-action="Index" class="nav-card">
+                        <div class="stat-icon si-olive"><i class="fas fa-map"></i></div>
+                        <div class="nav-card-body">
+                            <div class="nav-card-title">البيانات الجغرافية</div>
+                            <div class="nav-card-sub">المحافظات والمراكز</div>
+                        </div>
+                        <i class="fas fa-chevron-left stat-arrow"></i>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-3">
+                    <a asp-area="Organization" asp-controller="LeadershipPositions" asp-action="Index" class="nav-card">
+                        <div class="stat-icon si-indigo"><i class="fas fa-user-tie"></i></div>
+                        <div class="nav-card-body">
+                            <div class="nav-card-title">القيادات</div>
+                            <div class="nav-card-sub">تسكين القيادات الإدارية</div>
+                        </div>
+                        <i class="fas fa-chevron-left stat-arrow"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+</section>

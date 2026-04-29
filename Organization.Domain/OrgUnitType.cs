@@ -1,4 +1,5 @@
 ﻿using Modules.Shared.Domain;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Organization.Domain
 {
     public class OrgUnitType : Entity // هيرث الـ Guid Id من هنا
@@ -22,16 +23,25 @@ namespace Organization.Domain
             CanHaveChild = canHaveChild;
         }
 
-        public static Result<OrgUnitType> Create(string code, string name, int levelOrder, bool canHaveChild)
+        public static Result<OrgUnitType> Create(string code, string name,int levelOrder, bool canHaveChild)
         {
-            // Domain Validations
             if (string.IsNullOrWhiteSpace(code))
-                throw new ArgumentException("Code is required.", nameof(code));
+                return Result<OrgUnitType>.Failure(OrganizationErrors.CodeRequired);
+
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required.", nameof(name));
+                return Result<OrgUnitType>.Failure(OrganizationErrors.NameRequired);
+
             if (levelOrder < 0)
-                throw new ArgumentException("LevelOrder must be non-negative.", nameof(levelOrder));
-            return Result<OrgUnitType>.Success(new OrgUnitType(Guid.NewGuid(), code, name, levelOrder, canHaveChild));
+                return Result<OrgUnitType>.Failure(OrganizationErrors.InvalidLevelOrder);
+
+            var orgUnitType = new OrgUnitType(
+                Guid.NewGuid(),
+                code,
+                name,
+                levelOrder,
+                canHaveChild);
+
+            return Result<OrgUnitType>.Success(orgUnitType);
         }
 
         // 3. Business Behaviors (Methods)

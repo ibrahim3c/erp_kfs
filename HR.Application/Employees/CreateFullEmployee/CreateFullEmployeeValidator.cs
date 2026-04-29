@@ -1,4 +1,10 @@
-﻿namespace HR.Application.Employees.CreateFullEmployee
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HR.Application.Employees.CreateFullEmployee
 {
     internal class CreateFullEmployeeValidator
     {

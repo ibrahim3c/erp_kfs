@@ -1,0 +1,77 @@
+@model Identity.Application.Dtos.UserDto
+@using Identity.Application.Dtos
+
+@{
+    ViewData["Title"] = "تفاصيل المستخدم";
+    var allRoles = ViewBag.AllRoles as List<RoleDto> ?? new();
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1><i class="fas fa-user mr-2"></i> تفاصيل المستخدم</h1>
+            </div>
+            <div class="col-sm-6 text-left">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right mr-1"></i> رجوع
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">بيانات المستخدم</h3>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">اسم المستخدم</dt>
+                            <dd class="col-sm-8">@Model.FullName</dd>
+                            
+                            <dt class="col-sm-4">البريد الإلكتروني</dt>
+                            <dd class="col-sm-8">@Model.Email</dd>
+                        </dl>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> تعديل
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card card-outline card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">الأدوار المُعيّنة</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Roles != null && Model.Roles.Any())
+                        {
+                            <div class="list-group">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-tag mr-2"></i>@role</span>
+                                        <span class="badge badge-success">مُعيّن</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">لا يوجد أدوار مُعيّنة لهذا المستخدم</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

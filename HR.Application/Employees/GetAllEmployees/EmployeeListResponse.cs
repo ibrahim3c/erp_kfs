@@ -9,5 +9,6 @@
         public string Phone { get; private set; }
         public DateTime HireDate { get; private set; }
         public bool IsActive { get; private set; }
+        public Guid? LeadershipPositionId { get; private set; } = Guid.Empty;
     }
 }

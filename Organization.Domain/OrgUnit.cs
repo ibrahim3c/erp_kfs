@@ -1,4 +1,5 @@
-﻿using Modules.Shared.Domain;
+﻿using Geography.Domain;
+using Modules.Shared.Domain;
 
 namespace Organization.Domain
 {
@@ -10,6 +11,11 @@ namespace Organization.Domain
         public string Code { get; private set; }
         public bool IsActive { get; private set; }
         public Guid? GovernorateId { get; private set; }
+
+        // Navigation Properties
+        public OrgUnitType? OrgUnitType { get; private set; }
+        public OrgUnit? Parent { get; private set; }
+        public Governorate? Governorate { get; private set; }
 
         // Navigation Properties (Encapsulated)
         private readonly List<OrgUnit> _children = new();
@@ -31,11 +37,11 @@ namespace Organization.Domain
         {
             // Domain Validations
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required.", nameof(name));
+                return Result<OrgUnit>.Failure(OrganizationErrors.NameRequired);
             if (string.IsNullOrWhiteSpace(code))
-                throw new ArgumentException("Code is required.", nameof(code));
+                return Result<OrgUnit>.Failure(OrganizationErrors.CodeRequired);
             if (orgUnitTypeId == Guid.Empty)
-                throw new ArgumentException("OrgUnitTypeId is required.", nameof(orgUnitTypeId));
+                return Result<OrgUnit>.Failure(OrganizationErrors.OrgUnitTypeIdEmpty);
             return Result<OrgUnit>.Success(new OrgUnit(Guid.NewGuid(), name, code, orgUnitTypeId, parentId, governorateId));
         }
 

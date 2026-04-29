@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Identity
 @{
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "إدارة الصلاحيات والأدوار";
+    ViewData["Title"] = "لوحة التحكم";
 
     var permissions = ViewBag.Permissions as List<Permission> ?? new List<Permission>();
     var rolePermissions = ViewBag.RolePermissions as List<RolePermission> ?? new List<RolePermission>();
@@ -17,128 +17,54 @@
         padding: 1.5rem 0 3rem 0;
     }
 
-    /* Welcome Banner - Creative Redesign */
     .welcome-banner {
-        background: #0f172a;
         background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
         border-radius: 1.5rem;
-        padding: 3rem 2.5rem;
+        padding: 2.5rem 2rem;
         color: white;
         position: relative;
         overflow: hidden;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     }
 
         .welcome-banner::before {
             content: '';
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 250px;
+            height: 250px;
             background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-            top: -100px;
+            top: -80px;
             left: -50px;
             border-radius: 50%;
-            filter: blur(40px);
-            z-index: 1;
+            filter: blur(30px);
         }
-
-        .welcome-banner::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-            bottom: -150px;
-            right: -100px;
-            border-radius: 50%;
-            filter: blur(50px);
-            z-index: 1;
-        }
-
-    .welcome-content {
-        position: relative;
-        z-index: 2;
-    }
 
     .welcome-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 900;
         margin-bottom: 0.5rem;
-        letter-spacing: -0.5px;
     }
 
     .welcome-sub {
         color: rgba(255,255,255,0.75);
-        font-size: 0.95rem;
-        max-width: 650px;
-        line-height: 1.7;
+        font-size: 0.9rem;
     }
 
-    /* Stats Cards */
-    .modern-card {
-        background: white !important;
-        border-radius: 1rem !important;
-        padding: 1.25rem !important;
-        border: 1px solid rgba(226, 232, 240, 0.7) !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
-        transition: all 0.3s ease !important;
-        display: flex !important;
-        align-items: center;
-        gap: 1rem !important;
-    }
-
-        .modern-card:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05) !important;
-            border-color: #3b82f644 !important;
-        }
-
-    .icon-box {
-        width: 50px !important;
-        height: 50px !important;
-        border-radius: 0.85rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 1.3rem !important;
-        flex-shrink: 0 !important;
-    }
-
-    .card-info {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .card-title-sm {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        font-weight: 600;
-        margin-bottom: 0.2rem;
-    }
-
-    .card-value {
-        font-size: 1.4rem;
-        font-weight: 900;
-        color: #0f172a;
-        line-height: 1;
-    }
-
-    /* Section Title */
     .section-header {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        margin-bottom: 1.5rem;
-        margin-top: 1rem;
+        margin-bottom: 1.25rem;
+        margin-top: 1.5rem;
     }
 
         .section-header h2 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 800;
-            color: #0f172a;
+            color: #1e293b;
             margin: 0;
+            white-space: nowrap;
         }
 
         .section-header .line {
@@ -147,21 +73,110 @@
             background: #e2e8f0;
         }
 
-    /* ====== Role Card (التصميم الجديد للأدوار والصلاحيات) ====== */
+    .menu-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        padding: 1.25rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+        .menu-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+            border-color: #3b82f633;
+        }
+
+    .menu-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .menu-info {
+        flex: 1;
+    }
+
+    .menu-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.2rem;
+    }
+
+    .menu-desc {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+        }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
     .role-card {
         background: white;
-        border-radius: 1.25rem;
+        border-radius: 1rem;
         border: 1px solid #e2e8f0;
         padding: 1.5rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     }
 
         .role-card:hover {
-            box-shadow: 0 15px 30px rgba(0,0,0,0.06);
-            transform: translateY(-4px);
-            border-color: #3b82f666;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
         }
 
     .role-header {
@@ -174,26 +189,21 @@
     }
 
     .role-name {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 800;
         color: #1e293b;
         margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
     }
 
-    /* Permissions Badges بدلاً من الـ Checkboxes القديمة */
     .perm-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        padding: 0.45rem 0.8rem;
+        padding: 0.4rem 0.75rem;
         border-radius: 0.5rem;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        margin: 0.25rem;
-        transition: all 0.2s;
+        margin: 0.2rem;
     }
 
     .perm-active {
@@ -212,10 +222,10 @@
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
         border: none;
-        padding: 0.5rem 1.25rem;
-        border-radius: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.65rem;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         transition: all 0.3s ease;
         box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
     }
@@ -230,64 +240,226 @@
 <div class="admin-dashboard">
     <div class="container-fluid px-4">
 
-        <div class="welcome-banner wow fadeIn">
-            <div class="welcome-content">
-                <h1 class="welcome-title">إدارة صلاحيات النظام</h1>
-                <p class="welcome-sub">تتيح لك هذه الصفحة التحكم الكامل في الأدوار الوظيفية (Roles) وتوزيع الصلاحيات (Permissions) على كل دور لضمان أمان وسرية البيانات.</p>
+        <div class="welcome-banner">
+            <div style="position: relative; z-index: 1;">
+                <h1 class="welcome-title">لوحة تحكم النظام</h1>
+                <p class="welcome-sub">تحكم كامل في المستخدمين والأدوار والصلاحيات والإعدادات</p>
             </div>
         </div>
 
         <div class="row g-3 mb-4">
-            <div class="col-md-4 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="modern-card">
-                    <div class="icon-box" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
                         <i class="fa-solid fa-users-gear"></i>
                     </div>
-                    <div class="card-info">
-                        <span class="card-title-sm">إجمالي الأدوار</span>
-                        <span class="card-value">@Model.Count()</span>
+                    <div class="stat-info">
+                        <span class="stat-label">إجمالي الأدوار</span>
+                        <span class="stat-value">@Model.Count()</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
-                <div class="modern-card">
-                    <div class="icon-box" style="background: rgba(16,185,129,0.1); color: #10b981;">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <div class="card-info">
-                        <span class="card-title-sm">صلاحيات النظام المسجلة</span>
-                        <span class="card-value">@permissions.Count()</span>
+                    <div class="stat-info">
+                        <span class="stat-label">الصلاحيات المسجلة</span>
+                        <span class="stat-value">@permissions.Count()</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="modern-card">
-                    <div class="icon-box" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
                         <i class="fa-solid fa-link"></i>
                     </div>
-                    <div class="card-info">
-                        <span class="card-title-sm">عمليات الربط النشطة</span>
-                        <span class="card-value">@rolePermissions.Count()</span>
+                    <div class="stat-info">
+                        <span class="stat-label">عمليات الربط النشطة</span>
+                        <span class="stat-value">@rolePermissions.Count()</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="section-header wow fadeIn">
-            <i class="fa-solid fa-layer-group text-primary"></i>
-            <h2>توزيع الصلاحيات حسب كل دور</h2>
+        <div class="section-header">
+            <i class="fa-solid fa-user-shield text-warning"></i>
+            <h2>الأمان والمستخدمين</h2>
             <div class="line"></div>
         </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">إدارة المستخدمين</div>
+                        <div class="menu-desc">إضافة وتعديل وحذف</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">الأدوار والصلاحيات</div>
+                        <div class="menu-desc">إنشاء وتعديل الأدوار</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="UserRoles" asp-action="Index" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+                        <i class="fa-solid fa-user-tag"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">توزيع الصلاحيات</div>
+                        <div class="menu-desc">ربط مستخدم بدور</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Audit" asp-action="LoginHistory" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(239,68,68,0.1); color: #ef4444;">
+                        <i class="fa-solid fa-history"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">سجل الدخول</div>
+                        <div class="menu-desc">تاريخ تسجيلات الدخول</div>
+                    </div>
+                </a>
+            </div>
+        </div>
 
+        <div class="section-header">
+            <i class="fa-solid fa-database text-info"></i>
+            <h2>البيانات الأساسية</h2>
+            <div class="line"></div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Organization" asp-action="Branches" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(6,182,212,0.1); color: #06b6d4;">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">الفروع والمكاتب</div>
+                        <div class="menu-desc">إدارة الفروع</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Organization" asp-action="Departments" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(20,184,166,0.1); color: #14b8a6;">
+                        <i class="fa-solid fa-sitemap"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">الهيكل الإداري</div>
+                        <div class="menu-desc">شجرة الوحدات الإدارية</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Lookups" asp-action="Index" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(99,102,241,0.1); color: #6366f1;">
+                        <i class="fa-solid fa-list-alt"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">قوائم النظام</div>
+                        <div class="menu-desc">الأكواد والثوابت</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Settings" asp-action="General" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(132,204,22,0.1); color: #84cc16;">
+                        <i class="fa-solid fa-cog"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">الإعدادات العامة</div>
+                        <div class="menu-desc">إعدادات المنصة</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <i class="fa-solid fa-cubes text-primary"></i>
+            <h2>إعدادات المنصة</h2>
+            <div class="line"></div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Settings" asp-action="Modules" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(168,85,247,0.1); color: #a855f7;">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">إدارة الموديولات</div>
+                        <div class="menu-desc">تفعيل/إلغاء الوحدات</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Notifications" asp-action="Index" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(251,146,60,0.1); color: #fb923c;">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">إرسال إشعارات</div>
+                        <div class="menu-desc">إشعارات عامة لكل المستخدمين</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <i class="fa-solid fa-clipboard-list text-danger"></i>
+            <h2>الصيانة والتقارير</h2>
+            <div class="line"></div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Audit" asp-action="SystemLogs" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(239,68,68,0.1); color: #ef4444;">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">سجل الأحداث</div>
+                        <div class="menu-desc">سجل عمليات النظام</div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <a asp-area="Admin" asp-controller="Backup" asp-action="Index" class="menu-card">
+                    <div class="menu-icon" style="background: rgba(34,197,94,0.1); color: #22c55e;">
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-title">النسخ الاحتياطي</div>
+                        <div class="menu-desc">نسخ واسترجاع قاعدة البيانات</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <i class="fa-solid fa-layer-group text-primary"></i>
+            <h2>توزيع الصلاحيات حسب الأدوار</h2>
+            <div class="line"></div>
+        </div>
         <div class="row">
             @foreach (var role in Model)
             {
-                <div class="col-12 wow fadeInUp">
+                <div class="col-12">
                     <div class="role-card">
-
                         <div class="role-header">
                             <h3 class="role-name">
-                                <i class="fa-solid fa-user-tag text-primary opacity-75"></i>
+                                <i class="fa-solid fa-user-tag text-primary opacity-75 ms-2"></i>
                                 @role.Name
                             </h3>
                             <a asp-area="Admin"
@@ -295,42 +467,24 @@
                                asp-action="Assign"
                                asp-route-roleId="@role.Id"
                                class="btn-edit-role text-decoration-none d-inline-flex align-items-center gap-2">
-                                <i class="fas fa-edit"></i> تعديل الصلاحيات
+                                <i class="fas fa-edit"></i> تعديل
                             </a>
                         </div>
-
-                        <div class="role-body pt-2">
+                        <div class="d-flex flex-wrap">
                             @if (permissions.Any())
                             {
-                                <div class="d-flex flex-wrap">
-                                    @foreach (var perm in permissions)
+                                @foreach (var perm in permissions)
+                                {
+                                    bool isChecked = rolePermissions.Any(rp => rp.RoleId == role.Id && rp.PermissionId == perm.Id);
+                                    if (isChecked)
                                     {
-                                        bool isChecked = rolePermissions.Any(rp => rp.RoleId == role.Id && rp.PermissionId == perm.Id);
-
-                                        if (isChecked)
-                                        {
-                                            <span class="perm-badge perm-active" title="مفعلة">
-                                                <i class="fa-solid fa-circle-check"></i> @perm.DisplayName
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="perm-badge perm-inactive" title="غير مفعلة">
-                                                <i class="fa-solid fa-circle-xmark opacity-50"></i> @perm.DisplayName
-                                            </span>
-                                        }
+                                        <span class="perm-badge perm-active">
+                                            <i class="fa-solid fa-circle-check"></i> @perm.DisplayName
+                                        </span>
                                     }
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="alert alert-light border text-center text-muted mb-0">
-                                    <i class="fa-solid fa-inbox fs-4 mb-2 d-block opacity-50"></i>
-                                    لا توجد صلاحيات مسجلة في النظام بعد.
-                                </div>
+                                }
                             }
                         </div>
-
                     </div>
                 </div>
             }

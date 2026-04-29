@@ -26,10 +26,10 @@ namespace HR.Application.Employees.GetAllEmployees
                     Phone AS Phone,
                     HireDate AS HireDate,
                     IsActive AS IsActive
-                FROM 
-                    Employees
-                ORDER BY 
-                    CreatedAt DESC
+
+                FROM HR.Employees 
+                ORDER BY Name
+                    
             """;
 
             var response = await connection.QueryAsync<EmployeeListResponse>(sql);

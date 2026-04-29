@@ -1,0 +1,449 @@
+@{
+    ViewData["Title"] = "سجل القرارات الإدارية";
+}
+
+<!-- CSS Links -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+        --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .content-header-luxe {
+        background: var(--primary-gradient);
+        padding: 2.5rem 2rem;
+        border-radius: 0 0 2rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .content-header-luxe::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .luxe-card {
+        background: var(--glass-bg);
+        border: none;
+        border-radius: 1.25rem;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .luxe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .luxe-card .card-header {
+        background: transparent;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 1.5rem;
+    }
+
+    .luxe-card .card-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .luxe-form-label {
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .luxe-input {
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        padding: 0.75rem 1rem;
+        transition: var(--transition);
+        background: #f8fafc;
+    }
+
+    .luxe-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        background: #fff;
+    }
+
+    .btn-luxe-primary {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: var(--transition);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-luxe-primary:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        color: white;
+    }
+
+    .luxe-table thead th {
+        background: #f1f5f9;
+        border: none;
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        padding: 1.25rem 1rem;
+    }
+
+    .luxe-table tbody tr {
+        transition: var(--transition);
+    }
+
+    .luxe-table tbody tr:hover {
+        background: rgba(59, 130, 246, 0.02) !important;
+    }
+
+    .badge-luxe {
+        padding: 0.5em 1em;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-pending { background: #fef9c3; color: #854d0e; }
+    .status-info { background: #e0f2fe; color: #075985; }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+        transition: var(--transition);
+        margin: 0 0.25rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple {
+        border-radius: 0.75rem !important;
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    .bg-primary-subtle { background-color: rgba(59, 130, 246, 0.1) !important; }
+    .bg-warning-subtle { background-color: rgba(245, 158, 11, 0.1) !important; }
+    .bg-success-subtle { background-color: rgba(16, 185, 129, 0.1) !important; }
+    .bg-purple-subtle { background-color: rgba(139, 92, 246, 0.1) !important; }
+    .bg-info-subtle { background-color: rgba(6, 182, 212, 0.1) !important; }
+
+    .text-slate { color: #475569 !important; }
+    .fw-600 { font-weight: 600 !important; }
+    .fw-700 { font-weight: 700 !important; }
+    .fw-800 { font-weight: 800 !important; }
+</style>
+
+<div class="content-header-luxe mb-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="m-0 text-white fw-800" style="font-size: 2.2rem;">سجل القرارات الإدارية</h1>
+                <p class="text-white-50 mb-0 mt-2">إدارة قرارات التعيين، التثبيت، والترقيات بذكاء</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end bg-transparent p-0 mb-0">
+                        <li class="breadcrumb-item"><a href="#" class="text-white-50">الموارد البشرية</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">سجل القرارات</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content px-4">
+    <div class="container-fluid">
+
+        <!-- 0. إحصائيات سريعة -->
+        <div class="row mb-4 animate__animated animate__fadeInDown">
+            <div class="col-md-3">
+                <div class="luxe-card p-3 mb-0" style="border-right: 4px solid #3b82f6;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 fw-600">إجمالي القرارات (2024)</p>
+                            <h3 class="fw-800 mb-0">1,284</h3>
+                        </div>
+                        <div class="bg-primary-subtle p-3 rounded-circle text-primary">
+                            <i class="fas fa-file-contract fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="luxe-card p-3 mb-0" style="border-right: 4px solid #f59e0b;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 fw-600">قرارات قيد التنفيذ</p>
+                            <h3 class="fw-800 mb-0">12</h3>
+                        </div>
+                        <div class="bg-warning-subtle p-3 rounded-circle text-warning">
+                            <i class="fas fa-clock fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="luxe-card p-3 mb-0" style="border-right: 4px solid #10b981;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 fw-600">تعيينات جديدة</p>
+                            <h3 class="fw-800 mb-0">450</h3>
+                        </div>
+                        <div class="bg-success-subtle p-3 rounded-circle text-success">
+                            <i class="fas fa-user-plus fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="luxe-card p-3 mb-0" style="border-right: 4px solid #8b5cf6;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1 fw-600">حركات الترقيات</p>
+                            <h3 class="fw-800 mb-0">85</h3>
+                        </div>
+                        <div class="bg-purple-subtle p-3 rounded-circle text-purple" style="color: #8b5cf6 !important;">
+                            <i class="fas fa-chart-line fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. نموذج إضافة قرار جديد -->
+        <div class="luxe-card animate__animated animate__fadeInUp">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 10px; border-radius: 12px;">
+                        <i class="fas fa-file-signature text-primary"></i>
+                    </div>
+                    تسجيل قرار جديد
+                </h3>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="row g-4">
+                        <!-- بيانات القرار الأساسية -->
+                        <div class="col-md-3">
+                            <label class="luxe-form-label"><i class="fas fa-hashtag text-primary"></i> رقم القرار</label>
+                            <input type="text" class="form-control luxe-input" placeholder="مثال: 546 لسنة 2024">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="luxe-form-label"><i class="fas fa-calendar-alt text-primary"></i> تاريخ الصدور</label>
+                            <input type="date" class="form-control luxe-input">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="luxe-form-label"><i class="fas fa-calendar-check text-primary"></i> تاريخ السريان</label>
+                            <input type="date" class="form-control luxe-input">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="luxe-form-label"><i class="fas fa-university text-primary"></i> مصدر القرار</label>
+                            <select class="form-control luxe-input">
+                                <option>المحافظة</option>
+                                <option>رئيس الهيئة / الجهاز</option>
+                                <option>وزارة المالية</option>
+                                <option>قرار تنفيذي داخلي</option>
+                            </select>
+                        </div>
+
+                        <!-- تفاصيل القرار -->
+                        <div class="col-md-4">
+                            <label class="luxe-form-label"><i class="fas fa-list-ul text-primary"></i> نوع القرار</label>
+                            <select class="form-control luxe-input" id="decisionType">
+                                <option value="1">تعيين جديد (مجموعة)</option>
+                                <option value="2">تثبيت عمالة مؤقتة</option>
+                                <option value="3">حركة ترقيات</option>
+                                <option value="4">تسوية مؤهل أعلى</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="luxe-form-label"><i class="fas fa-pen-nib text-primary"></i> موضوع القرار</label>
+                            <input type="text" class="form-control luxe-input" placeholder="بشأن تثبيت العاملين المتعاقدين بند 2/3 ...">
+                        </div>
+
+                        <!-- المرفق والموظفين -->
+                        <div class="col-md-6">
+                            <label class="luxe-form-label"><i class="fas fa-file-upload text-primary"></i> صورة القرار (Scanner)</label>
+                            <div class="custom-file luxe-input d-flex align-items-center justify-content-between p-0 overflow-hidden" style="height: auto;">
+                                <input type="file" class="custom-file-input" id="scanFile" style="cursor: pointer; opacity: 0; position: absolute; width: 100%; height: 100%;">
+                                <label class="custom-file-label m-0 px-3 py-2 text-muted" for="scanFile" style="flex-grow: 1;">اختر ملف PDF...</label>
+                                <div class="bg-light border-start px-3 py-2"><i class="fas fa-search"></i></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="luxe-form-label"><i class="fas fa-users text-primary"></i> الموظفين المشمولين</label>
+                            <select class="select2" multiple="multiple" data-placeholder="اختر الاسماء من هنا..." style="width: 100%;">
+                                <option>محمد فؤاد ابراهيم</option>
+                                <option>فاطمة عبدالفتاح الشرباني</option>
+                                <option>رانيا أبو النصر</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-start mt-5">
+                        <button class="btn btn-luxe-primary">
+                            <i class="fas fa-save"></i> حفظ وإصدار القرار
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. جدول القرارات الصادرة -->
+        <div class="luxe-card animate__animated animate__fadeInUp animate__delay-1s">
+            <div class="card-header border-0 d-flex justify-content-between align-items-center">
+                <h3 class="card-title">
+                    <div style="background: rgba(71, 85, 105, 0.1); padding: 10px; border-radius: 12px;">
+                        <i class="fas fa-archive text-slate"></i>
+                    </div>
+                    أرشيف القرارات الصادرة
+                </h3>
+                <div class="card-tools">
+                    <div class="input-group" style="width: 250px;">
+                        <input type="text" class="form-control luxe-input" placeholder="بحث برقم القرار...">
+                        <button class="btn btn-light ms-2 rounded-3 border">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover text-center luxe-table m-0">
+                        <thead>
+                            <tr>
+                                <th>رقم القرار</th>
+                                <th class="text-end">الموضوع</th>
+                                <th>النوع</th>
+                                <th>التاريخ</th>
+                                <th>عدد الموظفين</th>
+                                <th>حالة التنفيذ</th>
+                                <th>المرفقات</th>
+                                <th>خيارات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-800 text-primary">128/2023</td>
+                                <td class="text-end">
+                                    <div class="fw-700">تثبيت العمالة المؤقتة دفعة 2018</div>
+                                    <small class="text-muted">إدارة الموارد البشرية</small>
+                                </td>
+                                <td><span class="badge-luxe status-info">تثبيت</span></td>
+                                <td class="text-muted">01/01/2024</td>
+                                <td>
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <div class="avatar-group d-flex" style="flex-direction: row-reverse;">
+                                            <span class="bg-light border rounded-circle d-flex align-items-center justify-content-center fw-600" style="width: 32px; height: 32px; font-size: 0.7rem; margin-right: -10px;">+12</span>
+                                            <div class="rounded-circle border bg-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; margin-right: -10px;"><i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i></div>
+                                            <div class="rounded-circle border bg-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; margin-right: -10px;"><i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge-luxe status-active"><i class="fas fa-check-circle me-1"></i> تم التنفيذ</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-danger border-0 rounded-3"><i class="fas fa-file-pdf fa-lg"></i></a>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        <a class="action-btn bg-info-subtle text-info" href="#"><i class="fas fa-eye"></i></a>
+                                        <a class="action-btn bg-warning-subtle text-warning" href="#"><i class="fas fa-pen"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-800 text-primary">54/2024</td>
+                                <td class="text-end">
+                                    <div class="fw-700">ترقية العاملين للدرجة الأولى (أ)</div>
+                                    <small class="text-muted">الجهاز المركزي للتنظيم والادارة</small>
+                                </td>
+                                <td><span class="badge-luxe status-pending">ترقية</span></td>
+                                <td class="text-muted">01/07/2024</td>
+                                <td>
+                                    <span class="fw-600 px-2 py-1 bg-light rounded text-dark" style="font-size: 0.8rem;">142 موظف</span>
+                                </td>
+                                <td><span class="badge-luxe status-pending"><i class="fas fa-hourglass-half me-1"></i> جاري التنفيذ</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-danger border-0 rounded-3"><i class="fas fa-file-pdf fa-lg"></i></a>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        <a class="btn btn-success btn-sm rounded-3 px-3 fw-600 me-2" href="#"><i class="fas fa-play me-1"></i> تطبيق</a>
+                                        <a class="action-btn bg-info-subtle text-info" href="#"><i class="fas fa-eye"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Select2 Script -->
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+<script>
+    $(function () {
+        // تفعيل قائمة الاختيار المتعدد (Select2)
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            containerCssClass: ':all:',
+            placeholder: "اختر الموظفين..."
+        })
+
+         // كود تجميلي لرفع الملفات
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    });
+</script>

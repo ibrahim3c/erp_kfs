@@ -259,6 +259,12 @@ namespace Modules.Shared.Infrastructure.Database
             return await _context.Set<T>().AnyAsync(criteria);
         }
 
+        public IQueryable<T> Where(Expression<Func<T, bool>> criteria)
+        {
+            
+            return _context.Set<T>().Where(criteria);
+        }
+
 
 
         //// transaction

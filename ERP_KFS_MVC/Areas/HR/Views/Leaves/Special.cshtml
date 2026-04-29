@@ -1,0 +1,212 @@
+﻿@{
+    ViewData["Title"] = "الأجازات الخاصة (وضع / حج / رعاية طفل)";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark"><i class="fas fa-star-half-alt text-warning me-2"></i> الأجازات الخاصة والاستثنائية</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الأجازات</a></li>
+                    <li class="breadcrumb-item active">خاصة</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- كارت رصيد أجازات الحج (إحصائية سريعة) -->
+            <div class="col-md-12 mb-3">
+                <div class="callout callout-info">
+                    <h5><i class="fas fa-info"></i> تنويه قانوني:</h5>
+                    تستحق الموظفة أجازة وضع لمدة <b>4 أشهر</b> بأجر كامل (بحد أقصى 3 مرات طوال الخدمة).
+                    أجازة الحج تمنح <b>مرة واحدة</b> في العمر بأجر كامل لمدة 30 يوم بشرط قضاء 5 سنوات خدمة.
+                </div>
+            </div>
+
+            <!-- الفورم الرئيسي -->
+            <div class="col-md-12">
+                <div class="card card-purple card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title text-purple">طلب أجازة خاصة جديدة</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="row">
+                                <!-- اختيار الموظف ونوع الاجازة -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">اسم الموظف/ة</label>
+                                    <select class="form-select select2">
+                                        <option>-- بحث بالاسم --</option>
+                                        <option>رانيا ابو النصر (إناث)</option>
+                                        <option>فاطمة الشرباني (إناث)</option>
+                                        <option>محمد فؤاد (ذكور)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">نوع الأجازة الخاصة</label>
+                                    <select class="form-select" id="leaveTypeSelect" onchange="toggleSpecialOptions()">
+                                        <option value="Maternity">أجازة وضع (Maternity)</option>
+                                        <option value="ChildCare">أجازة رعاية طفل</option>
+                                        <option value="Hajj">أجازة حج / زيارة مقدسة</option>
+                                        <option value="Exams">أجازة أداء امتحانات</option>
+                                    </select>
+                                </div>
+
+                                <!-- الحساب المالي (هام جداً) -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">الموقف المالي (الراتب)</label>
+                                    <input type="text" class="form-control is-valid fw-bold" id="salaryStatus" value="أجر كامل (مدفوعة)" readonly>
+                                    <small class="text-muted">يتغير تلقائياً حسب نوع الأجازة.</small>
+                                </div>
+
+                                <div class="w-100"><hr /></div>
+
+                                <!-- خيارات التاريخ (حسب النوع) -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">تاريخ البداية</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">المدة المطلوبة</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="أيام">
+                                        <span class="input-group-text" id="unitLabel">يوم</span>
+                                    </div>
+                                </div>
+
+                                <!-- خيارات إضافية ديناميكية -->
+                                <div class="col-md-6 mb-3" id="babySection">
+                                    <label class="form-label text-purple"><i class="fas fa-baby me-1"></i> بيانات المولود / الطفل</label>
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" placeholder="اسم الطفل (كما في الشهادة)">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="date" class="form-control" title="تاريخ الميلاد">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3" id="hajjSection" style="display:none">
+                                    <label class="form-label text-purple"><i class="fas fa-kaaba me-1"></i> تأشيرة الحج</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">سنة الخدمة:</span>
+                                        <input type="text" class="form-control" value="15 سنة (مستوفي)" readonly>
+                                        <input type="file" class="form-control" title="ارفق صورة التأشيرة/جواز السفر">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 text-center mt-3">
+                                    <button class="btn btn-purple w-25"><i class="fas fa-save me-2"></i> إصدار القرار</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الجدول -->
+            <div class="col-md-12">
+                <div class="card card-outline card-secondary">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">سجل الأجازات الخاصة المسجلة</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-bordered text-center">
+                            <thead class="bg-dark text-white">
+                                <tr>
+                                    <th>م</th>
+                                    <th>الموظف</th>
+                                    <th>نوع الأجازة</th>
+                                    <th>من</th>
+                                    <th>إلى</th>
+                                    <th>الوضع المالي</th>
+                                    <th>المرفق</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
+                                    <td><span class="badge bg-danger p-2">أجازة وضع</span></td>
+                                    <td>01/01/2023</td>
+                                    <td>30/04/2023</td>
+                                    <td><span class="badge bg-success">أجر كامل</span></td>
+                                    <td><i class="fas fa-file-pdf"></i> شهادة</td>
+                                    <td><span class="badge bg-secondary">منتهية</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td class="text-end fw-bold">رانيا ابو النصر</td>
+                                    <td><span class="badge bg-warning text-dark p-2">رعاية طفل (عام 1)</span></td>
+                                    <td>01/06/2023</td>
+                                    <td>01/06/2024</td>
+                                    <td><span class="badge bg-dark">بدون أجر</span></td>
+                                    <td><i class="fas fa-file-image"></i> الميلاد</td>
+                                    <td><span class="badge bg-success">سارية</span></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td class="text-end fw-bold">بهجت إبراهيم</td>
+                                    <td><span class="badge bg-info text-dark p-2">أداء فريضة الحج</span></td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td>--</td>
+                                    <td><span class="badge bg-primary">قيد المراجعة</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+    <script>
+        // دالة تغيير الفورم حسب نوع الأجازة
+        function toggleSpecialOptions() {
+            var type = document.getElementById("leaveTypeSelect").value;
+            var babySec = document.getElementById("babySection");
+            var hajjSec = document.getElementById("hajjSection");
+            var salary = document.getElementById("salaryStatus");
+
+            if (type === "Maternity") {
+                babySec.style.display = "block";
+                hajjSec.style.display = "none";
+                salary.value = "أجر كامل (إجبارية)";
+                salary.className = "form-control is-valid fw-bold";
+            }
+            else if (type === "ChildCare") {
+                babySec.style.display = "block";
+                hajjSec.style.display = "none";
+                salary.value = "بدون أجر (الموظفة تتحمل التأمينات)";
+                salary.className = "form-control is-invalid fw-bold";
+            }
+            else if (type === "Hajj") {
+                babySec.style.display = "none";
+                hajjSec.style.display = "block";
+                salary.value = "أجر كامل (مرة بالعمر)";
+                salary.className = "form-control is-valid fw-bold";
+            }
+             else {
+                babySec.style.display = "none";
+                hajjSec.style.display = "none";
+                salary.value = "حسب اللائحة";
+                 salary.className = "form-control";
+            }
+        }
+    </script>
