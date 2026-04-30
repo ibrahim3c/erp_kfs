@@ -2,13 +2,13 @@
 {
     public sealed class EmployeeListResponse
     {
-        public Guid Id { get; set; }
-        public string Name { get; private set; }
-        public string Code { get; private set; }
-        public string Email { get; private set; }
-        public string Phone { get; private set; }
-        public DateTime HireDate { get; private set; }
-        public bool IsActive { get; private set; }
-        public Guid? LeadershipPositionId { get; private set; } = Guid.Empty;
+        public Guid Id { get; init; }
+        public string Code { get; init; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
+        public bool IsActive { get; init; }
+        public string? JobTitleName { get; init; } 
+        public string? JobGradeName { get; init; }
+        public string? OrgUnitName { get; init; }
+        public Guid? LeadershipPositionId { get; init; }
     }
 }

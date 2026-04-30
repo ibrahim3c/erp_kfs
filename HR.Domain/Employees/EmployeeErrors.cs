@@ -174,6 +174,10 @@ namespace HR.Domain.Employees
             "EmployeeQualification.AlreadyVerified",
             "المؤهل تم التحقق منه بالفعل");
 
+        public static readonly Error NationalIdAlreadyExists = new Error(
+            "Employee.NationalIdAlreadyExists",
+            "الرقم القومي مستخدم بالفعل من قبل موظف آخر");
+
 
     }
 }

@@ -10,6 +10,8 @@ namespace HR.Application.Employees.CreateFullEmployee
         DateTime DateOfBirth,
         string Gender,
         string Phone,
+        string Email,
+        string MaritalStatus,
         string Address,
         bool IsDisabled, // فئة خاصة
 

@@ -322,6 +322,14 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
         // abdallah added here
+        public Result AddEmployeeFile(EmployeeFile file)
+        {
+            if (file is null)
+                return Result.Failure(new Error("Employee.InvalidFile", "الملف غير صحيح"));
+
+            _employeeFiles.Add(file);
+            return Result.Success();
+        }
         public Result AssignLeadershipPosition(Guid positionId)
         {
             if (positionId == Guid.Empty)

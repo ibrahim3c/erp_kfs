@@ -1,6 +1,7 @@
-﻿using ERP_KFS_MVC.Models;
+﻿using ERP_KFS_MVC.Areas.HR.ViewModels;
+using ERP_KFS_MVC.Models;
 using Geography.Application.IServices;
-using HR.Application.Employees.CreateEmployee;
+using HR.Application.Employees.CreateFullEmployee;
 using HR.Application.Employees.DeleteEmployee;
 using HR.Application.Employees.EmploymentTypes;
 using HR.Application.Employees.GetAllEmployees;
@@ -21,15 +22,18 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         private readonly IMediator _mediator;
         private readonly IGeographyService _geographyService;
         private readonly IOrganizationService _organizationService;
+        private readonly IWebHostEnvironment _env;
 
         public EmployeesController(
             IMediator mediator,
             IGeographyService geographyService,
-            IOrganizationService organizationService)
+            IOrganizationService organizationService,
+            IWebHostEnvironment env)
         {
             _mediator = mediator;
             _geographyService = geographyService;
             _organizationService = organizationService;
+            _env = env;
         }
 
         // ─────────────────────────────────────────
@@ -37,7 +41,6 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         // ─────────────────────────────────────────
         private async Task PopulateDropdownsAsync()
         {
-            // Geography
             var cityCenters = await _geographyService.GetAllCityCentersAsync();
             ViewBag.CityCenterId = cityCenters.IsSuccess
                 ? cityCenters.Value.Select(x => new SelectListItem
@@ -47,28 +50,9 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 }).ToList()
                 : new List<SelectListItem>();
 
-            var villages = await _geographyService.GetAllVillagesAsync();
-            ViewBag.VillageId = villages.IsSuccess
-                ? villages.Value.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList()
-                : new List<SelectListItem>();
-
-            // Organization
             var employmentTypes = await _mediator.Send(new GetAllEmploymentTypesQuery());
             ViewBag.EmploymentTypeId = employmentTypes.IsSuccess
                 ? employmentTypes.Value.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList()
-                : new List<SelectListItem>();
-
-            var jobTitles = await _organizationService.GetAllJobTitlesAsync();
-            ViewBag.JobTitleId = jobTitles.IsSuccess
-                ? jobTitles.Value.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.Name
@@ -84,14 +68,22 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 }).ToList()
                 : new List<SelectListItem>();
 
-            var functionalGroups = await _organizationService.GetAllFunctionalGroupsAsync();
-            ViewBag.FunctionalGroupId = functionalGroups.IsSuccess
-                ? functionalGroups.Value.Select(x => new SelectListItem
+            var jobTitles = await _organizationService.GetAllJobTitlesAsync();
+            ViewBag.JobTitleName = jobTitles.IsSuccess
+                ? jobTitles.Value.Select(x => new SelectListItem
                 {
-                    Value = x.Id.ToString(),
+                    Value = x.Name,
                     Text = x.Name
                 }).ToList()
                 : new List<SelectListItem>();
+
+            var fubctionalGroups = await _organizationService.GetAllFunctionalGroupsAsync();
+                ViewBag.FunctionalGroupName = fubctionalGroups.IsSuccess
+                    ? fubctionalGroups.Value.Select(x => new SelectListItem
+                    {
+                        Value = x.Name,
+                        Text = x.Name
+                    }).ToList() : new List<SelectListItem>();
 
             var orgUnits = await _organizationService.GetAllOrgUnitsAsync();
             ViewBag.OrgUnitId = orgUnits.IsSuccess
@@ -101,6 +93,27 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                     Text = x.Name
                 }).ToList()
                 : new List<SelectListItem>();
+        }
+
+        // ─────────────────────────────────────────
+        // Helper: رفع ملف وإرجاع المسار
+        // ─────────────────────────────────────────
+        private async Task<string?> SaveFileAsync(IFormFile? file, string subFolder)
+        {
+            if (file is null || file.Length == 0) return null;
+
+            // wwwroot/uploads/hr/{subFolder}/
+            var folder = Path.Combine(_env.WebRootPath, "uploads", "hr", subFolder);
+            Directory.CreateDirectory(folder);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var fullPath = Path.Combine(folder, fileName);
+
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            // نرجع المسار النسبي — سهل للتخزين في الـ DB
+            return $"/uploads/hr/{subFolder}/{fileName}";
         }
 
         // ─────────────────────────────────────────
@@ -152,30 +165,78 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         // ─────────────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateEmployeeCommand command)
+        public async Task<IActionResult> Create(CreateFullEmployeeViewModel vm)
         {
             if (!ModelState.IsValid)
             {
                 await PopulateDropdownsAsync();
-                return View(command);
+                return View(vm);
             }
 
+            var profileImagePath = await SaveFileAsync(vm.ProfileImage, "profile");
+            var nationalIdCardPath = await SaveFileAsync(vm.NationalIdCard, "national-id");
+            var qualificationFilePath = await SaveFileAsync(vm.QualificationFile, "qualification");
+            var birthCertificatePath = await SaveFileAsync(vm.BirthCertificate, "birth-cert");
+            var militaryFilePath = await SaveFileAsync(vm.MilitaryFile, "military");
+            var contractFilePath = await SaveFileAsync(vm.ContractFile, "contract");
+            var policeClearancePath = await SaveFileAsync(vm.PoliceClearance, "police");
+
+            var command = new CreateFullEmployeeCommand(
+                FirstName: vm.FirstName,
+                FatherName: vm.FatherName,
+                LastName: vm.LastName,
+                NationalId: vm.NationalId,
+                DateOfBirth: vm.DateOfBirth,
+                Gender: vm.Gender,
+                Phone: vm.Phone,
+                 Email: vm.Email,
+                 MaritalStatus: vm.MaritalStatus,
+                Address: vm.Address,
+                IsDisabled: vm.IsDisabled,
+                OrgUnitId: vm.OrgUnitId,
+                JobTitleName: vm.JobTitleName,
+                QualificationName: vm.QualificationName,
+                JobGradeId: vm.JobGradeId,
+                HireDate: vm.HireDate,
+                JobGradeDate: vm.JobGradeDate,
+                EmploymentTypeId: vm.EmploymentTypeId,
+                ProfileImagePath: profileImagePath,
+                NationalIdCardPath: nationalIdCardPath,
+                QualificationFilePath: qualificationFilePath,
+                BirthCertificatePath: birthCertificatePath,
+                MilitaryFilePath: militaryFilePath,
+                ContractFilePath: contractFilePath,
+                PoliceClearancePath: policeClearancePath,
+                BasicSalary2019: vm.BasicSalary2019,
+                GrossSalary: vm.GrossSalary,
+                InsuranceNumber: vm.InsuranceNumber,
+                BankName: vm.BankName,
+                BankAccountNumber: vm.BankAccountNumber,
+                HasFellowshipFund: vm.HasFellowshipFund,
+                HasMedicalFund: vm.HasMedicalFund
+            );
+
+     
+   
             var result = await _mediator.Send(command);
-
-            if (result.IsFailure)
+            if (!result.IsSuccess)
             {
+
                 ModelState.AddModelError(string.Empty, result.Error.Name);
+
                 await PopulateDropdownsAsync();
-                return View(command);
+                return View(vm);
             }
 
-            TempData["Success"] = "تم إضافة الموظف بنجاح";
-            return RedirectToAction(nameof(Index));
+                TempData["Success"] = "تم إضافة الموظف بنجاح";
+                return RedirectToAction(nameof(Index));          
+    
         }
 
         // ─────────────────────────────────────────
         // GET: /HR/Employees/Edit/{id}
         // ─────────────────────────────────────────
+        // في EmployeesController — Edit GET معدّل
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -188,48 +249,79 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                     ErrorMessage = result.Error.Name
                 });
 
-            var command = new UpdateEmployeeCommand(
-                Id: result.Value!.Id,
-                Name: result.Value.Name,
-                Code: result.Value.Code,
-                Phone: result.Value.Phone,
-                Email: result.Value.Email,
-                HireDate: result.Value.HireDate,
-                IsActive: result.Value.IsActive,
-                CreatedAt: result.Value.CreatedAt
-            );
+            var r = result.Value!;
+
+            var vm = new UpdateEmployeeViewModel
+            {
+                Id = r.Id,
+                Code = r.Code,
+                FirstName = r.Name.Split(' ').ElementAtOrDefault(0) ?? string.Empty,
+                FatherName = r.Name.Split(' ').ElementAtOrDefault(1) ?? string.Empty,
+                LastName = r.Name.Split(' ').ElementAtOrDefault(2) ?? string.Empty,
+                NationalId = r.NationalId,
+                DateOfBirth = r.DateOfBirth,
+                Gender = r.Gender,
+                Phone = r.Phone,
+                Address = r.Address,
+                MaritalStatus = r.MaritalStatus,
+                IsActive = r.IsActive,
+                IsDisabled = r.IsDisabled,
+                HireDate = r.HireDate,
+                JobGradeDate = r.JobGradeDate,
+                OrgUnitId = r.OrgUnitId,
+                JobGradeId = r.JobGradeId,
+                EmploymentTypeId = r.EmploymentTypeId,
+                JobTitleName = r.JobTitleName,
+                QualificationName = r.QualificationName,
+                GrossSalary = r.GrossSalary,
+                BasicSalary2019 = r.BasicSalary2019,
+                InsuranceNumber = r.InsuranceNumber,
+                BankName = r.BankName,
+                BankAccountNumber = r.BankAccountNumber,
+                HasFellowshipFund = r.HasFellowshipFund,
+                HasMedicalFund = r.HasMedicalFund,
+            };
 
             await PopulateDropdownsAsync();
-            return View(command);
+            return View(vm);
         }
 
-        // ─────────────────────────────────────────
-        // POST: /HR/Employees/Edit/{id}
-        // ─────────────────────────────────────────
+        // Edit POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, UpdateEmployeeCommand command)
+        public async Task<IActionResult> Edit(Guid id, UpdateEmployeeViewModel vm)
         {
             if (!ModelState.IsValid)
             {
                 await PopulateDropdownsAsync();
-                return View(command);
+                return View(vm);
             }
 
-            var finalCommand = command with { Id = id };
-            var result = await _mediator.Send(finalCommand);
+            string fullName = $"{vm.FirstName} {vm.FatherName} {vm.LastName}".Trim();
+
+            var command = new UpdateEmployeeCommand(
+                Id: id,
+                Name: fullName,
+                Code: vm.Code,
+                Phone: vm.Phone,
+                Email: null,
+                HireDate: vm.HireDate,
+                IsActive: vm.IsActive,
+                CreatedAt: DateTime.UtcNow   // أو تجيبه من الـ response
+            );
+
+            var result = await _mediator.Send(command);
 
             if (result.IsFailure)
             {
                 ModelState.AddModelError(string.Empty, result.Error.Name);
                 await PopulateDropdownsAsync();
-                return View(command);
+                return View(vm);
             }
 
             TempData["Success"] = "تم تحديث بيانات الموظف بنجاح";
             return RedirectToAction(nameof(Index));
         }
-
         // ─────────────────────────────────────────
         // GET: /HR/Employees/Delete/{id}
         // ─────────────────────────────────────────
@@ -265,6 +357,20 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
 
             TempData["Success"] = "تم حذف الموظف بنجاح";
             return RedirectToAction(nameof(Index));
+        }
+
+        // ─────────────────────────────────────────
+        // GET API: /HR/Employees/VillagesByCityCenter/{id}
+        // ─────────────────────────────────────────
+        [HttpGet("/api/geography/villages-by-city-center/{cityCenterId:guid}")]
+        public async Task<IActionResult> VillagesByCityCenter(Guid cityCenterId)
+        {
+            var result = await _geographyService.GetVillagesByCityCenterIdAsync(cityCenterId);
+
+            if (result.IsFailure)
+                return NotFound();
+
+            return Ok(result.Value.Select(v => new { id = v.Id, name = v.Name }));
         }
     }
 }
