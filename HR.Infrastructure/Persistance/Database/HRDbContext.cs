@@ -19,6 +19,8 @@ public class HRDbContext : DbContext
     public DbSet<Candidate> Candidates { get; set; }
     public DbSet<NominationFile> NominationFiles { get; set; }
     public DbSet<Employee> Employees { get; set; }
+    public DbSet<EmployeeFile> EmployeeFiles { get; set; }
+    public DbSet<EmployeeFinancial> EmployeeFinancials { get; set; }
     public DbSet<Loan> Loans { get; set; }
     public DbSet<InsurancePeriodPurchase> InsurancePeriodPurchases { get; set; }
     public DbSet<LoanInstallment> LoanInstallments { get; set; }
