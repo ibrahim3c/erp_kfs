@@ -18,6 +18,8 @@ namespace ERP_KFS_MVC.Extensions
 
             // Seed data
             await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+            await RoleSeeder.SeedAsync(scope.ServiceProvider);
+            await RolePermissionSeeder.SeedAsync(scope.ServiceProvider);
         }
     }
 }
