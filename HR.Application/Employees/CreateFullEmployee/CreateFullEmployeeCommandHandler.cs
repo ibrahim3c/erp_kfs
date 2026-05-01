@@ -56,7 +56,7 @@ namespace HR.Application.Employees.CreateFullEmployee
                 maritalStatus: request.MaritalStatus,
                 isDisabled: request.IsDisabled,
                 employmentTypeId: request.EmploymentTypeId,
-                jobTitleId: null,          // JobTitleName = free text — يُحل لاحقاً
+                jobTitleId: request.JobTitleId,          // JobTitleName = free text — يُحل لاحقاً
                 jobGradeId: request.JobGradeId,
                 functionalGroupId: null,
                 orgUnitId: request.OrgUnitId);

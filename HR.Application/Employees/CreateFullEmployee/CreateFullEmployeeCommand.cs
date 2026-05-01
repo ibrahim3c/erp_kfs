@@ -18,6 +18,7 @@ namespace HR.Application.Employees.CreateFullEmployee
         // 2. Job Information
         Guid? OrgUnitId, // الإدارة التابع لها
         string JobTitleName, // المسمى الوظيفي (Text input in UI)
+        Guid JobTitleId,
         string QualificationName, // المؤهل الدراسي (Text input in UI)
         Guid? JobGradeId, // الدرجة المالية
         DateTime HireDate, // تاريخ التعيين
