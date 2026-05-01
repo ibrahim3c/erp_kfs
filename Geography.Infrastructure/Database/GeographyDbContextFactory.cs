@@ -16,7 +16,7 @@ namespace Geography.Infrastructure.Database
             var optionsBuilder = new DbContextOptionsBuilder<GeographyDbContext>();
 
             optionsBuilder.UseSqlServer(
-                "Data Source=.;Initial Catalog=MyERPsystem;Integrated Security=True;Trust Server Certificate=True");
+                "Server=db48963.public.databaseasp.net; Database=db48963; User Id=db48963; Password=3Db+Y#9r2Nk@; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;");
 
             return new GeographyDbContext(optionsBuilder.Options);
         }

@@ -195,6 +195,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 IsDisabled: vm.IsDisabled,
                 OrgUnitId: vm.OrgUnitId,
                 JobTitleName: vm.JobTitleName,
+                JobTitleId: vm.JobTitleId ?? Guid.Empty,
                 QualificationName: vm.QualificationName,
                 JobGradeId: vm.JobGradeId,
                 HireDate: vm.HireDate,

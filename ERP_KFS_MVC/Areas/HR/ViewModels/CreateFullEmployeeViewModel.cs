@@ -39,6 +39,7 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         [Required(ErrorMessage = "المسمى الوظيفي مطلوب")]
         [MaxLength(150)]
         public string JobTitleName { get; set; } = string.Empty;
+        public Guid? JobTitleId { get; set; }
 
         [MaxLength(150)]
         public string? QualificationName { get; set; }

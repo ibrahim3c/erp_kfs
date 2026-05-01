@@ -34,7 +34,6 @@ namespace HR.Application.Employees.GetEmployeeForEdit
                         e.HireDate,
                         e.DateOfBirth,
                         e.JobGradeDate,
-                        e.CreatedAt,
                         e.OrgUnitId,
                         e.JobGradeId,
                         e.EmploymentTypeId,
