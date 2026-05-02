@@ -37,10 +37,8 @@ namespace Organization.Infrastructure.Configurations
                 .HasForeignKey(x => x.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.Governorate)
-                .WithMany()
-                .HasForeignKey(x => x.GovernorateId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(x => x.GovernorateId)
+                .IsRequired(false);
 
             builder.HasIndex(x => x.Code)
                 .IsUnique();

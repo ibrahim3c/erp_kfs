@@ -1,0 +1,323 @@
+﻿@model ERP_KFS_MVC.Areas.HR.ViewModels.UpdateEmployeeViewModel
+
+@{
+    ViewData["Title"] = "تعديل بيانات موظف";
+}
+
+<link rel="stylesheet" href="~/css/global/hr-custom.css" asp-append-version="true">
+
+<div class="hr-page-container animate__animated animate__fadeIn">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h5 font-weight-bold text-dark mb-1">تعديل بيانات الموظف</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index">سجل الموظفين</a></li>
+                    <li class="breadcrumb-item">
+                        <a asp-action="Details" asp-route-id="@Model.Id">@Model.FirstName @Model.LastName</a>
+                    </li>
+                    <li class="breadcrumb-item active">تعديل</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="hr-btn hr-btn-outline">
+            <i class="fas fa-arrow-right"></i> العودة للملف
+        </a>
+    </div>
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" id="editEmployeeForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Code" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4 mb-3"></div>
+
+        <div class="hr-card">
+            <ul class="nav nav-tabs hr-tabs border-0" id="editTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-personal" data-bs-toggle="tab" href="#personal" role="tab">
+                        <i class="fas fa-user-circle"></i> البيانات الشخصية
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-job" data-bs-toggle="tab" href="#job" role="tab">
+                        <i class="fas fa-briefcase"></i> الوظيفة والدرجة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-financial" data-bs-toggle="tab" href="#financial" role="tab">
+                        <i class="fas fa-wallet"></i> البيانات المالية
+                    </a>
+                </li>
+            </ul>
+
+            <div class="hr-table-wrapper p-5">
+                <div class="tab-content">
+
+                    <!-- 1. البيانات الشخصية -->
+                    <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="FirstName" class="hr-form-label">
+                                    الاسم الأول <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="FirstName" class="form-control hr-form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="FatherName" class="hr-form-label">
+                                    اسم الأب <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="FatherName" class="form-control hr-form-control" />
+                                <span asp-validation-for="FatherName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="LastName" class="hr-form-label">
+                                    اسم العائلة <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="LastName" class="form-control hr-form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 hr-form-group">
+                                <label class="hr-form-label text-muted">الرقم القومي</label>
+                                <input value="@Model.NationalId" class="form-control hr-form-control"
+                                       readonly />
+                                <small class="text-muted">لا يمكن تعديل الرقم القومي</small>
+                            </div>
+                            <div class="col-md-3 hr-form-group">
+                                <label asp-for="DateOfBirth" class="hr-form-label">تاريخ الميلاد</label>
+                                <input asp-for="DateOfBirth" type="date"
+                                       class="form-control hr-form-control" />
+                            </div>
+                            <div class="col-md-3 hr-form-group">
+                                <label asp-for="Gender" class="hr-form-label">النوع</label>
+                                <select asp-for="Gender" class="form-select hr-form-control">
+                                    <option value="">-- اختر --</option>
+                                    <option value="ذكر">ذكر</option>
+                                    <option value="أنثى">أنثى</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="MaritalStatus" class="hr-form-label">الحالة الاجتماعية</label>
+                                <select asp-for="MaritalStatus" class="form-select hr-form-control">
+                                    <option value="">-- اختر --</option>
+                                    <option value="أعزب">أعزب</option>
+                                    <option value="متزوج">متزوج</option>
+                                    <option value="مطلق">مطلق</option>
+                                    <option value="أرمل">أرمل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="Phone" class="hr-form-label">رقم الموبايل</label>
+                                <input asp-for="Phone" type="tel"
+                                       class="form-control hr-form-control"
+                                       placeholder="01x xxxx xxxx" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="Address" class="hr-form-label">العنوان</label>
+                                <input asp-for="Address" class="form-control hr-form-control" />
+                            </div>
+
+                            <!-- حالة الموظف -->
+                            <div class="col-12 mt-3">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="hr-switch-group d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1 text-dark">حالة الموظف</h6>
+                                                <p class="text-muted small mb-0">تفعيل أو إيقاف حساب الموظف</p>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input asp-for="IsActive" class="form-check-input"
+                                                       type="checkbox" style="width:3rem; height:1.5rem;">
+                                                <label asp-for="IsActive" class="form-check-label mr-3">نشط</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="hr-switch-group d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1 text-dark">فئة خاصة (ذوي الهمم)</h6>
+                                                <p class="text-muted small mb-0">يرفع رصيد الإجازات إلى 45 يوم</p>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input asp-for="IsDisabled" class="form-check-input"
+                                                       type="checkbox" style="width:3rem; height:1.5rem;">
+                                                <label asp-for="IsDisabled" class="form-check-label mr-3">نعم</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. الوظيفة والدرجة -->
+                    <div class="tab-pane fade" id="job" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 hr-form-group">
+                                <label class="hr-form-label">كود الموظف</label>
+                                <input value="@Model.Code" class="form-control hr-form-control" readonly />
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="OrgUnitId" class="hr-form-label">الإدارة التابع لها</label>
+                                <select asp-for="OrgUnitId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.OrgUnitId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="JobTitleName" class="hr-form-label">
+                                    المسمى الوظيفي <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="JobTitleName" class="form-control hr-form-control" />
+                                <span asp-validation-for="JobTitleName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="QualificationName" class="hr-form-label">المؤهل الدراسي</label>
+                                <input asp-for="QualificationName" class="form-control hr-form-control" />
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="JobGradeId" class="hr-form-label">الدرجة المالية</label>
+                                <select asp-for="JobGradeId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.JobGradeId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="EmploymentTypeId" class="hr-form-label">نوع الكادر</label>
+                                <select asp-for="EmploymentTypeId" class="form-select hr-form-control"
+                                        asp-items="ViewBag.EmploymentTypeId">
+                                    <option value="">-- اختر --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="HireDate" class="hr-form-label">
+                                    تاريخ التعيين <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="HireDate" type="date"
+                                       class="form-control hr-form-control" />
+                                <span asp-validation-for="HireDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="JobGradeDate" class="hr-form-label">تاريخ الحصول على الدرجة</label>
+                                <input asp-for="JobGradeDate" type="date"
+                                       class="form-control hr-form-control" />
+                                <small class="text-muted">هام جداً لاحتساب أقدمية الترقية</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. البيانات المالية -->
+                    <div class="tab-pane fade" id="financial" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="InsuranceNumber" class="hr-form-label">الرقم التأميني</label>
+                                <input asp-for="InsuranceNumber" class="form-control hr-form-control" />
+                                <span asp-validation-for="InsuranceNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="BankAccountNumber" class="hr-form-label">رقم الحساب (ميزة)</label>
+                                <input asp-for="BankAccountNumber" class="form-control hr-form-control" />
+                                <span asp-validation-for="BankAccountNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="BankName" class="hr-form-label">البنك</label>
+                                <select asp-for="BankName" class="form-select hr-form-control">
+                                    <option value="">-- اختر البنك --</option>
+                                    <option value="البنك الأهلي المصري">البنك الأهلي المصري</option>
+                                    <option value="بنك مصر">بنك مصر</option>
+                                    <option value="بنك القاهرة">بنك القاهرة</option>
+                                    <option value="البريد المصري">البريد المصري</option>
+                                </select>
+                                <span asp-validation-for="BankName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-3 hr-form-group">
+                                <label asp-for="GrossSalary" class="hr-form-label">إجمالي الاستحقاق</label>
+                                <div class="input-group">
+                                    <input asp-for="GrossSalary" type="number" step="0.01"
+                                           class="form-control hr-form-control" placeholder="0.00" />
+                                    <span class="input-group-text bg-light">جم</span>
+                                </div>
+                                <span asp-validation-for="GrossSalary" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-3 hr-form-group">
+                                <label asp-for="BasicSalary2019" class="hr-form-label">الراتب الأساسي 2019</label>
+                                <div class="input-group">
+                                    <input asp-for="BasicSalary2019" type="number" step="0.01"
+                                           class="form-control hr-form-control" placeholder="0.00" />
+                                    <span class="input-group-text bg-light">جم</span>
+                                </div>
+                                <span asp-validation-for="BasicSalary2019" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="hr-switch-group d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1 text-dark">صندوق الزمالة</h6>
+                                                <p class="text-muted small mb-0">مشترك في صندوق الزمالة</p>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input asp-for="HasFellowshipFund" class="form-check-input"
+                                                       type="checkbox" style="width:3rem; height:1.5rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="hr-switch-group d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1 text-dark">صندوق التكافل الصحي</h6>
+                                                <p class="text-muted small mb-0">مشترك في صندوق التكافل</p>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input asp-for="HasMedicalFund" class="form-check-input"
+                                                       type="checkbox" style="width:3rem; height:1.5rem;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="hr-card-footer bg-light p-4 d-flex justify-content-between align-items-center border-top">
+                <a asp-action="Details" asp-route-id="@Model.Id"
+                   class="text-muted font-weight-bold text-decoration-none">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+                <button type="submit" class="hr-btn hr-btn-primary px-5">
+                    <i class="fas fa-save"></i> حفظ التعديلات
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                const hasError = pane.querySelector('.text-danger:not(:empty)');
+                if (hasError) {
+                    const tabLink = document.getElementById('tab-' + pane.id);
+                    if (tabLink) {
+                        tabLink.classList.add('text-danger');
+                        tabLink.innerHTML +=
+                            ' <i class="fas fa-exclamation-circle text-danger small"></i>';
+                    }
+                }
+            });
+        });
+    </script>
+}

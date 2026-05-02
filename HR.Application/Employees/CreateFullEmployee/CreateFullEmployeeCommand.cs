@@ -10,12 +10,15 @@ namespace HR.Application.Employees.CreateFullEmployee
         DateTime DateOfBirth,
         string Gender,
         string Phone,
+        string Email,
+        string MaritalStatus,
         string Address,
         bool IsDisabled, // فئة خاصة
 
         // 2. Job Information
         Guid? OrgUnitId, // الإدارة التابع لها
         string JobTitleName, // المسمى الوظيفي (Text input in UI)
+        Guid JobTitleId,
         string QualificationName, // المؤهل الدراسي (Text input in UI)
         Guid? JobGradeId, // الدرجة المالية
         DateTime HireDate, // تاريخ التعيين

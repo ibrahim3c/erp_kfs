@@ -88,5 +88,16 @@ namespace HR.Infrastructure.Persistance.Repositories
             // If the code format in the DB doesn't match our expectations
             throw new InvalidOperationException("Unrecognized employee code format in the database.");
         }
+
+        public async Task<bool> ExistsByNationalIdAsync(string nationalId, CancellationToken ct = default)
+        {
+            return await _dbContext.Employees
+         .AnyAsync(e => e.NationalId == nationalId, ct);
+        }
+
+        public async Task AddAsync(Employee employee, CancellationToken cancellationToken = default)
+        {
+            await _dbContext.Employees.AddAsync(employee, cancellationToken);
+        }
     }
 }

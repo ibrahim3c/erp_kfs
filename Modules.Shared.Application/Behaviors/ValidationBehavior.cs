@@ -2,6 +2,7 @@
 using MediatR;
 using Modules.Shared.Application.Exceptions;
 using Modules.Shared.Application.Messaging;
+using Modules.Shared.Domain;
 
 namespace Modules.Shared.Application.Behaviors;
 
@@ -53,9 +54,13 @@ public class ValidationBehavior<TRequest, TResponse>
 
 
         if (validationErrors.Any())
-            //custom exception
-            throw new Exceptions.ValidationException(validationErrors);
+        {
+            // استخدم Select بدلاً من SelectMany للحفاظ على الجملة كاملة
+            var errorMessage = string.Join(" | ", validationErrors.Select(e => e.ErrorMessage));
 
+            return (TResponse)(object)Result<Guid>.Failure(
+                new Error("Validation", errorMessage));
+        }
 
         return await next();
 

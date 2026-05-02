@@ -23,94 +23,6 @@ namespace Organization.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Geography.Domain.CityCenter", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GovernorateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GovernorateId");
-
-                    b.ToTable("CityCenter", "Organization");
-                });
-
-            modelBuilder.Entity("Geography.Domain.Governorate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Governorate", "Organization");
-                });
-
-            modelBuilder.Entity("Geography.Domain.LocalUnit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CityCenterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CityCenterId");
-
-                    b.ToTable("LocalUnit", "Organization");
-                });
-
-            modelBuilder.Entity("Geography.Domain.Village", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CityCenterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LocalUnitId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CityCenterId");
-
-                    b.HasIndex("LocalUnitId");
-
-                    b.ToTable("Village", "Organization");
-                });
-
             modelBuilder.Entity("Organization.Domain.FunctionalGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -258,6 +170,8 @@ namespace Organization.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("JobTitleId");
+
                     b.HasIndex("OrgUnitId");
 
                     b.ToTable("LeadershipPositions", "Organization");
@@ -339,8 +253,6 @@ namespace Organization.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.HasIndex("GovernorateId");
-
                     b.HasIndex("Name");
 
                     b.HasIndex("OrgUnitTypeId");
@@ -413,43 +325,6 @@ namespace Organization.Infrastructure.Migrations
                     b.ToTable("QualitativeGroups", "Organization");
                 });
 
-            modelBuilder.Entity("Geography.Domain.CityCenter", b =>
-                {
-                    b.HasOne("Geography.Domain.Governorate", "Governorate")
-                        .WithMany("CityCenters")
-                        .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Governorate");
-                });
-
-            modelBuilder.Entity("Geography.Domain.LocalUnit", b =>
-                {
-                    b.HasOne("Geography.Domain.CityCenter", "CityCenter")
-                        .WithMany("LocalUnits")
-                        .HasForeignKey("CityCenterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CityCenter");
-                });
-
-            modelBuilder.Entity("Geography.Domain.Village", b =>
-                {
-                    b.HasOne("Geography.Domain.CityCenter", null)
-                        .WithMany("Villages")
-                        .HasForeignKey("CityCenterId");
-
-                    b.HasOne("Geography.Domain.LocalUnit", "LocalUnit")
-                        .WithMany("Villages")
-                        .HasForeignKey("LocalUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LocalUnit");
-                });
-
             modelBuilder.Entity("Organization.Domain.FunctionalGroup", b =>
                 {
                     b.HasOne("Organization.Domain.QualitativeGroup", "QualitativeGroup")
@@ -482,11 +357,19 @@ namespace Organization.Infrastructure.Migrations
 
             modelBuilder.Entity("Organization.Domain.LeadershipPosition", b =>
                 {
+                    b.HasOne("Organization.Domain.JobTitle", "JobTitle")
+                        .WithMany()
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Organization.Domain.OrgUnit", "OrgUnit")
                         .WithMany()
                         .HasForeignKey("OrgUnitId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("JobTitle");
 
                     b.Navigation("OrgUnit");
                 });
@@ -504,11 +387,6 @@ namespace Organization.Infrastructure.Migrations
 
             modelBuilder.Entity("Organization.Domain.OrgUnit", b =>
                 {
-                    b.HasOne("Geography.Domain.Governorate", "Governorate")
-                        .WithMany()
-                        .HasForeignKey("GovernorateId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Organization.Domain.OrgUnitType", "OrgUnitType")
                         .WithMany()
                         .HasForeignKey("OrgUnitTypeId")
@@ -524,28 +402,9 @@ namespace Organization.Infrastructure.Migrations
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Governorate");
-
                     b.Navigation("OrgUnitType");
 
                     b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("Geography.Domain.CityCenter", b =>
-                {
-                    b.Navigation("LocalUnits");
-
-                    b.Navigation("Villages");
-                });
-
-            modelBuilder.Entity("Geography.Domain.Governorate", b =>
-                {
-                    b.Navigation("CityCenters");
-                });
-
-            modelBuilder.Entity("Geography.Domain.LocalUnit", b =>
-                {
-                    b.Navigation("Villages");
                 });
 
             modelBuilder.Entity("Organization.Domain.FunctionalGroup", b =>
