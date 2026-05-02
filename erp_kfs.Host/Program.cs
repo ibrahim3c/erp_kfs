@@ -1,10 +1,4 @@
-﻿using HR.Infrastructure;
-using HR.Application;
-using Modules.Shared.Infrastructure;
-using Modules.Shared.Application;
-using Identity.Infrastructure;
-using erp_kfs.Host.Extensions;
-using MyERP.Web.Data;
+﻿using MyERP.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using erp_kfs.Host.Models;
 using Microsoft.EntityFrameworkCore;
@@ -55,10 +49,10 @@ namespace erp_kfs.Host
             var app = builder.Build();
 
             // Seed initial data (roles and admin user)
-            using (var scope = app.Services.CreateScope())
-            {
-                await IdentitySeeder.SeedAsync(scope.ServiceProvider);
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+            //}
 
             #region my part
             //// Data Seeding

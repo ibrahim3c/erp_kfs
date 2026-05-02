@@ -30,7 +30,7 @@ namespace ERP_KFS_MVC
             var app = builder.Build();
 
             //  Apply Migrations + Seed
-            await app.ApplyMigrationsAndSeedAsync();
+            //await app.ApplyMigrationsAndSeedAsync();
 
             // Middleware
             if (!app.Environment.IsDevelopment())
