@@ -1,0 +1,128 @@
+﻿@model HR.Application.Loans.GetLoanDetails.GetLoanDetailsQueryResponse
+@{
+    ViewData["Title"] = "تفاصيل السلفة";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-list-ol text-primary me-2"></i> تفاصيل السلفة
+                </h1>
+            </div>
+            <div class="col-sm-6 text-end">
+                <a asp-action="Requests" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-right me-1"></i> رجوع
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @* بيانات السلفة *@
+        <div class="card card-outline card-primary mb-4">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle me-1"></i> بيانات السلفة
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">الموظف</small>
+                        <strong>@Model.EmployeeName</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">قيمة السلفة</small>
+                        <strong class="text-success">@Model.Amount.ToString("N0") جم</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">عدد الأقساط</small>
+                        <strong>@Model.Months شهر</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">القسط الشهري</small>
+                        <strong class="text-danger">@Model.InstallmentAmount.ToString("N0") جم</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">المتبقي</small>
+                        <strong>@Model.RemainingAmount.ToString("N0") جم</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">تاريخ الصرف</small>
+                        <strong>@Model.StartDate.ToString("dd/MM/yyyy")</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">السبب</small>
+                        <strong>@Model.Reason</strong>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted d-block">الحالة</small>
+                        @if (Model.IsCompleted)
+                        {
+                            <span class="badge bg-success">خالصة</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">سارية (يخصم)</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* جدول الأقساط *@
+        <div class="card card-outline card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-alt me-1"></i> جدول الأقساط
+                    <span class="badge bg-info ms-1">@Model.Installments.Count قسط</span>
+                </h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover table-bordered text-center align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>#</th>
+                            <th>تاريخ الاستحقاق</th>
+                            <th>قيمة القسط</th>
+                            <th>الحالة</th>
+                            <th>تاريخ السداد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var inst in Model.Installments)
+                        {
+                            <tr class="@(inst.IsPaid ? "table-success" : "")">
+                                <td>@inst.InstallmentNumber</td>
+                                <td>@inst.DueDate.ToString("dd/MM/yyyy")</td>
+                                <td class="fw-bold">@inst.Amount.ToString("N0") جم</td>
+                                <td>
+                                    @if (inst.IsPaid)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i> مدفوع
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i> لم يُسدد
+                                        </span>
+                                    }
+                                </td>
+                                <td>@(inst.PaidAt.HasValue ? inst.PaidAt.Value.ToString("dd/MM/yyyy") : "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>

@@ -8,6 +8,55 @@
 <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
 <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
+<style>
+    .info-box {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .info-box-icon {
+        border-radius: 0;
+    }
+
+    .card-tabs .nav-tabs .nav-link {
+        border-radius: 0;
+        font-weight: 600;
+        padding: 12px 20px;
+    }
+
+        .card-tabs .nav-tabs .nav-link.active {
+            background: #fff;
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+        }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    table thead th {
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+    }
+
+    .btn-sm {
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+    }
+
+        .empty-state i {
+            font-size: 48px;
+            opacity: 0.3;
+        }
+</style>
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -46,16 +95,21 @@
     <div class="container-fluid">
 
         @* ── Summary Cards ── *@
-        <div class="row">
+        @{
+            var totalLoans = Model.Loans.Sum(x => x.Amount);
+            var totalInstallments = Model.Loans.Where(x => !x.IsCompleted).Sum(x => x.InstallmentAmount);
+            var totalRemaining = Model.Loans.Sum(x => x.RemainingAmount);
+            var totalInsurance = Model.InsurancePurchases
+                .Where(x => x.Status == "Approved")
+                .Sum(x => x.MonthlyInstallment);
+        }
+        <div style="display:flex;justify-content:space-around;align-items:center;">
             <div class="col-md-3 col-6">
                 <div class="info-box bg-white shadow-sm border-bottom border-success">
                     <span class="info-box-icon bg-success"><i class="fas fa-money-bill-wave"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">إجمالي السلف المنصرفة</span>
-                        <span class="info-box-number">
-                            @Model.Loans.Sum(x => x.Amount).ToString("N0")
-                            <small>جم</small>
-                        </span>
+                        <span class="info-box-number">@totalLoans.ToString("N0") <small>جم</small></span>
                     </div>
                 </div>
             </div>
@@ -64,10 +118,7 @@
                     <span class="info-box-icon bg-primary"><i class="fas fa-sync"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">إجمالي القسط الشهري المحصل</span>
-                        <span class="info-box-number">
-                            @Model.Loans.Where(x => !x.IsCompleted).Sum(x => x.InstallmentAmount).ToString("N0")
-                            <small>جم</small>
-                        </span>
+                        <span class="info-box-number">@totalInstallments.ToString("N0") <small>جم</small></span>
                     </div>
                 </div>
             </div>
@@ -76,10 +127,7 @@
                     <span class="info-box-icon bg-danger"><i class="fas fa-chart-pie"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">الرصيد المتبقي (مديونية)</span>
-                        <span class="info-box-number text-danger">
-                            @Model.Loans.Sum(x => x.RemainingAmount).ToString("N0")
-                            <small>جم</small>
-                        </span>
+                        <span class="info-box-number text-danger">@totalRemaining.ToString("N0") <small>جم</small></span>
                     </div>
                 </div>
             </div>
@@ -88,12 +136,7 @@
                     <span class="info-box-icon bg-info"><i class="fas fa-shield-alt"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">أقساط التأمينات الشهرية</span>
-                        <span class="info-box-number">
-                            @Model.InsurancePurchases
-                            .Where(x => x.Status == "Approved")
-                            .Sum(x => x.MonthlyInstallment).ToString("N0")
-                            <small>جم</small>
-                        </span>
+                        <span class="info-box-number">@totalInsurance.ToString("N0") <small>جم</small></span>
                     </div>
                 </div>
             </div>
@@ -147,57 +190,64 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{
-                                    int loanCounter = 1;
-                                }
-                                @foreach (var loan in Model.Loans)
+                                @if (!Model.Loans.Any())
                                 {
                                     <tr>
-                                        <td>@loanCounter</td>
-                                        <td class="text-end fw-bold">@loan.EmployeeName</td>
-                                        <td>@loan.StartDate.ToString("dd/MM/yyyy")</td>
-                                        <td class="fw-bold text-success">
-                                            @loan.Amount.ToString("N0")
-                                        </td>
-                                        <td>@loan.Months شهر</td>
-                                        <td class="text-danger fw-bold">
-                                            @loan.InstallmentAmount.ToString("N0")
-                                        </td>
-                                        <td>@loan.RemainingAmount.ToString("N0")</td>
-                                        <td>
-                                            @if (loan.IsCompleted)
-                                            {
-                                                <span class="badge bg-success">خالصة</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning text-dark">سارية (يخصم)</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            <a asp-action="Details"
-                                               asp-route-id="@loan.Id"
-                                               class="btn btn-sm btn-outline-info">
-                                                <i class="fas fa-list-ol"></i> الأقساط
-                                            </a>
-
-                                            @if (!loan.IsCompleted)
-                                            {
-                                                <form asp-action="SettleLoan"
-                                                      method="post"
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('هل تريد مخالصة هذه السلفة؟')">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="id" value="@loan.Id" />
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-outline-dark">
-                                                        <i class="fas fa-check"></i> مخالصة
-                                                    </button>
-                                                </form>
-                                            }
+                                        <td colspan="9">
+                                            <div class="empty-state text-center text-muted">
+                                                <i class="fas fa-hand-holding-usd d-block mb-3 text-secondary"></i>
+                                                <h6 class="fw-bold">لا يوجد سلف حالياً</h6>
+                                                <small>يمكنك إضافة سلفة جديدة من الزر أعلاه</small>
+                                            </div>
                                         </td>
                                     </tr>
-                                    loanCounter++;
+                                }
+                                else
+                                {
+                                    int loanCounter = 1;
+                                    foreach (var loan in Model.Loans)
+                                    {
+                                        <tr>
+                                            <td>@loanCounter</td>
+                                            <td class="text-end fw-bold">@loan.EmployeeName</td>
+                                            <td>@loan.StartDate.ToString("dd/MM/yyyy")</td>
+                                            <td class="fw-bold text-success">@loan.Amount.ToString("N0")</td>
+                                            <td>@loan.Months شهر</td>
+                                            <td class="text-danger fw-bold">@loan.InstallmentAmount.ToString("N0")</td>
+                                            <td>@loan.RemainingAmount.ToString("N0")</td>
+                                            <td>
+                                                @if (loan.IsCompleted)
+                                                {
+                                                    <span class="badge bg-success">خالصة</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">سارية (يخصم)</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-action="Details"
+                                                   asp-route-id="@loan.Id"
+                                                   class="btn btn-sm btn-outline-info">
+                                                    <i class="fas fa-list-ol"></i> الأقساط
+                                                </a>
+                                                @if (!loan.IsCompleted)
+                                                {
+                                                    <form asp-action="SettleLoan"
+                                                          method="post"
+                                                          class="d-inline"
+                                                          onsubmit="return confirm('هل تريد مخالصة هذه السلفة؟')">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@loan.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-dark">
+                                                            <i class="fas fa-check"></i> مخالصة
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                        loanCounter++;
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -238,61 +288,81 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{
-                                    int insCounter = 1;
-                                }
-                                @foreach (var item in Model.InsurancePurchases)
+                                @if (!Model.InsurancePurchases.Any())
                                 {
                                     <tr>
-                                        <td>@insCounter</td>
-                                        <td class="text-end fw-bold">@item.EmployeeName</td>
-                                        <td>@item.InsuranceAuthority</td>
-                                        <td>@item.PurchasedYears سنوات</td>
-                                        <td>@item.TotalCost.ToString("N0") جم</td>
-                                        <td class="text-danger fw-bold">
-                                            @item.MonthlyInstallment.ToString("N0") جم
-                                        </td>
-                                        <td>@item.RemainingAmount.ToString("N0") جم</td>
-                                        <td>@item.DeductionStartDate.ToString("dd/MM/yyyy")</td>
-                                        <td>
-                                            @switch (item.Status)
-                                            {
-                                                case "Approved":
-                                                    <span class="badge bg-primary">معتمد وساري</span>
-                                                    break;
-                                                case "PendingApproval":
-                                                    <span class="badge bg-warning text-dark">في انتظار الاعتماد</span>
-                                                    break;
-                                                case "Completed":
-                                                    <span class="badge bg-success">منتهي</span>
-                                                    break;
-                                                case "Rejected":
-                                                    <span class="badge bg-danger">مرفوض</span>
-                                                    break;
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (item.Status == "PendingApproval")
-                                            {
-                                                <form asp-action="ApproveInsurancePurchase"
-                                                      method="post"
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('هل تريد اعتماد هذا الطلب؟')">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="id" value="@item.Id" />
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-success">
-                                                        <i class="fas fa-check"></i> اعتماد
-                                                    </button>
-                                                </form>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">—</span>
-                                            }
+                                        <td colspan="10">
+                                            <div class="empty-state text-center text-muted">
+                                                <i class="fas fa-shield-alt d-block mb-3 text-secondary"></i>
+                                                <h6 class="fw-bold">لا يوجد طلبات شراء مدد حالياً</h6>
+                                                <small>يمكنك إضافة طلب جديد من الزر أعلاه</small>
+                                            </div>
                                         </td>
                                     </tr>
-                                    insCounter++;
+                                }
+                                else
+                                {
+                                    int insCounter = 1;
+                                    foreach (var item in Model.InsurancePurchases)
+                                    {
+                                        <tr>
+                                            <td>@insCounter</td>
+                                            <td class="text-end fw-bold">@item.EmployeeName</td>
+                                            <td>@item.InsuranceAuthority</td>
+                                            <td>@item.PurchasedYears سنوات</td>
+                                            <td>@item.TotalCost.ToString("N0") جم</td>
+                                            <td class="text-danger fw-bold">@item.MonthlyInstallment.ToString("N0") جم</td>
+                                            <td>@item.RemainingAmount.ToString("N0") جم</td>
+                                            <td>@item.DeductionStartDate.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                @switch (item.Status)
+                                                {
+                                                    case "Approved":
+                                                        <span class="badge bg-primary">معتمد وساري</span>
+                                                        break;
+                                                    case "PendingApproval":
+                                                        <span class="badge bg-warning text-dark">في انتظار الاعتماد</span>
+                                                        break;
+                                                    case "Completed":
+                                                        <span class="badge bg-success">منتهي</span>
+                                                        break;
+                                                    case "Rejected":
+                                                        <span class="badge bg-danger">مرفوض</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (item.Status == "PendingApproval")
+                                                {
+                                                    <form asp-action="ApproveInsurancePurchase"
+                                                          method="post"
+                                                          class="d-inline"
+                                                          onsubmit="return confirm('هل تريد اعتماد هذا الطلب؟')">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-check"></i> اعتماد
+                                                        </button>
+                                                    </form>
+                                                    <form asp-action="RejectInsurancePurchase"
+                                                          method="post"
+                                                          class="d-inline"
+                                                          onsubmit="return confirm('هل تريد رفض هذا الطلب؟')">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-times"></i> رفض
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        insCounter++;
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -318,35 +388,28 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-
                     <div class="mb-3">
                         <label class="form-label fw-bold">الموظف المستفيد</label>
-                        <select name="employeeId"
-                                class="form-select select2-modal"
-                                style="width:100%"
-                                required>
+                        <select name="employeeId" class="form-select select2-modal" style="width:100%" required>
                             <option value="">-- اختر الموظف --</option>
-                            {{-- هتملأها من الـ ViewModel لو حبيت --}}
+                            @if (ViewBag.Employees != null)
+                            {
+                                foreach (var emp in ViewBag.Employees)
+                                {
+                                    <option value="@emp.Id">@emp.Name</option>
+                                }
+                            }
                         </select>
                     </div>
-
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold">قيمة السلفة</label>
-                            <input type="number"
-                                   name="amount"
-                                   class="form-control fw-bold text-success"
-                                   id="loanAmount"
-                                   min="1"
-                                   required
-                                   onkeyup="calcInstallment()">
+                            <input type="number" name="amount" class="form-control fw-bold text-success"
+                                   id="loanAmount" min="1" required onkeyup="calcInstallment()">
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold">تقسيط على (شهر)</label>
-                            <select name="months"
-                                    class="form-select"
-                                    id="loanMonths"
-                                    onchange="calcInstallment()">
+                            <select name="months" class="form-select" id="loanMonths" onchange="calcInstallment()">
                                 <option value="1">دفعة واحدة</option>
                                 <option value="3">3 شهور</option>
                                 <option value="6">6 شهور</option>
@@ -355,27 +418,19 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="alert alert-light border text-center p-2">
                         قيمة القسط الشهري:
                         <strong id="installmentVal" class="text-danger fs-5">0.00</strong> جنيه
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label fw-bold">يبدأ الخصم من راتب شهر</label>
-                        <input type="month"
-                               name="startMonth"
-                               class="form-control"
-                               value="@DateTime.Now.ToString("yyyy-MM")"
-                               required>
+                        <input type="month" name="startMonth" class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM")" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">سبب السلفة</label>
-                        <input type="text"
-                               name="reason"
-                               class="form-control"
-                               placeholder="ظروف طارئة / زواج / تعليم..."
-                               required>
+                        <input type="text" name="reason" class="form-control"
+                               placeholder="ظروف طارئة / زواج / تعليم..." required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -393,11 +448,8 @@
 <div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="CreateInsurancePurchase"
-                  asp-controller="Loans"
-                  asp-area="HR"
-                  method="post"
-                  enctype="multipart/form-data">
+            <form asp-action="CreateInsurancePurchase" asp-controller="Loans" asp-area="HR"
+                  method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <div class="modal-header bg-info text-white">
                     <h5 class="modal-title">
@@ -406,76 +458,52 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-
                     <div class="mb-3">
                         <label class="form-label fw-bold">الموظف</label>
-                        <select name="employeeId"
-                                class="form-select select2-modal"
-                                style="width:100%"
-                                required>
+                        <select name="employeeId" class="form-select select2-modal" style="width:100%" required>
                             <option value="">-- اختر الموظف --</option>
+                            @if (ViewBag.Employees != null)
+                            {
+                                foreach (var emp in ViewBag.Employees)
+                                {
+                                    <option value="@emp.Id">@emp.Name</option>
+                                }
+                            }
                         </select>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label fw-bold">الجهة التأمينية</label>
-                        <input type="text"
-                               name="insuranceAuthority"
-                               class="form-control"
-                               value="الهيئة القومية للتأمينات والمعاشات"
-                               required
-                               maxlength="200">
+                        <input type="text" name="insuranceAuthority" class="form-control"
+                               value="الهيئة القومية للتأمينات والمعاشات" required maxlength="200">
                     </div>
-
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold">عدد السنوات المشتراة</label>
-                            <input type="number"
-                                   name="purchasedYears"
-                                   class="form-control"
-                                   placeholder="سنة"
-                                   min="1"
-                                   max="30"
-                                   required>
+                            <input type="number" name="purchasedYears" class="form-control"
+                                   placeholder="سنة" min="1" max="30" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label fw-bold">التكلفة الإجمالية (المقدرة)</label>
-                            <input type="number"
-                                   name="totalCost"
-                                   class="form-control"
-                                   min="1"
-                                   required>
+                            <input type="number" name="totalCost" class="form-control" min="1" required>
                         </div>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label fw-bold text-danger">القسط الشهري للخصم</label>
                         <div class="input-group">
-                            <input type="number"
-                                   name="monthlyInstallment"
-                                   class="form-control"
-                                   placeholder="المبلغ الذي سيخصم من الراتب"
-                                   min="1"
-                                   required>
+                            <input type="number" name="monthlyInstallment" class="form-control"
+                                   placeholder="المبلغ الذي سيخصم من الراتب" min="1" required>
                             <span class="input-group-text text-danger fw-bold">جم</span>
                         </div>
                         <small class="text-muted">يستمر الخصم حتى سداد كامل المبلغ للهيئة.</small>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label fw-bold">يبدأ الخصم من شهر</label>
-                        <input type="month"
-                               name="deductionStartMonth"
-                               class="form-control"
-                               value="@DateTime.Now.ToString("yyyy-MM")"
-                               required>
+                        <input type="month" name="deductionStartMonth" class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM")" required>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label fw-bold">صورة قرار الموافقة</label>
-                        <input type="file"
-                               name="approvalDecisionFile"
-                               class="form-control"
+                        <input type="file" name="approvalDecisionFile" class="form-control"
                                accept=".pdf,.jpg,.jpeg,.png">
                     </div>
                 </div>
@@ -497,25 +525,51 @@
 
     <script>
         $(function () {
-        $('#tableLoans').DataTable({
-        lengthChange: false,
-        autoWidth: false,
-        language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
-        });
-        $('#tablePurchases').DataTable({
-        lengthChange: false,
-        autoWidth: false,
-        language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
-        });
+        // DataTables — بس لو في بيانات
+        @if (Model.Loans.Any())
+        {
+            <text>
+                $('#tableLoans').DataTable({
+                lengthChange: false,
+                autoWidth: false,
+                language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
+                });
+            </text>
+        }
+
+        @if (Model.InsurancePurchases.Any())
+        {
+            <text>
+                $('#tablePurchases').DataTable({
+                lengthChange: false,
+                autoWidth: false,
+                language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
+                });
+            </text>
+        }
 
         // Select2 جوه الـ Modal
-        $('.select2-modal').select2({
+        $('#loanModal').on('shown.bs.modal', function () {
+        $(this).find('.select2-modal').select2({
         theme: 'bootstrap4',
-        dropdownParent: $(this).closest('.modal')
+        dropdownParent: $('#loanModal'),
+        language: 'ar',
+        dir: 'rtl',
+        width: '100%'
         });
         });
 
-        // حاسبة الأقساط
+        $('#purchaseModal').on('shown.bs.modal', function () {
+        $(this).find('.select2-modal').select2({
+        theme: 'bootstrap4',
+        dropdownParent: $('#purchaseModal'),
+        language: 'ar',
+        dir: 'rtl',
+        width: '100%'
+        });
+        });
+        });
+
         function calcInstallment() {
         var amount = parseFloat(document.getElementById("loanAmount").value) || 0;
         var months = parseInt(document.getElementById("loanMonths").value) || 1;

@@ -29,8 +29,8 @@ namespace Organization.Domain
         public OrgUnit? OrgUnit { get; private set; }
         public JobTitle? JobTitle { get; private set; }
 
-        //private readonly List<LeadershipPositionHistory> _histories = new();
-        //public IReadOnlyCollection<LeadershipPositionHistory> LeadershipPositionHistories => _histories.AsReadOnly();
+        private readonly List<LeadershipPositionHistory> _histories = new();
+        public IReadOnlyCollection<LeadershipPositionHistory> LeadershipPositionHistories => _histories.AsReadOnly();
 
         // Factory
         public static Result<LeadershipPosition> Create(
