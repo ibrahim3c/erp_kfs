@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HR.Application.Employees.CreateFullEmployee
+namespace HR.Application.Employees.CreateEmployee
 {
-    internal sealed class CreateFullEmployeeValidator
-     : AbstractValidator<CreateFullEmployeeCommand>
+    internal sealed class CreateEmployeeValidator
+     : AbstractValidator<CreateEmployeeCommand>
     {
-        public CreateFullEmployeeValidator()
+        public CreateEmployeeValidator()
         {
             // ─── 1. البيانات الشخصية ───────────────────────────────────
 
@@ -66,13 +66,13 @@ namespace HR.Application.Employees.CreateFullEmployee
                     .WithMessage("تاريخ الحصول على الدرجة لا يمكن أن يكون قبل تاريخ التعيين")
                 .When(x => x.JobGradeDate.HasValue);
 
-            RuleFor(x => x.JobTitleName)
-                .NotEmpty().WithMessage("المسمى الوظيفي مطلوب")
-                .MaximumLength(150).WithMessage("المسمى الوظيفي لا يتجاوز 150 حرف");
+            //RuleFor(x => x.JobTitleName)
+            //    .NotEmpty().WithMessage("المسمى الوظيفي مطلوب")
+            //    .MaximumLength(150).WithMessage("المسمى الوظيفي لا يتجاوز 150 حرف");
 
-            RuleFor(x => x.QualificationName)
-                .MaximumLength(150).WithMessage("المؤهل الدراسي لا يتجاوز 150 حرف")
-                .When(x => !string.IsNullOrWhiteSpace(x.QualificationName));
+            //RuleFor(x => x.QualificationName)
+            //    .MaximumLength(150).WithMessage("المؤهل الدراسي لا يتجاوز 150 حرف")
+            //    .When(x => !string.IsNullOrWhiteSpace(x.QualificationName));
 
             // ─── 3. البيانات المالية (اختياري لكن مع rules منطقية) ───
 

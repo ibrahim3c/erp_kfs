@@ -28,6 +28,12 @@ namespace Identity.Domain
         public static readonly Error PasswordChangeFailed =
             new("User.PasswordChangeFailed", "Password change failed");
 
+        public static readonly Error UserCreateForEmployeeFailed =
+            new("User.EmployeeCreateFailed", "Failed to create system user for employee");
+
+        public static readonly Error UserDeleteFailed =
+            new("User.DeleteFailed", "Failed to delete system user during compensation");
+
         // Auth 
         public static readonly Error InvalidCredentials =
             new("Auth.InvalidCredentials", "Invalid email or password");

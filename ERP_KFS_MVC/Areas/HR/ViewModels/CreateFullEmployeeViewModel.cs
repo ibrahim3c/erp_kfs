@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http; // تأكد من وجود هذا الـ Namespace لـ IFormFile
 
 namespace ERP_KFS_MVC.Areas.HR.ViewModels
 {
@@ -26,8 +27,11 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
 
         [Required(ErrorMessage = "النوع مطلوب")]
         public string Gender { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "البريد الإلكتروني مطلوب")] // أضفنا Required بناءً على تصميم الواجهة
         [EmailAddress(ErrorMessage = "البريد الإلكتروني غير صحيح")]
         public string Email { get; set; } = string.Empty;
+
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string? MaritalStatus { get; set; }
@@ -41,10 +45,11 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         public string JobTitleName { get; set; } = string.Empty;
         public Guid? JobTitleId { get; set; }
 
-        [MaxLength(150)]
-        public string? QualificationName { get; set; }
+        // تم حذف QualificationName القديم من هنا واستبداله بالقسم رقم 3
 
         public Guid? JobGradeId { get; set; }
+
+        // تم الاعتماد على EmploymentTypeId ليكون نوع الكادر (كما طلبت)
         public Guid? EmploymentTypeId { get; set; }
 
         [Required(ErrorMessage = "تاريخ التعيين مطلوب")]
@@ -52,16 +57,45 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
 
         public DateTime? JobGradeDate { get; set; }
 
-        // ── 3. الملفات ───────────────────────────────────────────
+        // ── 3. بيانات المؤهل الدراسي (القسم الجديد) ───────────────
+        [Required(ErrorMessage = "نوع المؤهل مطلوب")]
+        public Guid QualificationTypeId { get; set; }
+
+        [Required(ErrorMessage = "اسم المؤهل بالكامل مطلوب")]
+        [MaxLength(200, ErrorMessage = "اسم المؤهل يجب ألا يتجاوز 200 حرف")]
+        public string QualificationFullName { get; set; } = string.Empty;
+
+        [MaxLength(100, ErrorMessage = "اسم التخصص يجب ألا يتجاوز 100 حرف")]
+        public string? Specialization { get; set; }
+
+        [MaxLength(150, ErrorMessage = "اسم الجامعة/المعهد يجب ألا يتجاوز 150 حرف")]
+        public string? University { get; set; }
+
+        public int? GraduationYear { get; set; }
+
+        [MaxLength(50)]
+        public string? Grade { get; set; }
+
+        public DateTime? ValidFrom { get; set; }
+
+        public DateTime? ValidTo { get; set; }
+
+        [MaxLength(500)]
+        public string? Notes { get; set; }
+
+        // تم استخدام IFormFile لرفع المستند الخاص بالمؤهل مباشرة من داخل التبويب
+        public IFormFile? FilePath { get; set; }
+
+        // ── 4. الملفات (مسوغات التعيين) ───────────────────────────
         public IFormFile? ProfileImage { get; set; }
         public IFormFile? NationalIdCard { get; set; }
-        public IFormFile? QualificationFile { get; set; }
+        public IFormFile? QualificationFile { get; set; } // تم الإبقاء عليه إن كنت تريد رفع نسخة إضافية في تبويب الملفات
         public IFormFile? BirthCertificate { get; set; }
         public IFormFile? MilitaryFile { get; set; }
         public IFormFile? ContractFile { get; set; }
         public IFormFile? PoliceClearance { get; set; }
 
-        // ── 4. البيانات المالية ──────────────────────────────────
+        // ── 5. البيانات المالية ──────────────────────────────────
         public decimal? BasicSalary2019 { get; set; }
         public decimal? GrossSalary { get; set; }
         public string? InsuranceNumber { get; set; }

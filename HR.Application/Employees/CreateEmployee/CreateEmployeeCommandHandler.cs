@@ -1,30 +1,46 @@
-﻿using CollegeControlSystem.Domain.Abstractions;
-using HR.Domain;
+﻿using HR.Domain;
 using HR.Domain.Employees;
+using Modules.Shared.Application.Interfaces;
 using Modules.Shared.Application.Messaging;
 using Modules.Shared.Domain;
+
 namespace HR.Application.Employees.CreateEmployee
 {
-    internal sealed class CreateEmployeeCommandHandler : ICommandHandler<CreateEmployeeCommand, Guid>
+
+    public sealed class CreateEmployeeCommandHandler
+        : ICommandHandler<CreateEmployeeCommand, Guid>
     {
         private readonly IHRUnitOfWork _unitOfWork;
+        private readonly IIdentityService _identityService;
 
         public CreateEmployeeCommandHandler(
-            IHRUnitOfWork unitOfWork)
+            IHRUnitOfWork unitOfWork,
+            IIdentityService identityService)
         {
             _unitOfWork = unitOfWork;
+            _identityService = identityService;
         }
 
-        public async Task<Result<Guid>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> Handle(
+            CreateEmployeeCommand request,
+            CancellationToken cancellationToken)
         {
-            // 1. Generate unique employee code (Assuming this method exists in your repo)
-            // Since the UI states "يتم إنشاؤه تلقائياً", we handle the logic here.
-            string generatedCode = await _unitOfWork.EmployeeRepository.GetNextCodeAsync(cancellationToken);
+            // 1. التحقق من تكرار الرقم القومي
+            bool nationalIdExists = await _unitOfWork.EmployeeRepository
+                .ExistsByNationalIdAsync(request.NationalId, cancellationToken);
 
-            // 2. Create Domain Entity
-            var result = Employee.Create(
-                code: generatedCode,
-                name: request.Name,
+            if (nationalIdExists)
+                return Result<Guid>.Failure(EmployeeErrors.NationalIdAlreadyExists);
+
+            // 2. توليد الكود التسلسلي
+            string code = await _unitOfWork.EmployeeRepository.GetNextCodeAsync(cancellationToken);
+
+            // 3. إنشاء الـ Employee aggregate
+            string fullName = $"{request.FirstName} {request.FatherName} {request.LastName}".Trim();
+
+            var employeeResult = Employee.Create(
+                code: code,
+                name: fullName,
                 nationalId: request.NationalId,
                 hireDate: request.HireDate,
                 phone: request.Phone,
@@ -33,28 +49,104 @@ namespace HR.Application.Employees.CreateEmployee
                 email: request.Email,
                 address: request.Address,
                 maritalStatus: request.MaritalStatus,
-                cityCenterId: request.CityCenterId,
-                villageId: request.VillageId,
-                //qualificationTypeId: request.QualificationTypeId,
-                //specialization: request.Specialization,
+                isDisabled: request.IsDisabled,
                 employmentTypeId: request.EmploymentTypeId,
-                jobTitleId: request.JobTitleId,
+                jobTitleId: request.JobTitleId,          // JobTitleName = free text — يُحل لاحقاً
                 jobGradeId: request.JobGradeId,
-                functionalGroupId: request.FunctionalGroupId,
-                orgUnitId: request.OrgUnitId
-            );
+                functionalGroupId: null,
+                orgUnitId: request.OrgUnitId);
 
-            // 3. Handle Domain Validation Failures
-            if (result.IsFailure)
+            if (employeeResult.IsFailure)
+                return Result<Guid>.Failure(employeeResult.Error);
+
+            var employee = employeeResult.Value;
+
+            // 4. إضافة المستندات (E-File) — اختياري بالكامل
+            bool hasAnyFile =
+                !string.IsNullOrWhiteSpace(request.NationalIdCardPath) ||
+                !string.IsNullOrWhiteSpace(request.QualificationFilePath) ||
+                !string.IsNullOrWhiteSpace(request.BirthCertificatePath) ||
+                !string.IsNullOrWhiteSpace(request.MilitaryFilePath) ||
+                !string.IsNullOrWhiteSpace(request.ContractFilePath) ||
+                !string.IsNullOrWhiteSpace(request.PoliceClearancePath) ||
+                !string.IsNullOrWhiteSpace(request.ProfileImagePath);
+
+            if (hasAnyFile)
             {
-                return Result<Guid>.Failure(result.Error);
+                var fileResult = EmployeeFile.Create(
+                    employeeId: employee.Id,
+                    militaryFile: request.MilitaryFilePath,
+                    qualificationFile: request.QualificationFilePath,
+                    birthCertificateFile: request.BirthCertificatePath,
+                    policeClearanceCertificate: request.PoliceClearancePath,
+                    nationalIdCardFront: request.NationalIdCardPath,
+                    nationalIdCardBack: null,
+                    marriageDocument: null,
+                    personalPhoto: request.ProfileImagePath,
+                    contractFile: request.ContractFilePath);
+
+                if (fileResult.IsFailure)
+                    return Result<Guid>.Failure(fileResult.Error);
+
+                // EmployeeFile يُضاف عبر EF navigation أو repository مستقل
+                // — حسب setup الـ DbContext عندك
+                employee.AddEmployeeFile(fileResult.Value);
             }
 
-            var employee = result.Value;
+            // 5. إضافة البيانات المالية — اختياري
+            bool hasFinancialData =
+                request.GrossSalary.HasValue ||
+                request.BasicSalary2019.HasValue ||
+                !string.IsNullOrWhiteSpace(request.InsuranceNumber) ||
+                !string.IsNullOrWhiteSpace(request.BankName) ||
+                !string.IsNullOrWhiteSpace(request.BankAccountNumber);
 
-            // 4. Persist
-            _unitOfWork.EmployeeRepository.Add(employee);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (hasFinancialData)
+            {
+                var financialResult = employee.AddFinancialInformation(
+                    basicSalary2019: request.BasicSalary2019,
+                    grossSalary: request.GrossSalary,
+                    insuranceNumber: request.InsuranceNumber,
+                    bankName: request.BankName,
+                    bankAccount: request.BankAccountNumber,
+                    hasFellowshipFund: request.HasFellowshipFund,
+                    hasMedicalFund: request.HasMedicalFund);
+
+                if (financialResult.IsFailure)
+                    return Result<Guid>.Failure(financialResult.Error);
+            }
+
+            employee.AddEmployeeQualification(request.QualificationTypeId,
+                request.QualificationFullName,
+                request.Specialization,
+                request.University,
+                request.GraduationYear,
+                request.Grade,
+                request.QualificationFilePath,
+                request.QualificationValidFrom,
+                request.QualificationValidTo,
+                request.QualificationNotes);
+
+            // 6. Create system user for employee (BEFORE persisting)
+            var userResult = await _identityService.CreateUserForEmployeeAsync(
+                fullName,
+                request.NationalId,
+                request.Email);
+
+            if (userResult.IsFailure)
+                return Result<Guid>.Failure(userResult.Error);
+
+            // 7. Persist employee
+            try
+            {
+                await _unitOfWork.EmployeeRepository.AddAsync(employee, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                await _identityService.DeleteUserAsync(userResult.Value);
+                throw;
+            }
 
             return Result<Guid>.Success(employee.Id);
         }

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
-using Organization.Domain;
 
 namespace HR.Infrastructure.Persistance.Configurations.Employees
 {
