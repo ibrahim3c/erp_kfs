@@ -1,0 +1,97 @@
+﻿@model List<Organization.Application.LeadershipPositionHistories.EmployeeLeadershipHistoryResponse>
+@{
+    ViewData["Title"] = "سجل المناصب القيادية";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-history text-secondary me-2"></i>
+                    سجل المناصب القيادية
+                </h1>
+            </div>
+            <div class="col-sm-6 text-end">
+                <a asp-action="AssignPosition" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-right me-1"></i> رجوع
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="callout callout-info mb-4">
+            <h5><i class="fas fa-user me-1"></i> @ViewBag.EmployeeName</h5>
+            <p class="mb-0 text-muted">جميع المناصب القيادية التي شغلها الموظف</p>
+        </div>
+
+        <div class="card card-outline card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    السجل الكامل
+                    <span class="badge badge-info ms-1">@Model.Count سجل</span>
+                </h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover table-bordered text-nowrap">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>#</th>
+                            <th>المنصب القيادي</th>
+                            <th>تاريخ البداية</th>
+                            <th>تاريخ النهاية</th>
+                            <th>رقم القرار</th>
+                            <th>تاريخ القرار</th>
+                            <th>الحالة</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            int i = 1;
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td><strong>@item.PositionName</strong></td>
+                                    <td>@item.StartDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@(item.EndDate.HasValue ? item.EndDate.Value.ToString("yyyy/MM/dd") : "—")</td>
+                                    <td>@(item.DecisionNumber ?? "—")</td>
+                                    <td>@(item.DecisionDate.HasValue ? item.DecisionDate.Value.ToString("yyyy/MM/dd") : "—")</td>
+                                    <td>
+                                        @if (!item.EndDate.HasValue)
+                                        {
+                                            <span class="badge badge-success">حالي</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">منتهي</span>
+                                        }
+                                    </td>
+                                    <td>@(item.Notes ?? "—")</td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted p-4">
+                                    <i class="fas fa-info-circle text-info mb-2" style="font-size:24px;"></i><br />
+                                    <strong>لا يوجد سجل مناصب لهذا الموظف.</strong>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>

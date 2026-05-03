@@ -12,6 +12,7 @@ namespace HR.Application.Penalties.GetPenaltyList
 
         public Guid Id { get; init; }
         public string EmployeeName { get; init; } = string.Empty;
+        public Guid EmployeeId { get; init; }
         public PenaltyActionType ActionType { get; init; } 
         public DateTime ViolationDate { get; init; }
         public string PenaltyType { get; init; } = string.Empty;
@@ -19,6 +20,7 @@ namespace HR.Application.Penalties.GetPenaltyList
         public DateTime ExecutionMonth { get; init; }
         public string DecisionReference { get; init; } = string.Empty;
         public string? AttachmentPathath { get; init; }
-       
+        public string? Notes { get; init; }
+
     }
 }

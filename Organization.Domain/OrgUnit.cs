@@ -15,7 +15,6 @@ namespace Organization.Domain
         // Navigation Properties
         public OrgUnitType? OrgUnitType { get; private set; }
         public OrgUnit? Parent { get; private set; }
-        public Governorate? Governorate { get; private set; }
 
         // Navigation Properties (Encapsulated)
         private readonly List<OrgUnit> _children = new();
