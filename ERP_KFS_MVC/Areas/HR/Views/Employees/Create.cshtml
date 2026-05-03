@@ -41,6 +41,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" id="tab-qualification" data-bs-toggle="tab" href="#qualification" role="tab">
+                        <i class="fas fa-graduation-cap"></i> المؤهل الدراسي
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" id="tab-files" data-bs-toggle="tab" href="#files" role="tab">
                         <i class="fas fa-clone"></i> مسوغات التعيين
                     </a>
@@ -57,7 +62,6 @@
 
                     <div class="tab-pane fade show active" id="personal" role="tabpanel">
                         <div class="row">
-
                             <div class="col-md-3 text-center mb-5 mb-md-0">
                                 <div class="hr-image-upload">
                                     <img id="imgPreview" src="~/image/icons/7.png"
@@ -74,55 +78,38 @@
 
                             <div class="col-md-9">
                                 <div class="row">
-
                                     <div class="col-md-4 hr-form-group">
-                                        <label asp-for="FirstName" class="hr-form-label">
-                                            الاسم الأول <span class="text-danger">*</span>
-                                        </label>
-                                        <input asp-for="FirstName" class="form-control hr-form-control"
-                                               placeholder="محمد" />
+                                        <label asp-for="FirstName" class="hr-form-label">الاسم الأول <span class="text-danger">*</span></label>
+                                        <input asp-for="FirstName" class="form-control hr-form-control" placeholder="محمد" />
                                         <span asp-validation-for="FirstName" class="text-danger small"></span>
                                     </div>
                                     <div class="col-md-4 hr-form-group">
-                                        <label asp-for="FatherName" class="hr-form-label">
-                                            اسم الأب <span class="text-danger">*</span>
-                                        </label>
-                                        <input asp-for="FatherName" class="form-control hr-form-control"
-                                               placeholder="أحمد" />
+                                        <label asp-for="FatherName" class="hr-form-label">اسم الأب <span class="text-danger">*</span></label>
+                                        <input asp-for="FatherName" class="form-control hr-form-control" placeholder="أحمد" />
                                         <span asp-validation-for="FatherName" class="text-danger small"></span>
                                     </div>
                                     <div class="col-md-4 hr-form-group">
-                                        <label asp-for="LastName" class="hr-form-label">
-                                            اسم العائلة <span class="text-danger">*</span>
-                                        </label>
-                                        <input asp-for="LastName" class="form-control hr-form-control"
-                                               placeholder="السيد" />
+                                        <label asp-for="LastName" class="hr-form-label">اسم العائلة <span class="text-danger">*</span></label>
+                                        <input asp-for="LastName" class="form-control hr-form-control" placeholder="السيد" />
                                         <span asp-validation-for="LastName" class="text-danger small"></span>
                                     </div>
 
                                     <div class="col-md-6 hr-form-group">
-                                        <label asp-for="NationalId" class="hr-form-label">
-                                            الرقم القومي (14 رقم) <span class="text-danger">*</span>
-                                        </label>
-                                        <input asp-for="NationalId" class="form-control hr-form-control"
-                                               maxlength="14" placeholder="2990901xxxxxxx"
-                                               id="nationalIdInput" />
+                                        <label asp-for="NationalId" class="hr-form-label">الرقم القومي (14 رقم) <span class="text-danger">*</span></label>
+                                        <input asp-for="NationalId" class="form-control hr-form-control" maxlength="14" placeholder="2990901xxxxxxx" id="nationalIdInput" />
                                         <small class="text-muted">سيتم استخراج تاريخ الميلاد والنوع تلقائياً</small>
                                         <span asp-validation-for="NationalId" class="text-danger small"></span>
                                     </div>
 
-
                                     <div class="col-md-3 hr-form-group">
                                         <label asp-for="DateOfBirth" class="hr-form-label">تاريخ الميلاد</label>
-                                        <input asp-for="DateOfBirth" type="date" id="dateOfBirthInput"
-                                               class="form-control hr-form-control" />
+                                        <input asp-for="DateOfBirth" type="date" id="dateOfBirthInput" class="form-control hr-form-control" />
                                         <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
                                     </div>
 
                                     <div class="col-md-3 hr-form-group">
                                         <label asp-for="Gender" class="hr-form-label">النوع</label>
-                                        <select asp-for="Gender" class="form-select hr-form-control"
-                                                id="genderSelect">
+                                        <select asp-for="Gender" class="form-select hr-form-control" id="genderSelect">
                                             <option value="">-- اختر --</option>
                                             <option value="ذكر">ذكر</option>
                                             <option value="أنثى">أنثى</option>
@@ -143,24 +130,19 @@
 
                                     <div class="col-md-6 hr-form-group">
                                         <label asp-for="Phone" class="hr-form-label">رقم الموبايل</label>
-                                        <input asp-for="Phone" type="tel"
-                                               class="form-control hr-form-control"
-                                               placeholder="01x xxxx xxxx" />
+                                        <input asp-for="Phone" type="tel" class="form-control hr-form-control" placeholder="01x xxxx xxxx" />
                                         <span asp-validation-for="Phone" class="text-danger small"></span>
                                     </div>
 
                                     <div class="col-md-6 hr-form-group">
                                         <label asp-for="Email" class="hr-form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
-                                        <input asp-for="Email" type="email"
-                                               class="form-control hr-form-control"
-                                               placeholder="example@domain.com" />
+                                        <input asp-for="Email" type="email" class="form-control hr-form-control" placeholder="example@domain.com" />
                                         <span asp-validation-for="Email" class="text-danger small"></span>
                                     </div>
 
                                     <div class="col-md-12 hr-form-group">
                                         <label asp-for="Address" class="hr-form-label">العنوان بالتفصيل</label>
-                                        <input asp-for="Address" class="form-control hr-form-control"
-                                               placeholder="المحافظة - المركز - الشارع" />
+                                        <input asp-for="Address" class="form-control hr-form-control" placeholder="المحافظة - المركز - الشارع" />
                                         <span asp-validation-for="Address" class="text-danger small"></span>
                                     </div>
 
@@ -168,16 +150,11 @@
                                         <div class="hr-switch-group d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h6 class="mb-1 text-dark">فئة خاصة (ذوي الهمم)</h6>
-                                                <p class="text-muted small mb-0">
-                                                    تفعيل هذه الحالة يرفع رصيد الأجازات الاعتيادية إلى 45 يوم تلقائياً
-                                                </p>
+                                                <p class="text-muted small mb-0">تفعيل هذه الحالة يرفع رصيد الأجازات الاعتيادية إلى 45 يوم تلقائياً</p>
                                             </div>
                                             <div class="form-check form-switch m-0">
-                                                <input asp-for="IsDisabled" class="form-check-input"
-                                                       type="checkbox"
-                                                       style="width:3rem; height:1.5rem;">
-                                                <label asp-for="IsDisabled"
-                                                       class="form-check-label mr-3">نعم (الـ 5%)</label>
+                                                <input asp-for="IsDisabled" class="form-check-input" type="checkbox" style="width:3rem; height:1.5rem;">
+                                                <label asp-for="IsDisabled" class="form-check-label mr-3">نعم (الـ 5%)</label>
                                             </div>
                                         </div>
                                     </div>
@@ -189,44 +166,30 @@
 
                     <div class="tab-pane fade" id="job" role="tabpanel">
                         <div class="row">
-
                             <div class="col-md-6 hr-form-group">
                                 <label class="hr-form-label">كود الموظف</label>
-                                <input class="form-control hr-form-control" readonly
-                                       placeholder="يتم إنشاؤه تلقائياً" />
+                                <input class="form-control hr-form-control" readonly placeholder="يتم إنشاؤه تلقائياً" />
                             </div>
 
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="OrgUnitId" class="hr-form-label">الإدارة التابع لها</label>
-                                <select asp-for="OrgUnitId" class="form-select hr-form-control"
-                                        asp-items="ViewBag.OrgUnitId">
+                                <select asp-for="OrgUnitId" class="form-select hr-form-control" asp-items="ViewBag.OrgUnitId">
                                     <option value="">-- اختر الإدارة --</option>
                                 </select>
                                 <span asp-validation-for="OrgUnitId" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 hr-form-group">
-                                <label asp-for="JobTitleName" class="hr-form-label">
-                                    المسمى الوظيفي <span class="text-danger">*</span>
-                                </label>
-                                <select asp-for="JobTitleName" class="form-select hr-form-control"
-                                        asp-items="ViewBag.JobTitleName">
+                                <label asp-for="JobTitleName" class="hr-form-label">المسمى الوظيفي <span class="text-danger">*</span></label>
+                                <select asp-for="JobTitleName" class="form-select hr-form-control" asp-items="ViewBag.JobTitleName">
                                     <option value="">-- اختر المسمى الوظيفي --</option>
                                 </select>
                                 <span asp-validation-for="JobTitleName" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-md-6 hr-form-group">
-                                <label asp-for="QualificationName" class="hr-form-label">المؤهل الدراسي</label>
-                                <input asp-for="QualificationName" class="form-control hr-form-control"
-                                       placeholder="مثال: بكالوريوس تجارة" />
-                                <span asp-validation-for="QualificationName" class="text-danger small"></span>
-                            </div>
-
                             <div class="col-md-4 hr-form-group">
                                 <label asp-for="JobGradeId" class="hr-form-label">الدرجة المالية</label>
-                                <select asp-for="JobGradeId" class="form-select hr-form-control"
-                                        asp-items="ViewBag.JobGradeId">
+                                <select asp-for="JobGradeId" class="form-select hr-form-control" asp-items="ViewBag.JobGradeId">
                                     <option value="">-- اختر --</option>
                                 </select>
                                 <span asp-validation-for="JobGradeId" class="text-danger small"></span>
@@ -234,43 +197,100 @@
 
                             <div class="col-md-4 hr-form-group">
                                 <label asp-for="EmploymentTypeId" class="hr-form-label">نوع الكادر</label>
-                                <select asp-for="EmploymentTypeId" class="form-select hr-form-control"
-                                        asp-items="ViewBag.EmploymentTypeId">
+                                <select asp-for="EmploymentTypeId" class="form-select hr-form-control" asp-items="ViewBag.EmploymentTypeId">
                                     <option value="">-- اختر --</option>
                                 </select>
                                 <span asp-validation-for="EmploymentTypeId" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-4 hr-form-group">
-                                <label asp-for="HireDate" class="hr-form-label">
-                                    تاريخ التعيين الفعلي <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="HireDate" type="date"
-                                       class="form-control hr-form-control" />
+                                <label asp-for="HireDate" class="hr-form-label">تاريخ التعيين الفعلي <span class="text-danger">*</span></label>
+                                <input asp-for="HireDate" type="date" class="form-control hr-form-control" />
                                 <span asp-validation-for="HireDate" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="JobGradeDate" class="hr-form-label">تاريخ الحصول على الدرجة</label>
-                                <input asp-for="JobGradeDate" type="date"
-                                       class="form-control hr-form-control" />
+                                <input asp-for="JobGradeDate" type="date" class="form-control hr-form-control" />
                                 <small class="text-muted">هام جداً لاحتساب أقدمية الترقية</small>
                                 <span asp-validation-for="JobGradeDate" class="text-danger small"></span>
                             </div>
+                        </div>
+                    </div>
 
+                    <div class="tab-pane fade" id="qualification" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="QualificationTypeId" class="hr-form-label">نوع المؤهل <span class="text-danger">*</span></label>
+                                <select asp-for="QualificationTypeId" class="form-select hr-form-control" asp-items="ViewBag.QualificationTypeId">
+                                    <option value="">-- اختر نوع المؤهل (بكالوريوس، ليسانس، دبلوم...) --</option>
+                                </select>
+                                <span asp-validation-for="QualificationTypeId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="QualificationFullName" class="hr-form-label">اسم المؤهل بالكامل <span class="text-danger">*</span></label>
+                                <input asp-for="QualificationFullName" class="form-control hr-form-control" placeholder="مثال: بكالوريوس تجارة" />
+                                <span asp-validation-for="QualificationFullName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="Specialization" class="hr-form-label">التخصص</label>
+                                <input asp-for="Specialization" class="form-control hr-form-control" placeholder="مثال: محاسبة / نظم معلومات" />
+                                <span asp-validation-for="Specialization" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="University" class="hr-form-label">الجامعة / المعهد / المدرسة</label>
+                                <input asp-for="University" class="form-control hr-form-control" placeholder="مثال: جامعة كفر الشيخ" />
+                                <span asp-validation-for="University" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="GraduationYear" class="hr-form-label">سنة التخرج</label>
+                                <input asp-for="GraduationYear" type="number" min="1950" max="2099" class="form-control hr-form-control" placeholder="مثال: 2018" />
+                                <span asp-validation-for="GraduationYear" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="Grade" class="hr-form-label">التقدير</label>
+                                <input asp-for="Grade" class="form-control hr-form-control" placeholder="مثال: جيد جداً" />
+                                <span asp-validation-for="Grade" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="FilePath" class="hr-form-label">صورة المؤهل (مستند)</label>
+                                <input asp-for="FilePath" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <span asp-validation-for="FilePath" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="ValidFrom" class="hr-form-label">صالح من تاريخ (إن وجد)</label>
+                                <input asp-for="ValidFrom" type="date" class="form-control hr-form-control" />
+                                <span asp-validation-for="ValidFrom" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 hr-form-group">
+                                <label asp-for="ValidTo" class="hr-form-label">صالح إلى تاريخ (إن وجد)</label>
+                                <input asp-for="ValidTo" type="date" class="form-control hr-form-control" />
+                                <span asp-validation-for="ValidTo" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12 hr-form-group">
+                                <label asp-for="Notes" class="hr-form-label">ملاحظات إضافية</label>
+                                <textarea asp-for="Notes" class="form-control hr-form-control" rows="2" placeholder="أي ملاحظات تخص المؤهل..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="tab-pane fade" id="files" role="tabpanel">
-
                         <div class="alert hr-primary-soft text-primary border-0 rounded-4 p-4 mb-4">
                             <div class="d-flex align-items-center gap-3">
                                 <i class="fas fa-info-circle h4 mb-0"></i>
                                 <div>
                                     <h6 class="mb-1 font-weight-bold">نظام الأرشفة الإلكترونية (E-File)</h6>
-                                    <p class="mb-0 small opacity-75">
-                                        يفضل رفع جميع المستندات بصيغة PDF لسهولة العرض في ملف الموظف لاحقاً
-                                    </p>
+                                    <p class="mb-0 small opacity-75">يفضل رفع جميع المستندات بصيغة PDF لسهولة العرض في ملف الموظف لاحقاً</p>
                                 </div>
                             </div>
                         </div>
@@ -278,40 +298,33 @@
                         <div class="row">
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="NationalIdCard" class="hr-form-label">صورة بطاقة الرقم القومي</label>
-                                <input asp-for="NationalIdCard" type="file"
-                                       class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="NationalIdCard" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
                             </div>
                             <div class="col-md-6 hr-form-group">
-                                <label asp-for="QualificationFile" class="hr-form-label">صورة المؤهل الدراسي</label>
-                                <input asp-for="QualificationFile" type="file"
-                                       class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <label asp-for="QualificationFile" class="hr-form-label">صورة المؤهل الدراسي الأساسي</label>
+                                <input asp-for="QualificationFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
                             </div>
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="BirthCertificate" class="hr-form-label">شهادة الميلاد المميكنة</label>
-                                <input asp-for="BirthCertificate" type="file"
-                                       class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="BirthCertificate" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
                             </div>
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="MilitaryFile" class="hr-form-label">الموقف من التجنيد</label>
-                                <input asp-for="MilitaryFile" type="file"
-                                       class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="MilitaryFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
                             </div>
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="ContractFile" class="hr-form-label">قرار التعيين / العقد</label>
-                                <input asp-for="ContractFile" type="file"
-                                       class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="ContractFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
                             </div>
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="PoliceClearance" class="hr-form-label">فيش جنائي حديث</label>
-                                <input asp-for="PoliceClearance" type="file"
-                                       class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="PoliceClearance" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
                             </div>
                         </div>
                     </div>
 
                     <div class="tab-pane fade" id="financial" role="tabpanel">
                         <div class="row">
-
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="InsuranceNumber" class="hr-form-label">الرقم التأميني</label>
                                 <input asp-for="InsuranceNumber" class="form-control hr-form-control" />
@@ -320,8 +333,7 @@
 
                             <div class="col-md-6 hr-form-group">
                                 <label asp-for="BankAccountNumber" class="hr-form-label">رقم بطاقة الدفع (ميزة)</label>
-                                <input asp-for="BankAccountNumber" class="form-control hr-form-control"
-                                       placeholder="أرقام البطاقة..." />
+                                <input asp-for="BankAccountNumber" class="form-control hr-form-control" placeholder="أرقام البطاقة..." />
                                 <span asp-validation-for="BankAccountNumber" class="text-danger small"></span>
                             </div>
 
@@ -340,8 +352,7 @@
                             <div class="col-md-3 hr-form-group">
                                 <label asp-for="GrossSalary" class="hr-form-label">إجمالي الاستحقاق (Gross)</label>
                                 <div class="input-group">
-                                    <input asp-for="GrossSalary" type="number" step="0.01"
-                                           class="form-control hr-form-control" placeholder="0.00" />
+                                    <input asp-for="GrossSalary" type="number" step="0.01" class="form-control hr-form-control" placeholder="0.00" />
                                     <span class="input-group-text bg-light">جم</span>
                                 </div>
                                 <span asp-validation-for="GrossSalary" class="text-danger small"></span>
@@ -350,8 +361,7 @@
                             <div class="col-md-3 hr-form-group">
                                 <label asp-for="BasicSalary2019" class="hr-form-label">الراتب الأساسي 2019</label>
                                 <div class="input-group">
-                                    <input asp-for="BasicSalary2019" type="number" step="0.01"
-                                           class="form-control hr-form-control" placeholder="0.00" />
+                                    <input asp-for="BasicSalary2019" type="number" step="0.01" class="form-control hr-form-control" placeholder="0.00" />
                                     <span class="input-group-text bg-light">جم</span>
                                 </div>
                                 <span asp-validation-for="BasicSalary2019" class="text-danger small"></span>
@@ -366,8 +376,7 @@
                                                 <p class="text-muted small mb-0">مشترك في صندوق الزمالة</p>
                                             </div>
                                             <div class="form-check form-switch m-0">
-                                                <input asp-for="HasFellowshipFund" class="form-check-input"
-                                                       type="checkbox" style="width:3rem; height:1.5rem;">
+                                                <input asp-for="HasFellowshipFund" class="form-check-input" type="checkbox" style="width:3rem; height:1.5rem;">
                                             </div>
                                         </div>
                                     </div>
@@ -378,14 +387,12 @@
                                                 <p class="text-muted small mb-0">مشترك في صندوق التكافل</p>
                                             </div>
                                             <div class="form-check form-switch m-0">
-                                                <input asp-for="HasMedicalFund" class="form-check-input"
-                                                       type="checkbox" style="width:3rem; height:1.5rem;">
+                                                <input asp-for="HasMedicalFund" class="form-check-input" type="checkbox" style="width:3rem; height:1.5rem;">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 

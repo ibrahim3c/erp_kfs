@@ -38,7 +38,7 @@ namespace HR.Domain.Employees
         public Guid? JobGradeId { get; private set; }
         public Guid? FunctionalGroupId { get; private set; }
 
-        
+
 
         public EmployeeFinancial FinancialInfo { get; private set; }
 
@@ -114,7 +114,7 @@ namespace HR.Domain.Employees
                     string email = null,
                     string address = null,
                     string maritalStatus = null,
-                    bool isDisabled=false,
+                    bool isDisabled = false,
                     Guid? cityCenterId = null,
                     Guid? villageId = null,
                     //Guid? qualificationTypeId = null,
@@ -299,14 +299,14 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
 
-    public Result AddFinancialInformation(
-        decimal? basicSalary2019,
-        decimal? grossSalary,
-        string insuranceNumber,
-        string bankName,
-        string bankAccount,
-        bool hasFellowshipFund,
-        bool hasMedicalFund)
+        public Result AddFinancialInformation(
+            decimal? basicSalary2019,
+            decimal? grossSalary,
+            string insuranceNumber,
+            string bankName,
+            string bankAccount,
+            bool hasFellowshipFund,
+            bool hasMedicalFund)
         {
             var financialResult = EmployeeFinancial.Create(
                 Id, // نمرر الـ ID الخاص بالموظف الحالي
@@ -355,6 +355,26 @@ namespace HR.Domain.Employees
         {
             LeadershipPositionId = null;
         }
-    }
 
+        // add employee qualification 
+        public Result AddEmployeeQualification(Guid qualificationTypeId,
+            string qualificationFullName,
+            string specialization = null,
+            string university = null,
+            int? graduationYear = null,
+            string grade = null,
+            string filePath = null,
+            DateTime? validFrom = null,
+            DateTime? validTo = null,
+            string notes = null)
+
+        {
+            var result = EmployeeQualification.Create(Id, qualificationTypeId, qualificationFullName, specialization, university, graduationYear, grade, filePath, validFrom, validTo, notes);
+            if (result.IsFailure)
+                return Result.Failure(result.Error);
+            _employeeQualifications.Add(result.Value);
+            return Result.Success();
+        }
+
+    }
 }
