@@ -38,7 +38,7 @@ namespace HR.Infrastructure.Persistance.Repositories
 
         public async Task<PenaltyRecord?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-           return await dbContext.PenaltyRecords.FindAsync( id, cancellationToken);
+           return await dbContext.PenaltyRecords.Include(x =>x.Employee).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
         public void Update(PenaltyRecord penalty)

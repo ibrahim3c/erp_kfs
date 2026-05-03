@@ -1,0 +1,210 @@
+﻿@using HR.Domain.Penalties
+@model HR.Application.Penalties.GetPenaltyDetails.GetPenaltyDetailsResponse
+@{
+    ViewData["Title"] = "تفاصيل الجزاء";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-file-alt text-danger me-2"></i> تفاصيل الجزاء الإداري
+                </h1>
+            </div>
+            <div class="col-sm-6 text-end">
+                <a asp-action="Index" asp-controller="Penalties" asp-area="HR"
+                   class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-right me-1"></i> رجوع للقائمة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @* ── بيانات الموظف والجزاء ── *@
+        <div class="card card-outline card-danger mb-4">
+            <div class="card-header">
+                <h3 class="card-title fw-bold text-danger">
+                    <i class="fas fa-gavel me-1"></i> بيانات الجزاء
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-4 col-6 mb-4">
+                        <small class="text-muted d-block mb-1">
+                            <i class="fas fa-user me-1"></i> الموظف
+                        </small>
+                        <strong class="fs-6">@Model.EmployeeName</strong>
+                    </div>
+
+                    <div class="col-md-4 col-6 mb-4">
+                        <small class="text-muted d-block mb-1">
+                            <i class="fas fa-calendar-day me-1"></i> تاريخ المخالفة
+                        </small>
+                        <strong>@Model.ViolationDate.ToString("dd/MM/yyyy")</strong>
+                    </div>
+
+                    <div class="col-md-4 col-6 mb-4">
+                        <small class="text-muted d-block mb-1">
+                            <i class="fas fa-tag me-1"></i> نوع المخالفة
+                        </small>
+                        <strong>@Model.PenaltyType</strong>
+                    </div>
+
+                    <div class="col-md-4 col-6 mb-4">
+                        <small class="text-muted d-block mb-1">
+                            <i class="fas fa-exclamation-circle me-1"></i> الجزاء الموقع
+                        </small>
+                        @switch (Model.ActionType)
+                        {
+                            case PenaltyActionType.Deduct:
+                                <span class="badge bg-danger fs-6 p-2">
+                                    خصم @Model.DeductionDays أيام
+                                </span>
+                                break;
+                            case PenaltyActionType.Warning:
+                                <span class="badge bg-warning text-dark fs-6 p-2">
+                                    لفت نظر (إنذار)
+                                </span>
+                                break;
+                            case PenaltyActionType.Hold:
+                                <span class="badge bg-dark fs-6 p-2">
+                                    وقف عن العمل
+                                </span>
+                                break;
+                            case PenaltyActionType.Postpone:
+                                <span class="badge bg-secondary fs-6 p-2">
+                                    تأجيل ترقية
+                                </span>
+                                break;
+                        }
+                    </div>
+
+                    @if (Model.ActionType == PenaltyActionType.Deduct || Model.ActionType == PenaltyActionType.Hold)
+                    {
+                        <div class="col-md-4 col-6 mb-4">
+                            <small class="text-muted d-block mb-1">
+                                <i class="fas fa-calendar-minus me-1"></i> عدد أيام الخصم
+                            </small>
+                            <strong class="text-danger">@Model.DeductionDays يوم</strong>
+                        </div>
+                    }
+
+                    <div class="col-md-4 col-6 mb-4">
+                        <small class="text-muted d-block mb-1">
+                            <i class="fas fa-calendar-alt me-1"></i> شهر التنفيذ
+                        </small>
+                        <strong>
+                            @Model.ExecutionMonth.ToString("MMMM yyyy",
+                                new System.Globalization.CultureInfo("ar-EG"))
+                        </strong>
+                    </div>
+
+                    <div class="col-md-4 col-6 mb-4">
+                        <small class="text-muted d-block mb-1">
+                            <i class="fas fa-file-contract me-1"></i> رقم القرار
+                        </small>
+                        <strong>@Model.DecisionReference</strong>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="col-12 mb-4">
+                            <small class="text-muted d-block mb-1">
+                                <i class="fas fa-sticky-note me-1"></i> ملاحظات
+                            </small>
+                            <div class="alert alert-light border p-2 mb-0">
+                                @Model.Notes
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.AttachmentPathath))
+                    {
+                        <div class="col-12 mb-2">
+                            <small class="text-muted d-block mb-1">
+                                <i class="fas fa-paperclip me-1"></i> مرفق القرار
+                            </small>
+                            <a href="/@Model.AttachmentPathath" target="_blank"
+                               class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-eye me-1"></i> عرض المرفق
+                            </a>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        @* ── الأثر القانوني ── *@
+        <div class="card card-outline card-warning">
+            <div class="card-header">
+                <h3 class="card-title fw-bold">
+                    <i class="fas fa-balance-scale me-1"></i> الأثر القانوني والمالي
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    @if (Model.ActionType == PenaltyActionType.Deduct)
+                    {
+                        <div class="col-md-4">
+                            <div class="info-box bg-white shadow-sm border-bottom border-danger">
+                                <span class="info-box-icon bg-danger">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">أيام الخصم</span>
+                                    <span class="info-box-number text-danger">
+                                        @Model.DeductionDays <small>يوم</small>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 d-flex align-items-center">
+                            <div class="alert alert-danger w-100 mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                سيتم خصم <strong>@Model.DeductionDays يوم</strong> من راتب الموظف
+                                في شهر <strong>@Model.ExecutionMonth.ToString("MMMM yyyy", new System.Globalization.CultureInfo("ar-EG"))</strong>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.ActionType == PenaltyActionType.Warning)
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-warning mb-0">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                تم توجيه <strong>إنذار رسمي / لفت نظر</strong> للموظف وإدراجه في ملفه الوظيفي.
+                            </div>
+                        </div>
+                    }
+                    else if (Model.ActionType == PenaltyActionType.Hold)
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-dark mb-0">
+                                <i class="fas fa-ban me-1"></i>
+                                تم إيقاف الموظف عن العمل لمدة <strong>@Model.DeductionDays يوم</strong>
+                                اعتباراً من شهر <strong>@Model.ExecutionMonth.ToString("MMMM yyyy", new System.Globalization.CultureInfo("ar-EG"))</strong>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.ActionType == PenaltyActionType.Postpone)
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-secondary mb-0">
+                                <i class="fas fa-clock me-1"></i>
+                                تم تأجيل ترقية الموظف وفقاً للقرار رقم <strong>@Model.DecisionReference</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

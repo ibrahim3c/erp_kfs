@@ -1,4 +1,5 @@
 ﻿using ERP_KFS_MVC.Models;
+using HR.Application.Employees.GetAllEmployees;
 using HR.Application.Loans;
 using HR.Application.Loans.ApproveInsurancePurchase;
 using HR.Application.Loans.CreateInsurancePurchase;
@@ -6,6 +7,8 @@ using HR.Application.Loans.CreateLoan;
 using HR.Application.Loans.GetInsurancePurchaseList;
 using HR.Application.Loans.GetLoanDetails;
 using HR.Application.Loans.GetLoanList;
+using HR.Application.Loans.RejectInsurancePurchase;
+using HR.Application.Loans.SettleLoan;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -59,6 +62,9 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 InsurancePurchases = insuranceResult.Value!
             };
 
+            var employees = await _mediator.Send(new GetAllEmployeesQuery());
+            ViewBag.Employees = employees.Value ?? new List<EmployeeListResponse>();
+
             return View(viewModel);
         }
 
@@ -88,6 +94,23 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
             }
 
             return View(result.Value);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SettleLoan(Guid id)
+        {
+            var loansResult = await _mediator.Send(new SettleLoanCommand(id));
+            if (loansResult.IsFailure)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    ErrorCode = loansResult.Error.Code,
+                    ErrorMessage = loansResult.Error.Name
+                });
+            }
+            TempData["SuccessMessage"] = "تم تسوية السلفة بنجاح.";
+            return RedirectToAction(nameof(Requests));
         }
 
         [HttpPost]
@@ -210,6 +233,28 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
             }
 
             TempData["SuccessMessage"] = "تم اعتماد الطلب بنجاح.";
+            return RedirectToAction(nameof(Requests));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectInsurancePurchase(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                TempData["ErrorMessage"] = "رقم الطلب غير صحيح.";
+                return RedirectToAction(nameof(Requests));
+            }
+            var result = await _mediator.Send(new RejectInsurancePurchaseCommand(id));
+            if (result.IsFailure)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    ErrorCode = result.Error.Code,
+                    ErrorMessage = result.Error.Name
+                });
+            }
+            TempData["SuccessMessage"] = "تم رفض الطلب بنجاح.";
             return RedirectToAction(nameof(Requests));
         }
     }
