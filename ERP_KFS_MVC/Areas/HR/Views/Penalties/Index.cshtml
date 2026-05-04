@@ -1,10 +1,10 @@
-﻿@using HR.Domain.Penalties
-@model List<HR.Application.Penalties.GetPenaltyList.GetPenaltyListResponse>
-@{
+﻿@{
     ViewData["Title"] = "سجل الجزاءات والمخالفات التأديبية";
 }
 
+<!-- DataTables & Plugins -->
 <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
 <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
@@ -12,10 +12,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">
-                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
-                    سجل المخالفات والجزاءات
-                </h1>
+                <h1 class="m-0 text-dark"><i class="fas fa-exclamation-triangle text-danger me-2"></i> سجل المخالفات والجزاءات</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
@@ -27,43 +24,13 @@
     </div>
 </div>
 
-@* ── Alerts ── *@
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show mx-3">
-        <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show mx-3">
-        <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-@* ══ Edit Forms برره من الـ Table تماماً ══ *@
-@foreach (var p in Model)
-{
-    <form id="edit-form-@p.Id"
-          asp-action="Edit"
-          asp-controller="Penalties"
-          asp-area="HR"
-          method="post"
-          style="display:none;">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="id" value="@p.Id" />
-    </form>
-}
-
 <section class="content">
     <div class="container-fluid">
 
-        @* ══ نموذج تسجيل جزاء ══ *@
+        <!-- 1. نموذج تسجيل جزاء (خصم / إنذار) -->
         <div class="card card-outline card-danger collapsed-card">
             <div class="card-header">
-                <h3 class="card-title text-danger fw-bold">
+                <h3 class="card-title text-danger text-bold">
                     <i class="fas fa-file-signature me-1"></i> توقيع جزاء إداري جديد
                 </h3>
                 <div class="card-tools">
@@ -73,43 +40,37 @@
                 </div>
             </div>
             <div class="card-body" style="display:none;">
-                <form asp-action="Create" asp-controller="Penalties" asp-area="HR"
-                      method="post" enctype="multipart/form-data">
-                    @Html.AntiForgeryToken()
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
                     <div class="row">
+                        <!-- بيانات المخالف -->
                         <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">الموظف</label>
-                            <select name="employeeId" class="form-select select2" style="width:100%" required>
-                                <option value="">-- بحث بالاسم --</option>
-                                @if (ViewBag.Employees != null)
-                                {
-                                    foreach (var emp in ViewBag.Employees)
-                                    {
-                                        <option value="@emp.Id">@emp.Name</option>
-                                    }
-                                }
+                            <label class="form-label">الموظف</label>
+                            <select class="form-select select2" style="width:100%">
+                                <option>بحث بالاسم...</option>
+                                <option>محمد فؤاد ابراهيم</option>
+                                <option>بهجت إبراهيم</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">نوع المخالفة</label>
-                            <select name="violationType" class="form-select" required>
-                                <option value="تأخير وغياب">تأخير وغياب</option>
-                                <option value="سلوك غير لائق">سلوك غير لائق</option>
-                                <option value="إهمال وتقصير">إهمال وتقصير</option>
-                                <option value="مخالفة تعليمات إدارية">مخالفة تعليمات إدارية</option>
-                                <option value="تغيب بدون إذن">تغيب بدون إذن</option>
+                            <label class="form-label">نوع المخالفة</label>
+                            <select class="form-select">
+                                <option>تأخير وغياب</option>
+                                <option>سلوك غير لائق</option>
+                                <option>إهمال وتقصير</option>
+                                <option>مخالفة تعليمات إدارية</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">تاريخ المخالفة</label>
-                            <input type="date" name="violationDate" class="form-control"
-                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                            <label class="form-label">تاريخ المخالفة</label>
+                            <input type="date" class="form-control">
                         </div>
+
                         <div class="col-12"><hr class="my-2" /></div>
+
+                        <!-- العقوبة -->
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold text-danger">نوع الجزاء (العقوبة)</label>
-                            <select name="penaltyType" class="form-select text-danger fw-bold"
-                                    id="penaltyTypeSelect" onchange="toggleDeduct()" required>
+                            <label class="form-label text-danger">نوع الجزاء (العقوبة)</label>
+                            <select class="form-select text-danger fw-bold" id="penaltyType" onchange="toggleDeduct()">
                                 <option value="Warning">إنذار / لفت نظر</option>
                                 <option value="Deduct" selected>خصم من الراتب (أيام)</option>
                                 <option value="Hold">وقف عن العمل</option>
@@ -117,56 +78,51 @@
                             </select>
                         </div>
                         <div class="col-md-2 mb-3" id="daysDiv">
-                            <label class="form-label fw-bold">عدد أيام الخصم</label>
+                            <label class="form-label">عدد أيام الخصم</label>
                             <div class="input-group">
-                                <input type="number" name="deductionDays"
-                                       class="form-control fw-bold border-danger" min="0" value="0">
+                                <input type="number" class="form-control fw-bold border-danger" placeholder="0">
                                 <span class="input-group-text text-danger">يوم</span>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold">شهر الخصم (التنفيذ)</label>
-                            <input type="month" name="executionMonth" class="form-control"
-                                   value="@DateTime.Now.ToString("yyyy-MM")" required>
+                            <label class="form-label">شهر الخصم (التنفيذ)</label>
+                            <input type="month" class="form-control" value="@DateTime.Now.ToString("yyyy-MM")">
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">مرجعية الجزاء (رقم القرار)</label>
-                            <input type="text" name="decisionReference" class="form-control"
-                                   placeholder="قرار رقم... بتاريخ..." required maxlength="100">
+                            <label class="form-label">مرجعية الجزاء (رقم القرار)</label>
+                            <input type="text" class="form-control" placeholder="قرار رقم... بتاريخ...">
                         </div>
+
+                        <!-- أسباب تفصيلية -->
                         <div class="col-md-8 mb-3">
-                            <label class="form-label fw-bold">أسباب وحيثيات الجزاء</label>
-                            <textarea name="reasons" class="form-control" rows="2"
-                                      placeholder="وذلك لأنه قام بـ...." required maxlength="1000"></textarea>
+                            <label class="form-label">أسباب وحيثيات الجزاء</label>
+                            <textarea class="form-control" rows="2" placeholder="وذلك لأنه قام بـ...."></textarea>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">مرفق صورة القرار / التحقيق</label>
-                            <input type="file" name="decisionFile" class="form-control"
-                                   accept=".pdf,.jpg,.jpeg,.png">
+                            <label class="form-label">مرفق صورة القرار / التحقيق</label>
+                            <input type="file" class="form-control">
                         </div>
+
                         <div class="col-12 text-center mt-2">
-                            <button type="submit" class="btn btn-danger px-5">
-                                <i class="fas fa-gavel me-1"></i> اعتماد الجزاء
-                            </button>
+                            <button type="submit" class="btn btn-danger px-5"><i class="fas fa-gavel me-1"></i> اعتماد الجزاء</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        @* ══ أرشيف الجزاءات ══ *@
+        <!-- 2. السجل (ارشيف الجزاءات) -->
         <div class="card">
             <div class="card-header border-0">
-                <h3 class="card-title fw-bold">أرشيف الجزاءات المسجلة</h3>
+                <h3 class="card-title text-bold">أرشيف الجزاءات المسجلة</h3>
                 <div class="card-tools">
-                    <button class="btn btn-secondary btn-sm" onclick="window.print()" title="طباعة">
-                        <i class="fas fa-print"></i>
-                    </button>
+                    <button class="btn btn-secondary btn-sm" title="فلتر بالموظف"><i class="fas fa-filter"></i></button>
+                    <button class="btn btn-secondary btn-sm" title="طباعة"><i class="fas fa-print"></i></button>
                 </div>
             </div>
+
             <div class="card-body">
-                <table id="penaltyTable"
-                       class="table table-bordered table-striped text-center align-middle">
+                <table id="penaltyTable" class="table table-bordered table-striped text-center align-middle">
                     <thead class="bg-secondary text-white">
                         <tr>
                             <th>تاريخ القرار</th>
@@ -180,227 +136,54 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var p in Model)
-                        {
-                            <tr class="@(p.ActionType == PenaltyActionType.Hold ? "table-warning" : "")">
-                                <td>@p.ViolationDate.ToString("dd/MM/yyyy")</td>
-                                <td class="text-end fw-bold">@p.EmployeeName</td>
-                                <td>@p.PenaltyType</td>
-                                <td>
-                                    @switch (p.ActionType)
-                                    {
-                                        case PenaltyActionType.Deduct:
-                                            <span class="badge bg-danger fs-6 p-2">خصم @p.DeductionDays أيام</span>
-                                            break;
-                                        case PenaltyActionType.Warning:
-                                            <span class="badge bg-warning text-dark fs-6 p-2">لفت نظر (إنذار)</span>
-                                            break;
-                                        case PenaltyActionType.Hold:
-                                            <span class="badge bg-dark fs-6 p-2">وقف عن العمل</span>
-                                            break;
-                                        case PenaltyActionType.Postpone:
-                                            <span class="badge bg-secondary fs-6 p-2">تأجيل ترقية</span>
-                                            break;
-                                    }
-                                </td>
-                                <td>
-                                    @p.ExecutionMonth.ToString("MMMM yyyy",
-                                        new System.Globalization.CultureInfo("ar-EG"))
-                                </td>
-                                <td>@p.DecisionReference</td>
-                                <td>
-                                    @if (p.ActionType == PenaltyActionType.Deduct || p.ActionType == PenaltyActionType.Hold)
-                                    {
-                                        <i class="fas fa-money-bill-wave text-warning me-1" title="خصم مالي"></i>
-                                    }
-                                    @if (p.ActionType == PenaltyActionType.Postpone)
-                                    {
-                                        <i class="fas fa-clock text-danger" title="تأجيل ترقية"></i>
-                                    }
-                                    @if (p.ActionType == PenaltyActionType.Warning)
-                                    {
-                                        <i class="fas fa-file-contract text-secondary" title="ملف الموظف"></i>
-                                    }
-                                    @if (p.AttachmentPathath != null)
-                                    {
-                                        <a href="/@p.AttachmentPathath" target="_blank" class="ms-1" title="عرض القرار">
-                                            <i class="fas fa-paperclip text-info"></i>
-                                        </a>
-                                    }
-                                </td>
-                                <td>
-                                    <a asp-action="Details" asp-controller="Penalties" asp-area="HR"
-                                       asp-route-id="@p.Id"
-                                       class="btn btn-sm btn-outline-info me-1" title="تفاصيل">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                        <!-- جزاء 1: خصم (مالي) -->
+                        <tr>
+                            <td>12/06/2024</td>
+                            <td class="text-end fw-bold">رانيا أبو النصر</td>
+                            <td>تأخير متكرر</td>
+                            <td><span class="badge bg-danger fs-6 p-2">خصم 3 أيام</span></td>
+                            <td>يونيو 2024</td>
+                            <td>105/ق</td>
+                            <td>
+                                <i class="fas fa-money-bill-wave text-warning me-1" title="خصم مالي"></i>
+                                <i class="fas fa-clock text-danger" title="تأخير ترقية"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" title="حذف (بعد قبول تظلم)"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
 
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-warning me-1"
-                                            onclick="toggleEditRow('@p.Id')"
-                                            title="تعديل">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
+                        <!-- جزاء 2: إنذار (إداري) -->
+                        <tr>
+                            <td>05/01/2024</td>
+                            <td class="text-end fw-bold">فاطمة الشرباني</td>
+                            <td>مخالفة تعليمات</td>
+                            <td><span class="badge bg-warning text-dark fs-6 p-2">لفت نظر (إنذار)</span></td>
+                            <td>يناير 2024</td>
+                            <td>20/ق</td>
+                            <td>
+                                <i class="fas fa-file-contract text-secondary" title="ملف الموظف"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" title="تعديل"><i class="fas fa-pen"></i></button>
+                            </td>
+                        </tr>
 
-                                    <form asp-action="Delete" asp-controller="Penalties" asp-area="HR"
-                                          method="post" class="d-inline"
-                                          onsubmit="return confirm('هل تريد حذف هذا الجزاء؟ (بعد قبول التظلم فقط)')">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@p.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-
-                            @* ── Edit Row ── *@
-                            <tr id="edit-row-@p.Id" class="edit-row" style="display:none;">
-                                <td colspan="8" class="p-0">
-                                    <div class="edit-form-container p-3 bg-light border-top border-warning">
-                                        <div class="row align-items-end">
-
-                                            @* نوع المخالفة *@
-                                            <div class="col-md-2 mb-2">
-                                                <label class="form-label fw-bold small">نوع المخالفة</label>
-                                                <select name="violationType"
-                                                        form="edit-form-@p.Id"
-                                                        class="form-select form-select-sm" required>
-                                                    @{
-                                                        var violationOptions = new[]
-                                                        {
-                                                            "تأخير وغياب", "سلوك غير لائق",
-                                                            "إهمال وتقصير", "مخالفة تعليمات إدارية", "تغيب بدون إذن"
-                                                        };
-                                                    }
-                                                    @foreach (var opt in violationOptions)
-                                                    {
-                                                        @if (opt == p.PenaltyType)
-                                                        {
-                                                            <option value="@opt" selected>@opt</option>
-                                                        }
-                                                        else
-                                                        {
-                                                            <option value="@opt">@opt</option>
-                                                        }
-                                                    }
-                                                </select>
-                                            </div>
-
-                                            @* نوع الجزاء *@
-                                            <div class="col-md-2 mb-2">
-                                                <label class="form-label fw-bold small">نوع الجزاء</label>
-                                                <select name="penaltyType"
-                                                        form="edit-form-@p.Id"
-                                                        class="form-select form-select-sm" required>
-                                                    @if (p.ActionType == PenaltyActionType.Warning)
-                                                    {
-                                                        <option value="Warning" selected>إنذار</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="Warning">إنذار</option>
-                                                    }
-
-                                                    @if (p.ActionType == PenaltyActionType.Deduct)
-                                                    {
-                                                        <option value="Deduct" selected>خصم أيام</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="Deduct">خصم أيام</option>
-                                                    }
-
-                                                    @if (p.ActionType == PenaltyActionType.Hold)
-                                                    {
-                                                        <option value="Hold" selected>وقف عن العمل</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="Hold">وقف عن العمل</option>
-                                                    }
-
-                                                    @if (p.ActionType == PenaltyActionType.Postpone)
-                                                    {
-                                                        <option value="Postpone" selected>تأجيل ترقية</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="Postpone">تأجيل ترقية</option>
-                                                    }
-                                                </select>
-                                            </div>
-
-                                            @* تاريخ المخالفة *@
-                                            <div class="col-md-2 mb-2">
-                                                <label class="form-label fw-bold small">تاريخ المخالفة</label>
-                                                <input type="date"
-                                                       name="violationDate"
-                                                       form="edit-form-@p.Id"
-                                                       class="form-control form-control-sm"
-                                                       value="@p.ViolationDate.ToString("yyyy-MM-dd")"
-                                                       max="@DateTime.Today.ToString("yyyy-MM-dd")" required>
-                                            </div>
-
-                                            @* أيام الخصم *@
-                                            <div class="col-md-1 mb-2">
-                                                <label class="form-label fw-bold small">أيام الخصم</label>
-                                                <input type="number"
-                                                       name="deductionDays"
-                                                       form="edit-form-@p.Id"
-                                                       class="form-control form-control-sm"
-                                                       value="@p.DeductionDays" min="0">
-                                            </div>
-
-                                            @* شهر التنفيذ *@
-                                            <div class="col-md-2 mb-2">
-                                                <label class="form-label fw-bold small">شهر التنفيذ</label>
-                                                <input type="month"
-                                                       name="executionMonth"
-                                                       form="edit-form-@p.Id"
-                                                       class="form-control form-control-sm"
-                                                       value="@p.ExecutionMonth.ToString("yyyy-MM")" required>
-                                            </div>
-
-                                            @* رقم القرار *@
-                                            <div class="col-md-2 mb-2">
-                                                <label class="form-label fw-bold small">رقم القرار</label>
-                                                <input type="text"
-                                                       name="decisionReference"
-                                                       form="edit-form-@p.Id"
-                                                       class="form-control form-control-sm"
-                                                       value="@p.DecisionReference" required maxlength="100">
-                                            </div>
-
-                                            @* ملاحظات *@
-                                            <div class="col-md-3 mb-2">
-                                                <label class="form-label fw-bold small">ملاحظات</label>
-                                                <input type="text"
-                                                       name="notes"
-                                                       form="edit-form-@p.Id"
-                                                       class="form-control form-control-sm"
-                                                       value="@p.Notes">
-                                            </div>
-
-                                            @* أزرار *@
-                                            <div class="col-md-2 mb-2 d-flex gap-2 align-items-end">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-secondary"
-                                                        onclick="toggleEditRow('@p.Id')">
-                                                    <i class="fas fa-times"></i> إلغاء
-                                                </button>
-                                                <button type="submit"
-                                                        form="edit-form-@p.Id"
-                                                        class="btn btn-sm btn-warning">
-                                                    <i class="fas fa-save"></i> حفظ
-                                                </button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
+                        <!-- جزاء 3: وقف عن العمل -->
+                        <tr class="table-warning">
+                            <td>01/03/2024</td>
+                            <td class="text-end fw-bold">موظف قيد التحقيق</td>
+                            <td>تغيب بدون إذن</td>
+                            <td><span class="badge bg-dark fs-6 p-2">وقف عن العمل (شهر)</span></td>
+                            <td>مارس 2024</td>
+                            <td>55/ق</td>
+                            <td>
+                                <i class="fas fa-money-bill-slash text-danger" title="وقف نصف الراتب"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" title="التفاصيل"><i class="fas fa-eye"></i></button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -409,50 +192,37 @@
     </div>
 </section>
 
-@section Scripts {
+
+    <!-- Scripts -->
     <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="~/plugins/select2/js/select2.full.min.js"></script>
 
-    <style>
-        .edit-form-container {
-        border-right: 4px solid #ffc107;
-        border-radius: 0 0 8px 8px;
-        }
-    </style>
-
     <script>
         $(function () {
-        $('.select2').select2({ theme: 'bootstrap4' });
+            // تفعيل السليكت 2
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
 
-        $('#penaltyTable').DataTable({
-        language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
-        autoWidth: false,
-        order: [[0, 'desc']]
-        });
+            // الجدول
+            $("#penaltyTable").DataTable({
+                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+                "autoWidth": false
+            });
         });
 
+        // دالة إظهار/إخفاء عدد الأيام حسب النوع
         function toggleDeduct() {
-        var type = document.getElementById('penaltyTypeSelect').value;
-        var div = document.getElementById('daysDiv');
-        var show = type === 'Deduct' || type === 'Hold';
-        div.style.visibility = show ? 'visible' : 'hidden';
-        div.style.opacity = show ? '1' : '0';
-        }
+            var type = document.getElementById("penaltyType").value;
+            var div = document.getElementById("daysDiv");
 
-        function toggleEditRow(id) {
-        var row = $('#edit-row-' + id);
-        if (row.is(':visible')) {
-        row.fadeOut(200);
-        } else {
-        $('.edit-row').fadeOut(200);
-        setTimeout(function () {
-        row.fadeIn(300);
-        $('html, body').animate({
-        scrollTop: row.offset().top - 100
-        }, 400);
-        }, 210);
-        }
+            if (type === "Deduct" || type === "Hold") {
+                div.style.visibility = "visible"; // إظهار خانة الأيام
+                div.style.opacity = "1";
+            } else {
+                div.style.visibility = "hidden";  // إخفاء في حالة الإنذار
+                div.style.opacity = "0";
+            }
         }
     </script>
-}

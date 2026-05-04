@@ -1,6 +1,5 @@
 ﻿using HR.Domain;
 using HR.Domain.Employees;
-using Modules.Shared.Application.Interfaces;
 using Modules.Shared.Application.Messaging;
 using Modules.Shared.Domain;
 
@@ -11,14 +10,11 @@ namespace HR.Application.Employees.CreateEmployee
         : ICommandHandler<CreateEmployeeCommand, Guid>
     {
         private readonly IHRUnitOfWork _unitOfWork;
-        private readonly IIdentityService _identityService;
 
         public CreateEmployeeCommandHandler(
-            IHRUnitOfWork unitOfWork,
-            IIdentityService identityService)
+            IHRUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _identityService = identityService;
         }
 
         public async Task<Result<Guid>> Handle(
@@ -127,26 +123,9 @@ namespace HR.Application.Employees.CreateEmployee
                 request.QualificationValidTo,
                 request.QualificationNotes);
 
-            // 6. Create system user for employee (BEFORE persisting)
-            var userResult = await _identityService.CreateUserForEmployeeAsync(
-                fullName,
-                request.NationalId,
-                request.Email);
-
-            if (userResult.IsFailure)
-                return Result<Guid>.Failure(userResult.Error);
-
-            // 7. Persist employee
-            try
-            {
-                await _unitOfWork.EmployeeRepository.AddAsync(employee, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
-            catch
-            {
-                await _identityService.DeleteUserAsync(userResult.Value);
-                throw;
-            }
+            // 6. Persist
+            await _unitOfWork.EmployeeRepository.AddAsync(employee, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result<Guid>.Success(employee.Id);
         }

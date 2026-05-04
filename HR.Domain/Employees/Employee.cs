@@ -1,13 +1,10 @@
 ﻿using HR.Domain.Decisions;
-using HR.Domain.Employees.Events;
 using HR.Domain.Employees.Qualifications;
 using HR.Domain.Incentives;
 using HR.Domain.Loans;
 using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 using Modules.Shared.Domain;
-using Modules.Shared.Domain.Events;
-using Organization.Domain;
 
 namespace HR.Domain.Employees
 {
@@ -333,21 +330,12 @@ namespace HR.Domain.Employees
             _employeeFiles.Add(file);
             return Result.Success();
         }
-        public Result AssignLeadershipPosition(Guid positionId, string? notes)
+        public Result AssignLeadershipPosition(Guid positionId)
         {
             if (positionId == Guid.Empty)
                 return Result.Failure(new Error("Employee.InvalidPosition", "رقم المنصب غير صحيح."));
 
             LeadershipPositionId = positionId;
-
-            // To separate the modules 
-            // Raise domain event for leadership position assignment 
-            RaiseDomainEvent(new LeadershipPositionAssignedDomainEvent(
-                    EmployeeId: Id,
-                    LeadershipPositionId: LeadershipPositionId ?? Guid.Empty,
-                    AssignedAt: DateTime.UtcNow,
-                    Notes: notes));
-
             return Result.Success();
         }
 

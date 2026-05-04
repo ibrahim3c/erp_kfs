@@ -30,15 +30,7 @@ namespace Organization.Infrastructure.Configurations
                 .HasForeignKey(x => x.OrgUnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(x => x.LeadershipPositionHistories)
-                   .WithOne()
-                   .HasForeignKey(x => x.LeadershipPositionId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasIndex(x => x.OrgUnitId);
-
-            builder.Navigation(x => x.LeadershipPositionHistories)
-                        .HasField("_histories");
         }
     }
 }

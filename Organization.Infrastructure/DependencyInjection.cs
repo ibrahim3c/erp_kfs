@@ -20,8 +20,6 @@ namespace Organization.Infrastructure
             services.AddDbContext<OrganizationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            
-
             services.AddScoped<IOrgUnitTypeRepository, OrgUnitTypeRepository>();
             services.AddScoped<IOrgUnitRepository, OrgUnitRepository>();
             services.AddScoped<ILeadershipPositionRepository, LeadershipPositionRepository>();

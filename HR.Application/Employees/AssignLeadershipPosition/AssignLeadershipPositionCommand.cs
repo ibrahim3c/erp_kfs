@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace HR.Application.Employees.AssignLeadershipPosition
 {
-    public record AssignLeadershipPositionCommand(Guid EmployeeId, Guid LeadershipPositionId, string? Notes) : IRequest<Result<bool>>;
+    public record AssignLeadershipPositionCommand(Guid EmployeeId, Guid LeadershipPositionId) : IRequest<Result<bool>>;
 }

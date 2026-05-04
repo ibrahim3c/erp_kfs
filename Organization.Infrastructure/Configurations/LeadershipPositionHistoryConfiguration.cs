@@ -23,12 +23,15 @@ namespace Organization.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(x => x.DecisionNumber)
-                .HasMaxLength(100).IsRequired(false);
+                .HasMaxLength(100);
 
             builder.Property(x => x.Notes)
                 .HasMaxLength(500);
 
-           
+            builder.HasOne(x => x.LeadershipPosition)
+                .WithMany()
+                .HasForeignKey(x => x.LeadershipPositionId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => x.LeadershipPositionId);
             builder.HasIndex(x => x.EmployeeId);
