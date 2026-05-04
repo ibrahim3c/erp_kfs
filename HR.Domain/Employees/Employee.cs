@@ -35,6 +35,8 @@ namespace HR.Domain.Employees
         public Guid? JobGradeId { get; private set; }
         public Guid? FunctionalGroupId { get; private set; }
 
+        public Guid? UserId { get; private set; }
+
 
 
         public EmployeeFinancial FinancialInfo { get; private set; }
@@ -74,7 +76,7 @@ namespace HR.Domain.Employees
 
         // EF Core Parameterless constructor
         private Employee() { }
-        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId) : base(id)
+        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId, Guid? userId) : base(id)
         {
             Code = code;
             Name = name;
@@ -91,13 +93,12 @@ namespace HR.Domain.Employees
             IsDisabled = isDisabled;
             CityCenterId = cityCenterId;
             VillageId = villageId;
-            //QualificationTypeId = qualificationTypeId;
-            //Specialization = specialization;
             EmploymentTypeId = employmentTypeId;
             JobTitleId = jobTitleId;
             JobGradeId = jobGradeId;
             FunctionalGroupId = functionalGroupId;
             OrgUnitId = orgUnitId;
+            UserId = userId;
         }
 
         public static Result<Employee> Create(
@@ -150,13 +151,12 @@ namespace HR.Domain.Employees
                 isDisabled: isDisabled,
                 cityCenterId: cityCenterId,
                 villageId: villageId,
-                //qualificationTypeId: qualificationTypeId,
-                //specialization: specialization,
                 employmentTypeId: employmentTypeId,
                 jobTitleId: jobTitleId,
                 jobGradeId: jobGradeId,
                 functionalGroupId: functionalGroupId,
-                orgUnitId: orgUnitId
+                orgUnitId: orgUnitId,
+                userId: null
             );
 
             return Result<Employee>.Success(employee);
@@ -342,6 +342,11 @@ namespace HR.Domain.Employees
         public void RemoveLeadershipPosition()
         {
             LeadershipPositionId = null;
+        }
+
+        public void LinkUserId(Guid userId)
+        {
+            UserId = userId;
         }
 
         // add employee qualification 

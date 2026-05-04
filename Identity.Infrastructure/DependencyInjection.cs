@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Shared.Application.Interfaces;
 
 namespace Identity.Infrastructure
 {
@@ -18,6 +19,7 @@ namespace Identity.Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IIdentityService, EmployeeIdentityService>();
 
             // 1. تسجيل DbContext
             var connectionString = configuration.GetConnectionString("DefaultConnection")

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http; // تأكد من وجود هذا الـ Namespa
 
 namespace ERP_KFS_MVC.Areas.HR.ViewModels
 {
-    public sealed class CreateFullEmployeeViewModel
+    public sealed class CreateEmployeeViewModel
     {
         // ── 1. البيانات الشخصية ──────────────────────────────────
         [Required(ErrorMessage = "الاسم الأول مطلوب")]
@@ -41,8 +41,6 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         public Guid? OrgUnitId { get; set; }
 
         [Required(ErrorMessage = "المسمى الوظيفي مطلوب")]
-        [MaxLength(150)]
-        public string JobTitleName { get; set; } = string.Empty;
         public Guid? JobTitleId { get; set; }
 
         // تم حذف QualificationName القديم من هنا واستبداله بالقسم رقم 3
@@ -56,6 +54,7 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         public DateTime HireDate { get; set; }
 
         public DateTime? JobGradeDate { get; set; }
+        public Guid? FunctionalGroupId { get; set; }
 
         // ── 3. بيانات المؤهل الدراسي (القسم الجديد) ───────────────
         [Required(ErrorMessage = "نوع المؤهل مطلوب")]
@@ -83,17 +82,16 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         [MaxLength(500)]
         public string? Notes { get; set; }
 
-        // تم استخدام IFormFile لرفع المستند الخاص بالمؤهل مباشرة من داخل التبويب
-        public IFormFile? FilePath { get; set; }
-
         // ── 4. الملفات (مسوغات التعيين) ───────────────────────────
         public IFormFile? ProfileImage { get; set; }
-        public IFormFile? NationalIdCard { get; set; }
-        public IFormFile? QualificationFile { get; set; } // تم الإبقاء عليه إن كنت تريد رفع نسخة إضافية في تبويب الملفات
+        public IFormFile? NationalIdCardFront { get; set; }
+        public IFormFile? NationalIdCardBack { get; set; }
+        public IFormFile? QualificationFile { get; set; }
         public IFormFile? BirthCertificate { get; set; }
         public IFormFile? MilitaryFile { get; set; }
         public IFormFile? ContractFile { get; set; }
         public IFormFile? PoliceClearance { get; set; }
+        public IFormFile? MarriageDocument { get; set; }
 
         // ── 5. البيانات المالية ──────────────────────────────────
         public decimal? BasicSalary2019 { get; set; }
