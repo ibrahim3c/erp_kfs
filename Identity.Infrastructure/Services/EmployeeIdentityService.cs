@@ -57,7 +57,7 @@ namespace Identity.Infrastructure.Services
 
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
-                return Result.Failure(IdentityErrors.UserDeleteFailed);
+                return Result.Failure(IdentityErrors.UserCannotDelete);
 
             return Result.Success();
         }

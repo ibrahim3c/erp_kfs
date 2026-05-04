@@ -43,21 +43,25 @@ namespace HR.Application.Loans.GetLoanList
             using var connection = sqlConnectionFactory.CreateConnection();
             var sql = """
                 SELECT 
-                    l.Id,
-                    e.Name AS EmployeeName, 
-                    l.StartDate,
-                    l.Amount,
-                    l.Months,
-                    l.InstallmentAmount,
-                    l.RemainingAmount,
-                    l.IsCompleted
-                FROM HR.Loans l
-                INNER JOIN HR.Employees e ON l.EmployeeId = e.Id
-                ORDER BY l.StartDate DESC
-            """;
+                    l."Id" AS Id,
+                    e."Name" AS EmployeeName, 
+                    l."StartDate" AS StartDate,
+                    l."Amount" AS Amount,
+                    l."Months" AS Months,
+                    l."InstallmentAmount" AS InstallmentAmount,
+                    l."RemainingAmount" AS RemainingAmount,
+                    l."IsCompleted" AS IsCompleted
+                FROM 
+                    "HR"."Loans" l
+                INNER JOIN 
+                    "HR"."Employees" e ON l."EmployeeId" = e."Id"
+                ORDER BY 
+                    l."StartDate" DESC;    
+                """;
 
             var loans = (await connection.QueryAsync<GetLoanListResponse>(sql)).ToList();
-  
+            if (loans == null || loans.Count == 0)        
+                return Result<List<GetLoanListResponse>>.Failure(LoanErrors.NotFoundLoans);
 
             return Result<List<GetLoanListResponse>>.Success(loans);
         }

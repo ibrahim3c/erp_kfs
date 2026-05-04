@@ -187,6 +187,7 @@ namespace Organization.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DecisionNumber")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -200,6 +201,7 @@ namespace Organization.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -374,11 +376,13 @@ namespace Organization.Infrastructure.Migrations
 
             modelBuilder.Entity("Organization.Domain.LeadershipPositionHistory", b =>
                 {
-                    b.HasOne("Organization.Domain.LeadershipPosition", null)
-                        .WithMany("LeadershipPositionHistories")
+                    b.HasOne("Organization.Domain.LeadershipPosition", "LeadershipPosition")
+                        .WithMany()
                         .HasForeignKey("LeadershipPositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("LeadershipPosition");
                 });
 
             modelBuilder.Entity("Organization.Domain.OrgUnit", b =>
@@ -406,11 +410,6 @@ namespace Organization.Infrastructure.Migrations
             modelBuilder.Entity("Organization.Domain.FunctionalGroup", b =>
                 {
                     b.Navigation("JobTitles");
-                });
-
-            modelBuilder.Entity("Organization.Domain.LeadershipPosition", b =>
-                {
-                    b.Navigation("LeadershipPositionHistories");
                 });
 
             modelBuilder.Entity("Organization.Domain.OrgUnit", b =>

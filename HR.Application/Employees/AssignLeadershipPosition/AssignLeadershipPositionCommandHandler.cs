@@ -29,14 +29,13 @@ namespace HR.Application.Employees.AssignLeadershipPosition
                 return Result<bool>.Failure(EmployeeErrors.NotFound);
             
             // 2. تحديث المنصب القيادي للموظف
-             employee.AssignLeadershipPosition(request.LeadershipPositionId, request.Notes);
+            employee.AssignLeadershipPosition(request.LeadershipPositionId);
 
 
             // 3. تحديث وحفظ التغييرات
             _uow.EmployeeRepository.Update(employee);
 
             await _uow.SaveChangesAsync();
-
 
             // 4. إرجاع نتيجة النجاح
             return Result<bool>.Success(true);

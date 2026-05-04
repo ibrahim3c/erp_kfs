@@ -1,4 +1,4 @@
-@model ERP_KFS_MVC.Areas.HR.ViewModels.CreateFullEmployeeViewModel
+@model ERP_KFS_MVC.Areas.HR.ViewModels.CreateEmployeeViewModel
 
 @{
     ViewData["Title"] = "إضافة موظف جديد";
@@ -167,11 +167,6 @@
                     <div class="tab-pane fade" id="job" role="tabpanel">
                         <div class="row">
                             <div class="col-md-6 hr-form-group">
-                                <label class="hr-form-label">كود الموظف</label>
-                                <input class="form-control hr-form-control" readonly placeholder="يتم إنشاؤه تلقائياً" />
-                            </div>
-
-                            <div class="col-md-6 hr-form-group">
                                 <label asp-for="OrgUnitId" class="hr-form-label">الإدارة التابع لها</label>
                                 <select asp-for="OrgUnitId" class="form-select hr-form-control" asp-items="ViewBag.OrgUnitId">
                                     <option value="">-- اختر الإدارة --</option>
@@ -180,11 +175,19 @@
                             </div>
 
                             <div class="col-md-6 hr-form-group">
-                                <label asp-for="JobTitleName" class="hr-form-label">المسمى الوظيفي <span class="text-danger">*</span></label>
-                                <select asp-for="JobTitleName" class="form-select hr-form-control" asp-items="ViewBag.JobTitleName">
+                                <label asp-for="FunctionalGroupId" class="hr-form-label">المجموعة النوعية</label>
+                                <select asp-for="FunctionalGroupId" class="form-select hr-form-control" asp-items="ViewBag.FunctionalGroupId">
+                                    <option value="">-- اختر المجموعة النوعية --</option>
+                                </select>
+                                <span asp-validation-for="FunctionalGroupId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4 hr-form-group">
+                                <label asp-for="JobTitleId" class="hr-form-label">المسمى الوظيفي <span class="text-danger">*</span></label>
+                                <select asp-for="JobTitleId" class="form-select hr-form-control" asp-items="ViewBag.JobTitleId">
                                     <option value="">-- اختر المسمى الوظيفي --</option>
                                 </select>
-                                <span asp-validation-for="JobTitleName" class="text-danger small"></span>
+                                <span asp-validation-for="JobTitleId" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-4 hr-form-group">
@@ -203,7 +206,7 @@
                                 <span asp-validation-for="EmploymentTypeId" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-md-4 hr-form-group">
+                            <div class="col-md-6 hr-form-group">
                                 <label asp-for="HireDate" class="hr-form-label">تاريخ التعيين الفعلي <span class="text-danger">*</span></label>
                                 <input asp-for="HireDate" type="date" class="form-control hr-form-control" />
                                 <span asp-validation-for="HireDate" class="text-danger small"></span>
@@ -259,12 +262,6 @@
                             </div>
 
                             <div class="col-md-4 hr-form-group">
-                                <label asp-for="FilePath" class="hr-form-label">صورة المؤهل (مستند)</label>
-                                <input asp-for="FilePath" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
-                                <span asp-validation-for="FilePath" class="text-danger small"></span>
-                            </div>
-
-                            <div class="col-md-6 hr-form-group">
                                 <label asp-for="ValidFrom" class="hr-form-label">صالح من تاريخ (إن وجد)</label>
                                 <input asp-for="ValidFrom" type="date" class="form-control hr-form-control" />
                                 <span asp-validation-for="ValidFrom" class="text-danger small"></span>
@@ -276,7 +273,7 @@
                                 <span asp-validation-for="ValidTo" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-md-12 hr-form-group">
+                            <div class="col-md-6 hr-form-group">
                                 <label asp-for="Notes" class="hr-form-label">ملاحظات إضافية</label>
                                 <textarea asp-for="Notes" class="form-control hr-form-control" rows="2" placeholder="أي ملاحظات تخص المؤهل..."></textarea>
                                 <span asp-validation-for="Notes" class="text-danger small"></span>
@@ -296,29 +293,45 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 hr-form-group">
-                                <label asp-for="NationalIdCard" class="hr-form-label">صورة بطاقة الرقم القومي</label>
-                                <input asp-for="NationalIdCard" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                            <div class="col-md-6 hr-form-group file-upload-group">
+                                <label asp-for="NationalIdCardFront" class="hr-form-label">بطاقة الرقم القومي — الوجه الأمامي</label>
+                                <input asp-for="NationalIdCardFront" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
                             </div>
-                            <div class="col-md-6 hr-form-group">
+                            <div class="col-md-6 hr-form-group file-upload-group">
+                                <label asp-for="NationalIdCardBack" class="hr-form-label">بطاقة الرقم القومي — الوجه الخلفي</label>
+                                <input asp-for="NationalIdCardBack" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
+                            </div>
+                            <div class="col-md-6 hr-form-group file-upload-group">
                                 <label asp-for="QualificationFile" class="hr-form-label">صورة المؤهل الدراسي الأساسي</label>
-                                <input asp-for="QualificationFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="QualificationFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
                             </div>
-                            <div class="col-md-6 hr-form-group">
+                            <div class="col-md-6 hr-form-group file-upload-group">
                                 <label asp-for="BirthCertificate" class="hr-form-label">شهادة الميلاد المميكنة</label>
-                                <input asp-for="BirthCertificate" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="BirthCertificate" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
                             </div>
-                            <div class="col-md-6 hr-form-group">
+                            <div class="col-md-6 hr-form-group file-upload-group">
                                 <label asp-for="MilitaryFile" class="hr-form-label">الموقف من التجنيد</label>
-                                <input asp-for="MilitaryFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="MilitaryFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
                             </div>
-                            <div class="col-md-6 hr-form-group">
+                            <div class="col-md-6 hr-form-group file-upload-group">
                                 <label asp-for="ContractFile" class="hr-form-label">قرار التعيين / العقد</label>
-                                <input asp-for="ContractFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="ContractFile" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
                             </div>
-                            <div class="col-md-6 hr-form-group">
+                            <div class="col-md-6 hr-form-group file-upload-group">
                                 <label asp-for="PoliceClearance" class="hr-form-label">فيش جنائي حديث</label>
-                                <input asp-for="PoliceClearance" type="file" class="form-control hr-form-control" accept=".pdf,image/*" />
+                                <input asp-for="PoliceClearance" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
+                            </div>
+                            <div class="col-md-6 hr-form-group file-upload-group">
+                                <label asp-for="MarriageDocument" class="hr-form-label">قسيمة الزواج (إن وجد)</label>
+                                <input asp-for="MarriageDocument" type="file" class="form-control hr-form-control" accept=".pdf,image/*" onchange="showFileName(this)" />
+                                <div class="file-name-display mt-1 text-muted small"></div>
                             </div>
                         </div>
                     </div>
@@ -428,7 +441,24 @@
             }
         }
 
-        // ─── 2. استخراج البيانات من الرقم القومي ─────────────────
+        // ─── 2. عرض اسم الملف المختار ──────────────────────────────
+        function showFileName(input) {
+            const group = input.closest('.file-upload-group');
+            if (!group) return;
+            const display = group.querySelector('.file-name-display');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const icon = file.name.toLowerCase().endsWith('.pdf')
+                    ? 'fa-file-pdf text-danger'
+                    : 'fa-file-image text-info';
+                const size = (file.size / 1024).toFixed(1);
+                display.innerHTML = `<i class="fas ${icon}"></i> ${file.name} <span class="text-muted">(${size} KB)</span>`;
+            } else {
+                display.innerHTML = '';
+            }
+        }
+
+        // ─── 3. استخراج البيانات من الرقم القومي ─────────────────
         document.getElementById('nationalIdInput').addEventListener('input', function () {
             const id = this.value;
             if (id.length !== 14 || !/^\d{14}$/.test(id)) return;
@@ -442,10 +472,11 @@
                 genderDigit % 2 !== 0 ? 'ذكر' : 'أنثى';
         });
 
-        // ─── 3. Tab indicator عند وجود validation errors ──────────
+        // ─── 4. Tab indicator عند وجود validation errors ──────────
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.tab-pane').forEach(pane => {
-                const hasError = pane.querySelector('.text-danger:not(:empty)');
+                const hasError = pane.querySelector('.is-invalid') ||
+                                 pane.querySelector('.text-danger:not(:empty)');
                 if (hasError) {
                     const tabLink = document.getElementById('tab-' + pane.id);
                     if (tabLink) {

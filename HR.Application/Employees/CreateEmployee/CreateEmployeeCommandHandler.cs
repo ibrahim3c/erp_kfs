@@ -1,6 +1,7 @@
-﻿using HR.Domain;
+using HR.Domain;
 using HR.Domain.Employees;
 using Modules.Shared.Application.Interfaces;
+using Modules.Shared.Application.IService;
 using Modules.Shared.Application.Messaging;
 using Modules.Shared.Domain;
 
@@ -11,13 +12,16 @@ namespace HR.Application.Employees.CreateEmployee
         : ICommandHandler<CreateEmployeeCommand, Guid>
     {
         private readonly IHRUnitOfWork _unitOfWork;
+        private readonly IFileService _fileService;
         private readonly IIdentityService _identityService;
 
         public CreateEmployeeCommandHandler(
             IHRUnitOfWork unitOfWork,
+            IFileService fileService,
             IIdentityService identityService)
         {
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
             _identityService = identityService;
         }
 
@@ -51,9 +55,9 @@ namespace HR.Application.Employees.CreateEmployee
                 maritalStatus: request.MaritalStatus,
                 isDisabled: request.IsDisabled,
                 employmentTypeId: request.EmploymentTypeId,
-                jobTitleId: request.JobTitleId,          // JobTitleName = free text — يُحل لاحقاً
+                jobTitleId: request.JobTitleId,
                 jobGradeId: request.JobGradeId,
-                functionalGroupId: null,
+                functionalGroupId: request.FunctionalGroupId,
                 orgUnitId: request.OrgUnitId);
 
             if (employeeResult.IsFailure)
@@ -61,35 +65,117 @@ namespace HR.Application.Employees.CreateEmployee
 
             var employee = employeeResult.Value;
 
-            // 4. إضافة المستندات (E-File) — اختياري بالكامل
+            // 4. Upload documents via FileService then add E-File
+            string? profileImagePath = null;
+            string? nationalIdCardFrontPath = null;
+            string? nationalIdCardBackPath = null;
+            string? qualificationFilePath = null;
+            string? birthCertificatePath = null;
+            string? militaryFilePath = null;
+            string? contractFilePath = null;
+            string? policeClearancePath = null;
+            string? marriageDocumentPath = null;
+
+            if (request.ProfileImage != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.ProfileImage, "employees/profiles");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                profileImagePath = uploadResult.Value;
+            }
+
+            if (request.NationalIdCardFront != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.NationalIdCardFront, "employees/national-ids-front");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                nationalIdCardFrontPath = uploadResult.Value;
+            }
+
+            if (request.NationalIdCardBack != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.NationalIdCardBack, "employees/national-ids-back");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                nationalIdCardBackPath = uploadResult.Value;
+            }
+
+            if (request.QualificationFile != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.QualificationFile, "employees/qualifications");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                qualificationFilePath = uploadResult.Value;
+            }
+
+            if (request.BirthCertificate != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.BirthCertificate, "employees/birth-certificates");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                birthCertificatePath = uploadResult.Value;
+            }
+
+            if (request.MilitaryFile != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.MilitaryFile, "employees/military");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                militaryFilePath = uploadResult.Value;
+            }
+
+            if (request.ContractFile != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.ContractFile, "employees/contracts");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                contractFilePath = uploadResult.Value;
+            }
+
+            if (request.PoliceClearance != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.PoliceClearance, "employees/police-clearance");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                policeClearancePath = uploadResult.Value;
+            }
+
+            if (request.MarriageDocument != null)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(request.MarriageDocument, "employees/marriage");
+                if (uploadResult.IsFailure)
+                    return Result<Guid>.Failure(uploadResult.Error);
+                marriageDocumentPath = uploadResult.Value;
+            }
+
             bool hasAnyFile =
-                !string.IsNullOrWhiteSpace(request.NationalIdCardPath) ||
-                !string.IsNullOrWhiteSpace(request.QualificationFilePath) ||
-                !string.IsNullOrWhiteSpace(request.BirthCertificatePath) ||
-                !string.IsNullOrWhiteSpace(request.MilitaryFilePath) ||
-                !string.IsNullOrWhiteSpace(request.ContractFilePath) ||
-                !string.IsNullOrWhiteSpace(request.PoliceClearancePath) ||
-                !string.IsNullOrWhiteSpace(request.ProfileImagePath);
+                !string.IsNullOrWhiteSpace(nationalIdCardFrontPath) ||
+                !string.IsNullOrWhiteSpace(nationalIdCardBackPath) ||
+                !string.IsNullOrWhiteSpace(qualificationFilePath) ||
+                !string.IsNullOrWhiteSpace(birthCertificatePath) ||
+                !string.IsNullOrWhiteSpace(militaryFilePath) ||
+                !string.IsNullOrWhiteSpace(contractFilePath) ||
+                !string.IsNullOrWhiteSpace(policeClearancePath) ||
+                !string.IsNullOrWhiteSpace(marriageDocumentPath) ||
+                !string.IsNullOrWhiteSpace(profileImagePath);
 
             if (hasAnyFile)
             {
                 var fileResult = EmployeeFile.Create(
                     employeeId: employee.Id,
-                    militaryFile: request.MilitaryFilePath,
-                    qualificationFile: request.QualificationFilePath,
-                    birthCertificateFile: request.BirthCertificatePath,
-                    policeClearanceCertificate: request.PoliceClearancePath,
-                    nationalIdCardFront: request.NationalIdCardPath,
-                    nationalIdCardBack: null,
-                    marriageDocument: null,
-                    personalPhoto: request.ProfileImagePath,
-                    contractFile: request.ContractFilePath);
+                    militaryFile: militaryFilePath,
+                    qualificationFile: qualificationFilePath,
+                    birthCertificateFile: birthCertificatePath,
+                    policeClearanceCertificate: policeClearancePath,
+                    nationalIdCardFront: nationalIdCardFrontPath,
+                    nationalIdCardBack: nationalIdCardBackPath,
+                    marriageDocument: marriageDocumentPath,
+                    personalPhoto: profileImagePath,
+                    contractFile: contractFilePath);
 
                 if (fileResult.IsFailure)
                     return Result<Guid>.Failure(fileResult.Error);
 
-                // EmployeeFile يُضاف عبر EF navigation أو repository مستقل
-                // — حسب setup الـ DbContext عندك
                 employee.AddEmployeeFile(fileResult.Value);
             }
 
@@ -122,30 +208,25 @@ namespace HR.Application.Employees.CreateEmployee
                 request.University,
                 request.GraduationYear,
                 request.Grade,
-                request.QualificationFilePath,
+                qualificationFilePath,
                 request.QualificationValidFrom,
                 request.QualificationValidTo,
                 request.QualificationNotes);
 
-            // 6. Create system user for employee (BEFORE persisting)
-            var userResult = await _identityService.CreateUserForEmployeeAsync(
-                fullName,
-                request.NationalId,
-                request.Email);
+            // 6. Persist
+            await _unitOfWork.EmployeeRepository.AddAsync(employee, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (userResult.IsFailure)
-                return Result<Guid>.Failure(userResult.Error);
+            // 7. Create system user for employee
+            var createUserResult = await _identityService.CreateUserForEmployeeAsync(
+                fullName: fullName,
+                nationalId: request.NationalId,
+                email: request.Email);
 
-            // 7. Persist employee
-            try
+            if (createUserResult.IsSuccess)
             {
-                await _unitOfWork.EmployeeRepository.AddAsync(employee, cancellationToken);
+                employee.LinkUserId(createUserResult.Value);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
-            catch
-            {
-                await _identityService.DeleteUserAsync(userResult.Value);
-                throw;
             }
 
             return Result<Guid>.Success(employee.Id);

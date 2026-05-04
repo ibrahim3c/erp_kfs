@@ -1,13 +1,10 @@
 ﻿using HR.Domain.Decisions;
-using HR.Domain.Employees.Events;
 using HR.Domain.Employees.Qualifications;
 using HR.Domain.Incentives;
 using HR.Domain.Loans;
 using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 using Modules.Shared.Domain;
-using Modules.Shared.Domain.Events;
-using Organization.Domain;
 
 namespace HR.Domain.Employees
 {
@@ -37,6 +34,8 @@ namespace HR.Domain.Employees
         public Guid? JobTitleId { get; private set; }
         public Guid? JobGradeId { get; private set; }
         public Guid? FunctionalGroupId { get; private set; }
+
+        public Guid? UserId { get; private set; }
 
 
 
@@ -77,7 +76,7 @@ namespace HR.Domain.Employees
 
         // EF Core Parameterless constructor
         private Employee() { }
-        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId) : base(id)
+        private Employee(Guid id, string code, string name, string phone, string nationalId, DateTime? dateOfBirth, string gender, string email, string address, DateTime hireDate, DateTime? terminationDate, string maritalStatus, bool isActive, bool isDisabled, Guid? cityCenterId, Guid? villageId, Guid? employmentTypeId, Guid? jobTitleId, Guid? jobGradeId, Guid? functionalGroupId, Guid? orgUnitId, Guid? userId) : base(id)
         {
             Code = code;
             Name = name;
@@ -94,13 +93,12 @@ namespace HR.Domain.Employees
             IsDisabled = isDisabled;
             CityCenterId = cityCenterId;
             VillageId = villageId;
-            //QualificationTypeId = qualificationTypeId;
-            //Specialization = specialization;
             EmploymentTypeId = employmentTypeId;
             JobTitleId = jobTitleId;
             JobGradeId = jobGradeId;
             FunctionalGroupId = functionalGroupId;
             OrgUnitId = orgUnitId;
+            UserId = userId;
         }
 
         public static Result<Employee> Create(
@@ -153,13 +151,12 @@ namespace HR.Domain.Employees
                 isDisabled: isDisabled,
                 cityCenterId: cityCenterId,
                 villageId: villageId,
-                //qualificationTypeId: qualificationTypeId,
-                //specialization: specialization,
                 employmentTypeId: employmentTypeId,
                 jobTitleId: jobTitleId,
                 jobGradeId: jobGradeId,
                 functionalGroupId: functionalGroupId,
-                orgUnitId: orgUnitId
+                orgUnitId: orgUnitId,
+                userId: null
             );
 
             return Result<Employee>.Success(employee);
@@ -333,27 +330,23 @@ namespace HR.Domain.Employees
             _employeeFiles.Add(file);
             return Result.Success();
         }
-        public Result AssignLeadershipPosition(Guid positionId, string? notes)
+        public Result AssignLeadershipPosition(Guid positionId)
         {
             if (positionId == Guid.Empty)
                 return Result.Failure(new Error("Employee.InvalidPosition", "رقم المنصب غير صحيح."));
 
             LeadershipPositionId = positionId;
-
-            // To separate the modules 
-            // Raise domain event for leadership position assignment 
-            RaiseDomainEvent(new LeadershipPositionAssignedDomainEvent(
-                    EmployeeId: Id,
-                    LeadershipPositionId: LeadershipPositionId ?? Guid.Empty,
-                    AssignedAt: DateTime.UtcNow,
-                    Notes: notes));
-
             return Result.Success();
         }
 
         public void RemoveLeadershipPosition()
         {
             LeadershipPositionId = null;
+        }
+
+        public void LinkUserId(Guid userId)
+        {
+            UserId = userId;
         }
 
         // add employee qualification 

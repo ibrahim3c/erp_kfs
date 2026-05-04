@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Shared.Application.Database;
+using Modules.Shared.Application.IService;
 using Modules.Shared.Infrastructure.Database;
+using Modules.Shared.Infrastructure.Services;
 
 namespace Modules.Shared.Infrastructure
 {
@@ -15,6 +17,9 @@ namespace Modules.Shared.Infrastructure
             #region Dapper
             services.AddSingleton<ISqlConnectionFactory>(_ => new SqlConnectionFactory(connectionString));
             #endregion
+
+            services.AddScoped<IFileService, FileService>();
+
             return services;
         }
     }

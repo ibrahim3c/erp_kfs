@@ -5,7 +5,6 @@ using HR.Infrastructure;
 using Identity.Infrastructure;
 using Modules.Shared.Application;
 using Modules.Shared.Infrastructure;
-using Organization.Application;
 using Organization.Infrastructure;
 
 namespace ERP_KFS_MVC
@@ -27,7 +26,6 @@ namespace ERP_KFS_MVC
             builder.Services.AddIdentityInfrastructure(builder.Configuration);
             builder.Services.AddGeographyInfrastructure(builder.Configuration);
             builder.Services.AddOrganizationInfrastructure(builder.Configuration);
-            builder.Services.AddOrganizationApplication();
 
             var app = builder.Build();
 

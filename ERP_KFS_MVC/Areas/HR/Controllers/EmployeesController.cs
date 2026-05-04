@@ -23,18 +23,15 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         private readonly IMediator _mediator;
         private readonly IGeographyService _geographyService;
         private readonly IOrganizationService _organizationService;
-        private readonly IWebHostEnvironment _env;
 
         public EmployeesController(
             IMediator mediator,
             IGeographyService geographyService,
-            IOrganizationService organizationService,
-            IWebHostEnvironment env)
+            IOrganizationService organizationService)
         {
             _mediator = mediator;
             _geographyService = geographyService;
             _organizationService = organizationService;
-            _env = env;
         }
 
         // ─────────────────────────────────────────
@@ -70,21 +67,22 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 : new List<SelectListItem>();
 
             var jobTitles = await _organizationService.GetAllJobTitlesAsync();
-            ViewBag.JobTitleName = jobTitles.IsSuccess
+            ViewBag.JobTitleId = jobTitles.IsSuccess
                 ? jobTitles.Value.Select(x => new SelectListItem
                 {
-                    Value = x.Name,
+                    Value = x.Id.ToString(),
                     Text = x.Name
                 }).ToList()
                 : new List<SelectListItem>();
 
-            var fubctionalGroups = await _organizationService.GetAllFunctionalGroupsAsync();
-                ViewBag.FunctionalGroupName = fubctionalGroups.IsSuccess
-                    ? fubctionalGroups.Value.Select(x => new SelectListItem
-                    {
-                        Value = x.Name,
-                        Text = x.Name
-                    }).ToList() : new List<SelectListItem>();
+            var functionalGroups = await _organizationService.GetAllFunctionalGroupsAsync();
+            ViewBag.FunctionalGroupId = functionalGroups.IsSuccess
+                ? functionalGroups.Value.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList()
+                : new List<SelectListItem>();
 
             var orgUnits = await _organizationService.GetAllOrgUnitsAsync();
             ViewBag.OrgUnitId = orgUnits.IsSuccess
@@ -107,28 +105,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         }
 
         // ─────────────────────────────────────────
-        // Helper: رفع ملف وإرجاع المسار
-        // ─────────────────────────────────────────
-        private async Task<string?> SaveFileAsync(IFormFile? file, string subFolder)
-        {
-            if (file is null || file.Length == 0) return null;
-
-            // wwwroot/uploads/hr/{subFolder}/
-            var folder = Path.Combine(_env.WebRootPath, "uploads", "hr", subFolder);
-            Directory.CreateDirectory(folder);
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var fullPath = Path.Combine(folder, fileName);
-
-            await using var stream = new FileStream(fullPath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            // نرجع المسار النسبي — سهل للتخزين في الـ DB
-            return $"/uploads/hr/{subFolder}/{fileName}";
-        }
-
-        // ─────────────────────────────────────────
-        // GET: /HR/Employees
+        // GET: /HR/Employees/Index
         // ─────────────────────────────────────────
         public async Task<IActionResult> Index()
         {
@@ -168,7 +145,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         public async Task<IActionResult> Create()
         {
             await PopulateDropdownsAsync();
-            return View();
+            return View(new CreateEmployeeViewModel());
         }
 
         // ─────────────────────────────────────────
@@ -176,21 +153,13 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         // ─────────────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateFullEmployeeViewModel vm)
+        public async Task<IActionResult> Create(CreateEmployeeViewModel vm)
         {
             if (!ModelState.IsValid)
             {
                 await PopulateDropdownsAsync();
                 return View(vm);
             }
-
-            var profileImagePath = await SaveFileAsync(vm.ProfileImage, "profile");
-            var nationalIdCardPath = await SaveFileAsync(vm.NationalIdCard, "national-id");
-            var qualificationFilePath = await SaveFileAsync(vm.QualificationFile, "qualification");
-            var birthCertificatePath = await SaveFileAsync(vm.BirthCertificate, "birth-cert");
-            var militaryFilePath = await SaveFileAsync(vm.MilitaryFile, "military");
-            var contractFilePath = await SaveFileAsync(vm.ContractFile, "contract");
-            var policeClearancePath = await SaveFileAsync(vm.PoliceClearance, "police");
 
             var command = new CreateEmployeeCommand(
                 // 1. Personal Information
@@ -208,20 +177,23 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
 
                 // 2. Job Information
                 OrgUnitId: vm.OrgUnitId,
-                JobTitleId: vm.JobTitleId ?? Guid.Empty, // تأكد من وجود Validation إذا كان إجبارياً
+                JobTitleId: vm.JobTitleId ?? Guid.Empty,
                 JobGradeId: vm.JobGradeId,
                 EmploymentTypeId: vm.EmploymentTypeId,
+                FunctionalGroupId: vm.FunctionalGroupId,
                 HireDate: vm.HireDate,
                 JobGradeDate: vm.JobGradeDate,
 
-                // 3. E-Files (Paths generated by Controller)
-                ProfileImagePath: profileImagePath,
-                NationalIdCardPath: nationalIdCardPath,
-                QualificationFilePath: qualificationFilePath,
-                BirthCertificatePath: birthCertificatePath,
-                MilitaryFilePath: militaryFilePath,
-                ContractFilePath: contractFilePath,
-                PoliceClearancePath: policeClearancePath,
+                // 3. E-Files (IFormFile passed directly)
+                ProfileImage: vm.ProfileImage,
+                NationalIdCardFront: vm.NationalIdCardFront,
+                NationalIdCardBack: vm.NationalIdCardBack,
+                QualificationFile: vm.QualificationFile,
+                BirthCertificate: vm.BirthCertificate,
+                MilitaryFile: vm.MilitaryFile,
+                ContractFile: vm.ContractFile,
+                PoliceClearance: vm.PoliceClearance,
+                MarriageDocument: vm.MarriageDocument,
 
                 // 4. Financial Information
                 BasicSalary2019: vm.BasicSalary2019,
@@ -232,7 +204,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 HasFellowshipFund: vm.HasFellowshipFund,
                 HasMedicalFund: vm.HasMedicalFund,
 
-                // 5. Employee Qualification (القسم الذي تمت إضافته)
+                // 5. Employee Qualification
                 QualificationTypeId: vm.QualificationTypeId,
                 QualificationFullName: vm.QualificationFullName,
                 Specialization: vm.Specialization,
@@ -247,16 +219,13 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
             var result = await _mediator.Send(command);
             if (!result.IsSuccess)
             {
-
                 ModelState.AddModelError(string.Empty, result.Error.Name);
-
                 await PopulateDropdownsAsync();
                 return View(vm);
             }
 
-                TempData["Success"] = "تم إضافة الموظف بنجاح";
-                return RedirectToAction(nameof(Index));          
-    
+            TempData["Success"] = "تم إضافة الموظف بنجاح";
+            return RedirectToAction(nameof(Index));
         }
 
         // ─────────────────────────────────────────
