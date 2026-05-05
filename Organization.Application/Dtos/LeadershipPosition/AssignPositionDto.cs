@@ -11,5 +11,6 @@ namespace Organization.Application.Dtos.LeadershipPosition
         public Guid EmployeeId { get; set; }
         public Guid LeadershipPositionId { get; set; }
         public string? Notes { get; set; }
+        public DateTime EndPositionForEmployee { get; set; }
     }
 }

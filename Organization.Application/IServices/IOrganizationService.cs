@@ -30,6 +30,7 @@ namespace Organization.Application.IServices
         Task<Result<IEnumerable<LeadershipPositionDto>>> GetAllLeadershipPositionsAsync();
         Task<Result<LeadershipPositionDto>> GetLeadershipPositionByIdAsync(Guid id);
         Task<Result<Guid>> CreateLeadershipPositionAsync(CreateLeadershipPositionDto dto);
+        Task<Result<LeadershipPositionHistoryDto>> GetLeadershipPositionHistoriesByEmployeeIdAsync(Guid employeeId);
         Task<Result<bool>> UpdateLeadershipPositionAsync(UpdateLeadershipPositionDto dto);
         Task<Result<bool>> DeleteLeadershipPositionAsync(Guid id);
 

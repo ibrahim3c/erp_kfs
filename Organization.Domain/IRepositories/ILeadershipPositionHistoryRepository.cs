@@ -5,5 +5,6 @@ namespace Organization.Domain.IRepositories
 {
     public interface ILeadershipPositionHistoryRepository : IBaseRepository<LeadershipPositionHistory>
     {
+
     }
 }

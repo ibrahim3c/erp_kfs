@@ -377,9 +377,10 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
 
-        public void RemoveLeadershipPosition()
+        public Result  RemoveLeadershipPosition()
         {
-            LeadershipPositionId = null;
+            RaiseDomainEvent(new LeadershipPositionRemovedDomainEvent(DateTime.UtcNow, Id));
+            return Result.Success();
         }
         public void LinkUserId(Guid userId)
         {

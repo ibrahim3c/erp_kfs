@@ -205,6 +205,14 @@ namespace Organization.Infrastructure.Services
             return Result<IEnumerable<LeadershipPositionHistoryDto>>.Success(dtoList);
         }
 
+        public async Task<Result<LeadershipPositionHistoryDto>> GetLeadershipPositionHistoriesByEmployeeIdAsync(Guid employeeId)
+        {
+            var history = await _unitOfWork.LeadershipPositionHistoryRepository.FindAsync(x => x.EmployeeId == employeeId);
+            if (history == null)
+                return Result<LeadershipPositionHistoryDto>.Failure(OrganizationErrors.LeadershipPositionHistoryNotFound);
+
+            return Result<LeadershipPositionHistoryDto>.Success(new LeadershipPositionHistoryDto(history.Id, history.LeadershipPositionId, history.EmployeeId, history.StartDate, history.EndDate, history.DecisionNumber, history.DecisionDate, history.Notes));
+        }
         public async Task<Result<LeadershipPositionHistoryDto>> GetLeadershipPositionHistoryByIdAsync(Guid id)
         {
             var history = await _unitOfWork.LeadershipPositionHistoryRepository.FindAsync(x => x.Id == id);
