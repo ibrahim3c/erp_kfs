@@ -1,4 +1,4 @@
-﻿@model HR.Application.Employees.GetEmployeeDetails.GetEmployeeDetailsResponse
+@model HR.Application.Employees.GetEmployeeDetails.GetEmployeeDetailsResponse
 
 @{
     ViewData["Title"] = "ملف الموظف";
@@ -38,6 +38,11 @@
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" href="#d-job" role="tab">
                     <i class="fas fa-briefcase"></i> الوظيفة والدرجة
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#d-qualification" role="tab">
+                    <i class="fas fa-graduation-cap"></i> المؤهل الدراسي
                 </a>
             </li>
             <li class="nav-item">
@@ -88,13 +93,17 @@
 
                         <div class="col-md-9">
                             <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="hr-form-label text-muted small">الاسم الكامل</label>
-                                    <p class="fw-bold mb-0">@Model.Name</p>
+                                <div class="col-md-4">
+                                    <label class="hr-form-label text-muted small">الاسم الأول</label>
+                                    <p class="fw-bold mb-0">@Model.FirstName</p>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="hr-form-label text-muted small">كود الموظف</label>
-                                    <p class="fw-bold mb-0 font-monospace">@Model.Code</p>
+                                <div class="col-md-4">
+                                    <label class="hr-form-label text-muted small">اسم الأب</label>
+                                    <p class="fw-bold mb-0">@Model.FatherName</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="hr-form-label text-muted small">اسم العائلة</label>
+                                    <p class="fw-bold mb-0">@Model.LastName</p>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="hr-form-label text-muted small">الرقم القومي</label>
@@ -112,6 +121,10 @@
                                     <label class="hr-form-label text-muted small">النوع</label>
                                     <p class="fw-bold mb-0">@(Model.Gender ?? "—")</p>
                                 </div>
+                                <div class="col-md-3">
+                                    <label class="hr-form-label text-muted small">الحالة الاجتماعية</label>
+                                    <p class="fw-bold mb-0">@(Model.MaritalStatus ?? "—")</p>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="hr-form-label text-muted small">رقم الموبايل</label>
                                     <p class="fw-bold mb-0">@(Model.Phone ?? "—")</p>
@@ -120,11 +133,7 @@
                                     <label class="hr-form-label text-muted small">البريد الإلكتروني</label>
                                     <p class="fw-bold mb-0">@(Model.Email ?? "—")</p>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="hr-form-label text-muted small">الحالة الاجتماعية</label>
-                                    <p class="fw-bold mb-0">@(Model.MaritalStatus ?? "—")</p>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label class="hr-form-label text-muted small">العنوان</label>
                                     <p class="fw-bold mb-0">@(Model.Address ?? "—")</p>
                                 </div>
@@ -141,6 +150,10 @@
                             <p class="fw-bold mb-0">@(Model.OrgUnitName ?? "—")</p>
                         </div>
                         <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">المجموعة النوعية</label>
+                            <p class="fw-bold mb-0">@(Model.FunctionalGroupName ?? "—")</p>
+                        </div>
+                        <div class="col-md-4">
                             <label class="hr-form-label text-muted small">المسمى الوظيفي</label>
                             <p class="fw-bold mb-0">@(Model.JobTitleName ?? "—")</p>
                         </div>
@@ -152,18 +165,89 @@
                             <label class="hr-form-label text-muted small">نوع الكادر</label>
                             <p class="fw-bold mb-0">@(Model.EmploymentTypeName ?? "—")</p>
                         </div>
-                        <div class="col-md-4">
-                            <label class="hr-form-label text-muted small">المجموعة الوظيفية</label>
-                            <p class="fw-bold mb-0">@(Model.FunctionalGroupName ?? "—")</p>
-                        </div>
                         <div class="col-md-6">
                             <label class="hr-form-label text-muted small">تاريخ التعيين</label>
                             <p class="fw-bold mb-0">@Model.HireDate.ToString("yyyy/MM/dd")</p>
                         </div>
+                        @* <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">تاريخ الحصول على الدرجة</label>
+                            <p class="fw-bold mb-0">
+                                @(Model.JobGradeDate.HasValue
+                                    ? Model.JobGradeDate.Value.ToString("yyyy/MM/dd")
+                                    : "—")
+                            </p>
+                        </div> *@
                     </div>
                 </div>
 
-                <!-- 3. مسوغات التعيين -->
+                <!-- 3. المؤهل الدراسي -->
+                <div class="tab-pane fade" id="d-qualification" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">نوع المؤهل</label>
+                            <p class="fw-bold mb-0">@(Model.QualificationTypeName ?? "—")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">اسم المؤهل بالكامل</label>
+                            <p class="fw-bold mb-0">@(Model.QualificationFullName ?? "—")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">التخصص</label>
+                            <p class="fw-bold mb-0">@(Model.QualificationSpecialization ?? "—")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">الجامعة / المعهد</label>
+                            <p class="fw-bold mb-0">@(Model.QualificationUniversity ?? "—")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="hr-form-label text-muted small">سنة التخرج</label>
+                            <p class="fw-bold mb-0">
+                                @(Model.QualificationGraduationYear.HasValue
+                                    ? Model.QualificationGraduationYear.Value.ToString()
+                                    : "—")
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="hr-form-label text-muted small">التقدير</label>
+                            <p class="fw-bold mb-0">@(Model.QualificationGrade ?? "—")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="hr-form-label text-muted small">حالة الاعتماد</label>
+                            <p class="fw-bold mb-0">
+                                @if (Model.QualificationIsVerified == true)
+                                {
+                                    <span class="badge bg-success">معتمد</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">غير معتمد</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">صالح من تاريخ</label>
+                            <p class="fw-bold mb-0">
+                                @(Model.QualificationValidFrom.HasValue
+                                    ? Model.QualificationValidFrom.Value.ToString("yyyy/MM/dd")
+                                    : "—")
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">صالح إلى تاريخ</label>
+                            <p class="fw-bold mb-0">
+                                @(Model.QualificationValidTo.HasValue
+                                    ? Model.QualificationValidTo.Value.ToString("yyyy/MM/dd")
+                                    : "—")
+                            </p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="hr-form-label text-muted small">ملاحظات</label>
+                            <p class="fw-bold mb-0">@(Model.QualificationNotes ?? "—")</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. مسوغات التعيين -->
                 <div class="tab-pane fade" id="d-files" role="tabpanel">
                     <div class="row g-4">
                         @{
@@ -187,31 +271,19 @@
                                 </div>
                             }
                         }
-                        @{
-                            FileRow("الصورة الشخصية", Model.PersonalPhoto);
-                        }
-                        @{
-                            FileRow("بطاقة الرقم القومي", Model.NationalIdCardFront);
-                        }
-                        @{
-                            FileRow("المؤهل الدراسي", Model.QualificationFile);
-                        }
-                        @{
-                            FileRow("شهادة الميلاد", Model.BirthCertificateFile);
-                        }
-                        @{
-                            FileRow("الموقف من التجنيد", Model.MilitaryFile);
-                        }
-                        @{
-                            FileRow("قرار التعيين / العقد", Model.ContractFile);
-                        }
-                        @{
-                            FileRow("الفيش الجنائي", Model.PoliceClearanceCertificate);
-                        }
+                        @{ FileRow("الصورة الشخصية", Model.PersonalPhoto); }
+                        @{ FileRow("بطاقة الرقم القومي — أمامي", Model.NationalIdCardFront); }
+                        @{ FileRow("بطاقة الرقم القومي — خلفي", Model.NationalIdCardBack); }
+                        @{ FileRow("المؤهل الدراسي", Model.QualificationFile); }
+                        @{ FileRow("شهادة الميلاد", Model.BirthCertificateFile); }
+                        @{ FileRow("الموقف من التجنيد", Model.MilitaryFile); }
+                        @{ FileRow("قرار التعيين / العقد", Model.ContractFile); }
+                        @{ FileRow("الفيش الجنائي", Model.PoliceClearanceCertificate); }
+                        @{ FileRow("قسيمة الزواج", Model.MarriageDocument); }
                     </div>
                 </div>
 
-                <!-- 4. البيانات المالية -->
+                <!-- 5. البيانات المالية -->
                 <div class="tab-pane fade" id="d-financial" role="tabpanel">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -219,12 +291,12 @@
                             <p class="fw-bold mb-0 font-monospace">@(Model.InsuranceNumber ?? "—")</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="hr-form-label text-muted small">رقم الحساب البنكي</label>
-                            <p class="fw-bold mb-0 font-monospace">@(Model.BankAccount ?? "—")</p>
-                        </div>
-                        <div class="col-md-6">
                             <label class="hr-form-label text-muted small">البنك</label>
                             <p class="fw-bold mb-0">@(Model.BankName ?? "—")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="hr-form-label text-muted small">رقم الحساب البنكي (ميزة)</label>
+                            <p class="fw-bold mb-0 font-monospace">@(Model.BankAccount ?? "—")</p>
                         </div>
                         <div class="col-md-3">
                             <label class="hr-form-label text-muted small">إجمالي الاستحقاق</label>
@@ -236,7 +308,20 @@
                                 else
                                 {
                                     <span>—</span>
-                                }                                
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="hr-form-label text-muted small">الراتب الأساسي 2019</label>
+                            <p class="fw-bold mb-0">
+                                @if (Model.BasicSalary2019.HasValue)
+                                {
+                                    <span class="font-monospace">@($"{Model.BasicSalary2019.Value:N2} جم")</span>
+                                }
+                                else
+                                {
+                                    <span>—</span>
+                                }
                             </p>
                         </div>
                         <div class="col-md-6">
