@@ -33,10 +33,8 @@ namespace HR.Application.Employees.RemoveLeadershipPosition
             // 2. إزالة المنصب القيادي (تصفير الـ ID)
             employee.RemoveLeadershipPosition();
 
-            // 3. التحديث والحفظ
-            _uow.EmployeeRepository.Update(employee);
-            await _uow.SaveChangesAsync();
 
+            await _uow.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
     }

@@ -8,6 +8,7 @@ using Organization.Application.Dtos.JobTitle;
 using Organization.Application.Dtos.LeadershipPosition;
 using Organization.Application.Dtos.OrgUnit;
 using Organization.Application.IServices;
+using Organization.Application.LeadershipPositionHistories;
 using System.Diagnostics;
 
 namespace ERP_KFS_MVC.Areas.Organization.Controllers
@@ -233,7 +234,7 @@ namespace ERP_KFS_MVC.Areas.Organization.Controllers
                 return View(dto);
             }
 
-            var command = new AssignLeadershipPositionCommand(dto.EmployeeId, dto.LeadershipPositionId);
+            var command = new AssignLeadershipPositionCommand(dto.EmployeeId, dto.LeadershipPositionId, dto.Notes);
             var result = await mediator.Send(command);
 
             if (result.IsFailure)
@@ -249,6 +250,26 @@ namespace ERP_KFS_MVC.Areas.Organization.Controllers
             TempData["SuccessMessage"] = "تم تعيين الموظف في المنصب القيادي بنجاح.";
             // التعديل هنا: الرجوع لنفس الصفحة عشان الجدول يتعمله تحديث
             return RedirectToAction(nameof(AssignPosition));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PositionHistory(Guid employeeId, string employeeName)
+        {
+            if (employeeId == Guid.Empty)
+                return RedirectToAction(nameof(AssignPosition));
+
+            var result = await mediator.Send(new GetEmployeeLeadershipHistoryQuery(employeeId));
+
+            if (result.IsFailure)
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    ErrorCode = result.Error.Code,
+                    ErrorMessage = result.Error.Name
+                });
+
+            ViewBag.EmployeeName = employeeName;
+            return View(result.Value);
         }
 
         [HttpPost]
@@ -292,22 +313,36 @@ namespace ERP_KFS_MVC.Areas.Organization.Controllers
             ViewBag.Employees = allEmployees;
             ViewBag.Positions = formattedPositions;
 
-            // 3. تجهيز بيانات الجدول (التعديل الصارم هنا 🔴)
-            var assignedEmployees = allEmployees
-                // نتأكد إن الـ ID مش بـ null وكمان مش Guid.Empty (بتاع الداتا الوهمية)
-                .Where(e => e.LeadershipPositionId != null && e.LeadershipPositionId != Guid.Empty)
-                .Select(e => new
+            // 3. تجهيز بيانات الجدول
+            var assignedEmployeesList = new List<dynamic>();
+
+            foreach (var e in allEmployees.Where(emp => emp.LeadershipPositionId != null && emp.LeadershipPositionId != Guid.Empty))
+            {
+                var positionName = formattedPositions.FirstOrDefault(p => p.Id == e.LeadershipPositionId)?.Name;
+
+                // الفلتر الأهم: لو المنصب اتحذف أو مش موجود، تخطى الموظف
+                if (string.IsNullOrEmpty(positionName)) continue;
+
+                // جلب سجل المناصب للموظف لمعرفة هل المنصب الحالي انتهى أم لا
+                var historyResult = await _organizationService.GetLeadershipPositionHistoriesByEmployeeIdAsync(e.Id);
+
+                // المنصب نشط لو السجل مش موجود، أو موجود بس ملوش EndDate
+                bool isPositionActive = true;
+                if (historyResult.IsSuccess && historyResult.Value != null)
+                {
+                    isPositionActive = !historyResult.Value.EndDate.HasValue;
+                }
+
+                assignedEmployeesList.Add(new
                 {
                     EmployeeId = e.Id,
                     EmployeeName = e.Name,
-                    // نجيب اسم المنصب لو موجود
-                    PositionName = formattedPositions.FirstOrDefault(p => p.Id == e.LeadershipPositionId)?.Name
-                })
-                // 🔴 الفلتر الأهم: لو المنصب اتحذف أو مش موجود، شيل الموظف من الجدول فوراً
-                .Where(x => !string.IsNullOrEmpty(x.PositionName))
-                .ToList();
+                    PositionName = positionName,
+                    IsActive = isPositionActive // 👈 دي الخاصية الجديدة اللي هتحكم في الزرار
+                });
+            }
 
-            ViewBag.AssignedEmployees = assignedEmployees;
+            ViewBag.AssignedEmployees = assignedEmployeesList;
         }
     }
 }

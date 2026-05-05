@@ -56,29 +56,38 @@ namespace HR.Application.Employees.GetEmployeeDetails
             ef.HasFellowshipFund,
             ef.HasMedicalFund,
 
-            efl.PersonalPhoto,
-            efl.NationalIdCardFront,
-            efl.NationalIdCardBack,
-            efl.QualificationFile,
-            efl.BirthCertificateFile,
-            efl.MilitaryFile,
-            efl.ContractFile,
-            efl.PoliceClearanceCertificate,
-            efl.MarriageDocument
+                        efl.PersonalPhoto,
+                        efl.NationalIdCardFront,
+                        efl.NationalIdCardBack,
+                        efl.QualificationFile,
+                        efl.BirthCertificateFile,
+                        efl.MilitaryFile,
+                        efl.ContractFile,
+                        efl.PoliceClearanceCertificate,
+                        efl.MarriageDocument,
 
-        FROM HR.Employees e
-        LEFT JOIN Organization.JobTitles jt ON jt.Id = e.JobTitleId
-        LEFT JOIN Organization.JobGrades jg ON jg.Id = e.JobGradeId
-        LEFT JOIN HR.EmploymentTypes et ON et.Id = e.EmploymentTypeId
-        LEFT JOIN Organization.OrgUnits ou ON ou.Id = e.OrgUnitId
-        LEFT JOIN Organization.FunctionalGroups fg ON fg.Id = e.FunctionalGroupId
-        LEFT JOIN HR.EmployeeFinancials ef ON ef.EmployeeId = e.Id
-        LEFT JOIN HR.EmployeeFiles efl ON efl.EmployeeId = e.Id
-        LEFT JOIN HR.EmployeeQualifications eq ON eq.EmployeeId = e.Id
-        LEFT JOIN HR.QualificationTypes qt ON qt.Id = eq.QualificationTypeId
-        WHERE e.Id = @EmployeeId
-        """;
+                        eq.QualificationFullName,
+                        qt.Name  AS QualificationTypeName,
+                        eq.Specialization,
+                        eq.University,
+                        eq.GraduationYear,
+                        eq.Grade,
+                        eq.ValidFrom AS QualificationValidFrom,
+                        eq.ValidTo   AS QualificationValidTo,
+                        eq.Notes     AS QualificationNotes
 
+                    FROM HR.Employees e
+                    LEFT JOIN Organization.JobTitles        jt  ON jt.Id  = e.JobTitleId
+                    LEFT JOIN Organization.JobGrades        jg  ON jg.Id  = e.JobGradeId
+                    LEFT JOIN HR.EmploymentTypes            et  ON et.Id  = e.EmploymentTypeId
+                    LEFT JOIN Organization.OrgUnits         ou  ON ou.Id  = e.OrgUnitId
+                    LEFT JOIN Organization.FunctionalGroups fg  ON fg.Id  = e.FunctionalGroupId
+                    LEFT JOIN HR.EmployeeFinancials         ef  ON ef.EmployeeId  = e.Id
+                    LEFT JOIN HR.EmployeeFiles              efl ON efl.EmployeeId = e.Id
+                    LEFT JOIN HR.EmployeeQualifications     eq  ON eq.EmployeeId  = e.Id
+                    LEFT JOIN HR.QualificationTypes         qt  ON qt.Id = eq.QualificationTypeId
+                    WHERE e.Id = @EmployeeId
+                    """;
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeDetailsResponse>(sql, new { request.EmployeeId });
 
             if (response is null)

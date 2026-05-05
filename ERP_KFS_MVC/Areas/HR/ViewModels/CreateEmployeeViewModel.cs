@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http; // تأكد من وجود هذا الـ Namespace لـ IFormFile
 
 namespace ERP_KFS_MVC.Areas.HR.ViewModels
 {
-    public sealed class CreateEmployeeViewModel
+    public sealed class CreateFullEmployeeViewModel
     {
         // ── 1. البيانات الشخصية ──────────────────────────────────
         [Required(ErrorMessage = "الاسم الأول مطلوب")]

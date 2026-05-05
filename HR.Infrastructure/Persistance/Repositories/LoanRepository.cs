@@ -43,22 +43,22 @@ namespace HR.Infrastructure.Persistance.Repositories
 
         public async Task<List<Loan>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await dbContext.Loans.AsNoTracking().ToListAsync(cancellationToken);
+            return await dbContext.Loans.ToListAsync(cancellationToken);
         }
 
         public async Task<List<Loan>> GetAllWithEmployeeAsync(CancellationToken cancellationToken)
         {
-           return await dbContext.Loans.Include(x => x.Employee).AsNoTracking().ToListAsync(cancellationToken);
+           return await dbContext.Loans.Include(x => x.Employee).ToListAsync(cancellationToken);
         }
 
         public async Task<Loan> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await dbContext.Loans.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            return await dbContext.Loans.Include(l => l.Installments).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
         public async Task<Loan> GetByIdWithEmployeeAsync(Guid id, CancellationToken cancellationToken)
         {
-           return await dbContext.Loans.Include(x => x.Employee).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+           return await dbContext.Loans.Include(x => x.Employee).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
         public void Update(Loan loan)

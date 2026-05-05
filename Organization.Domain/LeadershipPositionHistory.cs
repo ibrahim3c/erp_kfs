@@ -13,7 +13,7 @@ public sealed class LeadershipPositionHistory : Entity
         DateTime? endDate,
         string decisionNumber,
         DateTime? decisionDate,
-        string notes) : base(id)
+        string? notes) : base(id)
     {
         LeadershipPositionId = leadershipPositionId;
         EmployeeId = employeeId;
@@ -28,12 +28,9 @@ public sealed class LeadershipPositionHistory : Entity
     public Guid EmployeeId { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime? EndDate { get; private set; }
-    public string DecisionNumber { get; private set; }
+    public string? DecisionNumber { get; private set; }
     public DateTime? DecisionDate { get; private set; }
-    public string Notes { get; private set; }
-
-    // Navigation Properties
-    public LeadershipPosition? LeadershipPosition { get; private set; }
+    public string? Notes { get; private set; }
 
     // Factory method
     public static Result<LeadershipPositionHistory> Create(
@@ -41,9 +38,9 @@ public sealed class LeadershipPositionHistory : Entity
         Guid employeeId,
         DateTime startDate,
         DateTime? endDate = null,
-        string decisionNumber = null,
+        string? decisionNumber = null,
         DateTime? decisionDate = null,
-        string notes = null)
+        string? notes = null)
     {
         if (leadershipPositionId == Guid.Empty)
             return Result<LeadershipPositionHistory>.Failure(OrganizationErrors.OrgUnitIdEmpty);

@@ -359,6 +359,9 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Property<DateTime?>("TerminationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("VillageId")
                         .HasColumnType("uniqueidentifier");
 

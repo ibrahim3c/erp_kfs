@@ -1,9 +1,10 @@
 ﻿using ERP_KFS_MVC.Areas.HR.ViewModels;
 using ERP_KFS_MVC.Models;
 using Geography.Application.IServices;
-using HR.Application.Employees.CreateEmployee;
+using HR.Application.Employees.CreateFullEmployee;
 using HR.Application.Employees.DeleteEmployee;
 using HR.Application.Employees.EmploymentTypes;
+using HR.Application.Employees.GetAllEmployeeActiveAndNot;
 using HR.Application.Employees.GetAllEmployees;
 using HR.Application.Employees.GetAllQualificationTypes;
 using HR.Application.Employees.GetEmployeeDetails;
@@ -109,7 +110,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         // ─────────────────────────────────────────
         public async Task<IActionResult> Index()
         {
-            var result = await _mediator.Send(new GetAllEmployeesQuery());
+            var result = await _mediator.Send(new GetAllEmployeesActiveAndNotQuery());
 
             if (result.IsFailure)
                 return View("Error", new ErrorViewModel
@@ -118,7 +119,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                     ErrorMessage = result.Error.Name
                 });
 
-            return View(result.Value ?? new List<EmployeeListResponse>());
+            return View(result.Value ?? new List<GetAllEmployeesQueryActiveAndNotResponse>());
         }
 
         // ─────────────────────────────────────────
@@ -145,7 +146,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         public async Task<IActionResult> Create()
         {
             await PopulateDropdownsAsync();
-            return View(new CreateEmployeeViewModel());
+            return View(new CreateFullEmployeeViewModel());
         }
 
         // ─────────────────────────────────────────
@@ -153,7 +154,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         // ─────────────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateEmployeeViewModel vm)
+        public async Task<IActionResult> Create(CreateFullEmployeeViewModel vm)
         {
             if (!ModelState.IsValid)
             {
@@ -161,7 +162,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 return View(vm);
             }
 
-            var command = new CreateEmployeeCommand(
+            var command = new CreateFullEmployeeCommand(
                 // 1. Personal Information
                 FirstName: vm.FirstName,
                 FatherName: vm.FatherName,
@@ -185,15 +186,15 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 JobGradeDate: vm.JobGradeDate,
 
                 // 3. E-Files (IFormFile passed directly)
-                ProfileImage: vm.ProfileImage,
-                NationalIdCardFront: vm.NationalIdCardFront,
-                NationalIdCardBack: vm.NationalIdCardBack,
-                QualificationFile: vm.QualificationFile,
-                BirthCertificate: vm.BirthCertificate,
-                MilitaryFile: vm.MilitaryFile,
-                ContractFile: vm.ContractFile,
-                PoliceClearance: vm.PoliceClearance,
-                MarriageDocument: vm.MarriageDocument,
+                ProfileImagePath: vm.ProfileImage,
+                NationalIdCardFrontPath: vm.NationalIdCardFront,
+                NationalIdCardBackPath: vm.NationalIdCardBack,
+                QualificationFilePath: vm.QualificationFile,
+                BirthCertificatePath: vm.BirthCertificate,
+                MilitaryFilePath: vm.MilitaryFile,
+                ContractFilePath: vm.ContractFile,
+                PoliceClearancePath: vm.PoliceClearance,
+                MarriageDocumentPath: vm.MarriageDocument,
 
                 // 4. Financial Information
                 BasicSalary2019: vm.BasicSalary2019,
@@ -257,6 +258,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 DateOfBirth = r.DateOfBirth,
                 Gender = r.Gender,
                 Phone = r.Phone,
+                Email = r.Email,
                 Address = r.Address,
                 MaritalStatus = r.MaritalStatus,
                 IsActive = r.IsActive,
@@ -264,10 +266,12 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 HireDate = r.HireDate,
                 JobGradeDate = r.JobGradeDate,
                 OrgUnitId = r.OrgUnitId,
+                JobTitleId = r.JobTitleId,
                 JobGradeId = r.JobGradeId,
                 EmploymentTypeId = r.EmploymentTypeId,
+                FunctionalGroupId = r.FunctionalGroupId,
                 JobTitleName = r.JobTitleName,
-                QualificationName = r.QualificationName,
+                QualificationName = r.QualificationTypeName,
                 GrossSalary = r.GrossSalary,
                 BasicSalary2019 = r.BasicSalary2019,
                 InsuranceNumber = r.InsuranceNumber,
@@ -275,13 +279,23 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 BankAccountNumber = r.BankAccountNumber,
                 HasFellowshipFund = r.HasFellowshipFund,
                 HasMedicalFund = r.HasMedicalFund,
+
+                // الملفات الحالية
+                CurrentPersonalPhoto = r.PersonalPhoto,
+                CurrentNationalIdCardFront = r.NationalIdCardFront,
+                CurrentNationalIdCardBack = r.NationalIdCardBack,
+                CurrentQualificationFile = r.QualificationFile,
+                CurrentBirthCertificateFile = r.BirthCertificateFile,
+                CurrentMilitaryFile = r.MilitaryFile,
+                CurrentContractFile = r.ContractFile,
+                CurrentPoliceClearance = r.PoliceClearanceCertificate,
+                CurrentMarriageDocument = r.MarriageDocument,
             };
 
             await PopulateDropdownsAsync();
             return View(vm);
         }
 
-        // Edit POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateEmployeeViewModel vm)
@@ -299,10 +313,44 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 Name: fullName,
                 Code: vm.Code,
                 Phone: vm.Phone,
-                Email: null,
+                Email: vm.Email,
+                Gender: vm.Gender,
+                Address: vm.Address,
+                MaritalStatus: vm.MaritalStatus,
+                DateOfBirth: vm.DateOfBirth,
                 HireDate: vm.HireDate,
-                IsActive: vm.IsActive,
-                CreatedAt: DateTime.UtcNow   // أو تجيبه من الـ response
+                JobGradeDate: vm.JobGradeDate,
+                IsDisabled: vm.IsDisabled,
+                OrgUnitId: vm.OrgUnitId,
+                JobTitleId: vm.JobTitleId,
+                JobGradeId: vm.JobGradeId,
+                EmploymentTypeId: vm.EmploymentTypeId,
+                FunctionalGroupId: vm.FunctionalGroupId,
+                GrossSalary: vm.GrossSalary,
+                BasicSalary2019: vm.BasicSalary2019,
+                InsuranceNumber: vm.InsuranceNumber,
+                BankName: vm.BankName,
+                BankAccountNumber: vm.BankAccountNumber,
+                HasFellowshipFund: vm.HasFellowshipFund,
+                HasMedicalFund: vm.HasMedicalFund,
+                ProfileImage: vm.ProfileImage,
+                NationalIdCardFront: vm.NationalIdCardFront,
+                NationalIdCardBack: vm.NationalIdCardBack,
+                QualificationFile: vm.QualificationFile,
+                BirthCertificate: vm.BirthCertificate,
+                MilitaryFile: vm.MilitaryFile,
+                ContractFile: vm.ContractFile,
+                PoliceClearance: vm.PoliceClearance,
+                MarriageDocument: vm.MarriageDocument,
+                CurrentPersonalPhoto: vm.CurrentPersonalPhoto,
+                CurrentNationalIdCardFront: vm.CurrentNationalIdCardFront,
+                CurrentNationalIdCardBack: vm.CurrentNationalIdCardBack,
+                CurrentQualificationFile: vm.CurrentQualificationFile,
+                CurrentBirthCertificateFile: vm.CurrentBirthCertificateFile,
+                CurrentMilitaryFile: vm.CurrentMilitaryFile,
+                CurrentContractFile: vm.CurrentContractFile,
+                CurrentPoliceClearance: vm.CurrentPoliceClearance,
+                CurrentMarriageDocument: vm.CurrentMarriageDocument
             );
 
             var result = await _mediator.Send(command);

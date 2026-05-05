@@ -19,12 +19,13 @@ namespace HR.Application.Employees.DeleteEmployee
             var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (employee is null)
-            {
                 return Result.Failure(EmployeeErrors.NotFound);
-            }
-            _unitOfWork.EmployeeRepository.Delete(employee);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var result = employee.Delete(); // بيتحقق من IsActive جوا الـ Entity
+            if (!result.IsSuccess)
+                return result;
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken); // الـ Override هيعمل Soft Delete
 
             return Result.Success();
         }

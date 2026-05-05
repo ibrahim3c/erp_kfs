@@ -1,10 +1,13 @@
 ﻿using HR.Domain.Decisions;
+using HR.Domain.Employees.Events;
 using HR.Domain.Employees.Qualifications;
 using HR.Domain.Incentives;
 using HR.Domain.Loans;
 using HR.Domain.Permissions;
 using HR.Domain.Terminations;
 using Modules.Shared.Domain;
+using Modules.Shared.Domain.Events;
+
 
 namespace HR.Domain.Employees
 {
@@ -36,7 +39,6 @@ namespace HR.Domain.Employees
         public Guid? FunctionalGroupId { get; private set; }
 
         public Guid? UserId { get; private set; }
-
 
 
         public EmployeeFinancial FinancialInfo { get; private set; }
@@ -112,11 +114,9 @@ namespace HR.Domain.Employees
                     string email = null,
                     string address = null,
                     string maritalStatus = null,
-                    bool isDisabled = false,
+                    bool isDisabled=false,
                     Guid? cityCenterId = null,
                     Guid? villageId = null,
-                    //Guid? qualificationTypeId = null,
-                    //string specialization = null,
                     Guid? employmentTypeId = null,
                     Guid? jobTitleId = null,
                     Guid? jobGradeId = null,
@@ -162,8 +162,15 @@ namespace HR.Domain.Employees
             return Result<Employee>.Success(employee);
         }
         // --- Business Behaviors (Methods) ---
+        public Result Delete()
+        {
+            if (!IsActive)
+                return Result.Failure(EmployeeErrors.AlreadyInactive);
 
-        public Result UpdateMainDetails(string name, string code, DateTime hireDate, bool isActive)
+            IsActive = false;
+            return Result.Success();
+        }
+        public Result UpdateMainDetails(string name, string code, DateTime hireDate)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return Result.Failure(EmployeeErrors.NameEmpty);
@@ -177,7 +184,7 @@ namespace HR.Domain.Employees
             Name = name;
             Code = code;
             HireDate = hireDate;
-            IsActive = isActive;
+
 
             // Optional: If status changes to inactive, you might want to automatically set TerminationDate
             // if (!isActive && TerminationDate == null) TerminationDate = DateTime.UtcNow;
@@ -296,14 +303,14 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
 
-        public Result AddFinancialInformation(
-            decimal? basicSalary2019,
-            decimal? grossSalary,
-            string insuranceNumber,
-            string bankName,
-            string bankAccount,
-            bool hasFellowshipFund,
-            bool hasMedicalFund)
+    public Result AddFinancialInformation(
+        decimal? basicSalary2019,
+        decimal? grossSalary,
+        string insuranceNumber,
+        string bankName,
+        string bankAccount,
+        bool hasFellowshipFund,
+        bool hasMedicalFund)
         {
             var financialResult = EmployeeFinancial.Create(
                 Id, // نمرر الـ ID الخاص بالموظف الحالي
@@ -321,6 +328,28 @@ namespace HR.Domain.Employees
             FinancialInfo = financialResult.Value;
             return Result.Success();
         }
+        public Result UpdateFinancialInformation(
+                decimal? basicSalary2019,
+                decimal? grossSalary,
+                string? insuranceNumber,
+                string? bankName,
+                string? bankAccount,
+                bool hasFellowshipFund,
+                bool hasMedicalFund)
+        {
+            if (FinancialInfo is null)
+                return AddFinancialInformation(
+                    basicSalary2019, grossSalary,
+                    insuranceNumber, bankName, bankAccount,
+                    hasFellowshipFund, hasMedicalFund);
+
+            FinancialInfo.Update(
+                basicSalary2019, grossSalary,
+                insuranceNumber, bankName, bankAccount,
+                hasFellowshipFund, hasMedicalFund);
+
+            return Result.Success();
+        }
         // abdallah added here
         public Result AddEmployeeFile(EmployeeFile file)
         {
@@ -330,25 +359,33 @@ namespace HR.Domain.Employees
             _employeeFiles.Add(file);
             return Result.Success();
         }
-        public Result AssignLeadershipPosition(Guid positionId)
+        public Result AssignLeadershipPosition(Guid positionId, string? notes)
         {
             if (positionId == Guid.Empty)
                 return Result.Failure(new Error("Employee.InvalidPosition", "رقم المنصب غير صحيح."));
 
             LeadershipPositionId = positionId;
+
+            // To separate the modules 
+            // Raise domain event for leadership position assignment 
+            RaiseDomainEvent(new LeadershipPositionAssignedDomainEvent(
+                    EmployeeId: Id,
+                    LeadershipPositionId: LeadershipPositionId ?? Guid.Empty,
+                    AssignedAt: DateTime.UtcNow,
+                    Notes: notes));
+
             return Result.Success();
         }
 
-        public void RemoveLeadershipPosition()
+        public Result  RemoveLeadershipPosition()
         {
-            LeadershipPositionId = null;
+            RaiseDomainEvent(new LeadershipPositionRemovedDomainEvent(DateTime.UtcNow, Id));
+            return Result.Success();
         }
-
         public void LinkUserId(Guid userId)
         {
             UserId = userId;
         }
-
         // add employee qualification 
         public Result AddEmployeeQualification(Guid qualificationTypeId,
             string qualificationFullName,
@@ -368,6 +405,6 @@ namespace HR.Domain.Employees
             _employeeQualifications.Add(result.Value);
             return Result.Success();
         }
-
     }
+
 }

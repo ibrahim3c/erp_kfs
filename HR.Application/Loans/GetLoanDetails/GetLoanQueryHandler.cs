@@ -19,39 +19,63 @@ namespace HR.Application.Loans.GetLoanDetails
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task<Result<GetLoanDetailsQueryResponse>> Handle(GetLoanDetailsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetLoanDetailsQueryResponse>> Handle(
+     GetLoanDetailsQuery request,
+     CancellationToken cancellationToken)
         {
-            // Using Dapper
             using var connection = connectionFactory.CreateConnection();
-            var sql = """
-                SELECT 
-                    l."Id" AS LoanId,
-                    e."Name" AS EmployeeName,
-                    l."Amount" AS Amount,
-                    l."Months" AS Months,
-                    l."InstallmentAmount" AS InstallmentAmount,
-                    l."RemainingAmount" AS RemainingAmount,
-                    l."StartDate" AS StartDate,
-                    l."Reason" AS Reason,
-                    l."IsCompleted" AS IsCompleted,
-                    l."CreatedAt" AS CreatedAt
-                FROM 
-                    "HR"."Loans" l
-                INNER JOIN 
-                    "HR"."Employees" e ON l."EmployeeId" = e."Id"
-                WHERE 
-                    l."Id" = @LoanId;
-                """;
 
-            var loan = await connection.QueryFirstOrDefaultAsync<GetLoanDetailsQueryResponse>(
-                sql,
-                new { LoanId = request.LoanId }
-            );
+            const string loanSql = """
+                SELECT 
+                    l.Id,
+                    e.Name AS EmployeeName,
+                    l.Amount,
+                    l.Months,
+                    l.InstallmentAmount,
+                    l.RemainingAmount,
+                    l.StartDate,
+                    l.Reason,
+                    l.IsCompleted
+                FROM HR.Loans l
+                INNER JOIN HR.Employees e ON l.EmployeeId = e.Id
+                WHERE l.Id = @LoanId
+            """;
+
+            const string installmentsSql = """
+                SELECT 
+                    i.Id,
+                    ROW_NUMBER() OVER (ORDER BY i.DueDate) AS InstallmentNumber,
+                    i.Amount,
+                    i.DueDate,
+                    i.IsPaid,
+                    i.PaidAt
+                FROM HR.LoanInstallments i
+                WHERE i.LoanId = @LoanId
+                ORDER BY i.DueDate
+            """;
+
+            var loan = await connection.QueryFirstOrDefaultAsync<dynamic>(
+                loanSql, new { request.LoanId });
 
             if (loan == null)
                 return Result<GetLoanDetailsQueryResponse>.Failure(LoanErrors.NotFoundLoan);
-            
-            return Result<GetLoanDetailsQueryResponse>.Success(loan);
+
+            var installments = await connection.QueryAsync<LoanInstallmentResponse>(
+                installmentsSql, new { request.LoanId });
+
+            var response = new GetLoanDetailsQueryResponse(
+                Id: loan.Id,
+                EmployeeName: loan.EmployeeName,
+                StartDate: loan.StartDate,
+                Amount: loan.Amount,
+                Months: loan.Months,
+                InstallmentAmount: loan.InstallmentAmount,
+                RemainingAmount: loan.RemainingAmount,
+                Reason: loan.Reason,
+                IsCompleted: loan.IsCompleted,
+                Installments: installments.ToList());
+
+            return Result<GetLoanDetailsQueryResponse>.Success(response);
         }
     }
 }
