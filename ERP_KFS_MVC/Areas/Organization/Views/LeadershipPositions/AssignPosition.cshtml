@@ -113,13 +113,16 @@
                                            title="سجل المناصب">
                                             <i class="fas fa-history"></i> السجل
                                         </a>
-                                        <form asp-action="RemovePosition" method="post" style="display:inline;">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="employeeId" value="@item.EmployeeId" />
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من إعفاء هذا الموظف من منصبه؟')">
-                                                <i class="fas fa-user-minus"></i> إعفاء
-                                            </button>
-                                        </form>
+                                        @if (item.IsActive)
+                                        {
+                                            <form asp-action="RemovePosition" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="employeeId" value="@item.EmployeeId" />
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من إعفاء هذا الموظف من منصبه؟')">
+                                                    <i class="fas fa-user-minus"></i> إعفاء
+                                                </button>
+                                            </form>
+                                        }
                                     </td>
                                 </tr>
                                 index++;

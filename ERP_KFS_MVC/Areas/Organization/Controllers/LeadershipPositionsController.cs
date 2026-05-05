@@ -313,20 +313,36 @@ namespace ERP_KFS_MVC.Areas.Organization.Controllers
             ViewBag.Employees = allEmployees;
             ViewBag.Positions = formattedPositions;
 
-            // 3. تجهيز بيانات الجدول  
-            var assignedEmployees = allEmployees
-                .Where(e => e.LeadershipPositionId != null && e.LeadershipPositionId != Guid.Empty)
-                .Select(e => new
+            // 3. تجهيز بيانات الجدول
+            var assignedEmployeesList = new List<dynamic>();
+
+            foreach (var e in allEmployees.Where(emp => emp.LeadershipPositionId != null && emp.LeadershipPositionId != Guid.Empty))
+            {
+                var positionName = formattedPositions.FirstOrDefault(p => p.Id == e.LeadershipPositionId)?.Name;
+
+                // الفلتر الأهم: لو المنصب اتحذف أو مش موجود، تخطى الموظف
+                if (string.IsNullOrEmpty(positionName)) continue;
+
+                // جلب سجل المناصب للموظف لمعرفة هل المنصب الحالي انتهى أم لا
+                var historyResult = await _organizationService.GetLeadershipPositionHistoriesByEmployeeIdAsync(e.Id);
+
+                // المنصب نشط لو السجل مش موجود، أو موجود بس ملوش EndDate
+                bool isPositionActive = true;
+                if (historyResult.IsSuccess && historyResult.Value != null)
+                {
+                    isPositionActive = !historyResult.Value.EndDate.HasValue;
+                }
+
+                assignedEmployeesList.Add(new
                 {
                     EmployeeId = e.Id,
                     EmployeeName = e.Name,
-                    PositionName = formattedPositions.FirstOrDefault(p => p.Id == e.LeadershipPositionId)?.Name
-                })
-                // الفلتر الأهم: لو المنصب اتحذف أو مش موجود، شيل الموظف من الجدول فوراً
-                .Where(x => !string.IsNullOrEmpty(x.PositionName))
-                .ToList();
+                    PositionName = positionName,
+                    IsActive = isPositionActive // 👈 دي الخاصية الجديدة اللي هتحكم في الزرار
+                });
+            }
 
-            ViewBag.AssignedEmployees = assignedEmployees;
+            ViewBag.AssignedEmployees = assignedEmployeesList;
         }
     }
 }
