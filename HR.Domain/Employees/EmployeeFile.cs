@@ -129,6 +129,46 @@ namespace HR.Domain.Employees
         }
 
         // Helpers
+        public Result UpdateFiles(
+    string? personalPhoto,
+    string? nationalIdCardFront,
+    string? nationalIdCardBack,
+    string? qualificationFile,
+    string? birthCertificateFile,
+    string? militaryFile,
+    string? contractFile,
+    string? policeClearanceCertificate,
+    string? marriageDocument)
+        {
+            if (!string.IsNullOrWhiteSpace(personalPhoto))
+                PersonalPhoto = personalPhoto;
+
+            if (!string.IsNullOrWhiteSpace(nationalIdCardFront))
+                NationalIdCardFront = nationalIdCardFront;
+
+            if (!string.IsNullOrWhiteSpace(nationalIdCardBack))
+                NationalIdCardBack = nationalIdCardBack;
+
+            if (!string.IsNullOrWhiteSpace(qualificationFile))
+                QualificationFile = qualificationFile;
+
+            if (!string.IsNullOrWhiteSpace(birthCertificateFile))
+                BirthCertificateFile = birthCertificateFile;
+
+            if (!string.IsNullOrWhiteSpace(militaryFile))
+                MilitaryFile = militaryFile;
+
+            if (!string.IsNullOrWhiteSpace(contractFile))
+                ContractFile = contractFile;
+
+            if (!string.IsNullOrWhiteSpace(policeClearanceCertificate))
+                PoliceClearanceCertificate = policeClearanceCertificate;
+
+            if (!string.IsNullOrWhiteSpace(marriageDocument))
+                MarriageDocument = marriageDocument;
+
+            return Result.Success();
+        }
 
         private static bool AllFilesEmpty(
             string militaryFile,

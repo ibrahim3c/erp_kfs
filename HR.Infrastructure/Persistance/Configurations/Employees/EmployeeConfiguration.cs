@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Shared.Infrastructure.Database;
 
+
 namespace HR.Infrastructure.Persistance.Configurations.Employees
 {
     public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
@@ -43,6 +44,9 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
 
            builder.Property(e => e.LeadershipPositionId).IsRequired(false);
             builder.Property(e => e.UserId).IsRequired(false);
+
+
+
         }
     }
 }

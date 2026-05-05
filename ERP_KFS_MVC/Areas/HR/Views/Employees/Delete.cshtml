@@ -1,7 +1,7 @@
 ﻿@model HR.Application.Employees.GetEmployeeForDelete.GetEmployeeForDeleteResponse
 
 @{
-    ViewData["Title"] = "حذف موظف";
+    ViewData["Title"] = "إيقاف موظف";
 }
 
 <link rel="stylesheet" href="~/css/global/hr-custom.css" asp-append-version="true">
@@ -9,11 +9,11 @@
 <div class="hr-page-container animate__animated animate__fadeIn">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h5 font-weight-bold text-dark mb-1">حذف موظف</h1>
+            <h1 class="h5 font-weight-bold text-dark mb-1">إيقاف موظف</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent p-0 small mb-0">
                     <li class="breadcrumb-item"><a asp-action="Index">سجل الموظفين</a></li>
-                    <li class="breadcrumb-item active">حذف</li>
+                    <li class="breadcrumb-item active">إيقاف</li>
                 </ol>
             </nav>
         </div>
@@ -26,15 +26,16 @@
                 <div class="rounded-circle bg-danger bg-opacity-10 d-inline-flex
                     align-items-center justify-content-center"
                      style="width:80px; height:80px;">
-                    <i class="fas fa-exclamation-triangle text-danger"
+                    <i class="fas fa-user-slash text-white"
                        style="font-size: 2rem;"></i>
                 </div>
             </div>
 
-            <h4 class="font-weight-bold text-dark mb-2">تأكيد الحذف</h4>
+            <h4 class="font-weight-bold text-dark mb-2">تأكيد إيقاف الموظف</h4>
             <p class="text-muted mb-4">
-                هل أنت متأكد من حذف ملف الموظف التالي؟
-                هذا الإجراء <strong class="text-danger">لا يمكن التراجع عنه</strong>.
+                هل أنت متأكد من إيقاف تشغيل ملف الموظف التالي؟
+                سيتم تغيير حالته إلى <strong class="text-danger">غير نشط</strong>
+                ويمكن إعادة تفعيله لاحقاً.
             </p>
 
             <div class="hr-card bg-light border-0 p-4 mb-4 text-start">
@@ -65,7 +66,7 @@
                     </a>
                     <button type="submit" class="hr-btn px-4"
                             style="background-color: var(--bs-danger); color: #fff; border: none;">
-                        <i class="fas fa-trash"></i> نعم، احذف الملف
+                        <i class="fas fa-user-slash"></i> نعم، إيقاف الموظف
                     </button>
                 </div>
             </form>

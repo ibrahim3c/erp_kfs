@@ -19,39 +19,54 @@ namespace HR.Application.Employees.GetEmployeeForEdit
             using var connection = _sqlConnectionFactory.CreateConnection();
 
             const string sql = """
-                    SELECT
-                        e.Id,
-                        e.Code,
-                        e.Name,
-                        e.Phone,
-                        e.Email,
-                        e.NationalId,
-                        e.Gender,
-                        e.Address,
-                        e.MaritalStatus,
-                        e.IsActive,
-                        e.IsDisabled,
-                        e.HireDate,
-                        e.DateOfBirth,
-                        e.JobGradeDate,
-                        e.OrgUnitId,
-                        e.JobGradeId,
-                        e.EmploymentTypeId,
-                        e.FunctionalGroupId,
-                        e.JobTitleName,
-                        e.QualificationName,
+                SELECT
+                    e.Id,
+                    e.Code,
+                    e.Name,
+                    e.Phone,
+                    e.Email,
+                    e.NationalId,
+                    e.Gender,
+                    e.Address,
+                    e.MaritalStatus,
+                    e.IsActive,
+                    e.IsDisabled,
+                    e.HireDate,
+                    e.DateOfBirth,
+                    e.OrgUnitId,
+                    e.JobTitleId,
+                    e.JobGradeId,
+                    e.EmploymentTypeId,
+                    e.FunctionalGroupId,
 
-                        ef.GrossSalary,
-                        ef.BasicSalary2019,
-                        ef.InsuranceNumber,
-                        ef.BankName,
-                        ef.BankAccount      AS BankAccountNumber,
-                        ef.HasFellowshipFund,
-                        ef.HasMedicalFund
+                    jt.Name  AS JobTitleName,
+                    qt.Name  AS QualificationTypeName,
 
-                    FROM HR.Employees e
-                    LEFT JOIN HR.EmployeeFinancials ef ON ef.EmployeeId = e.Id
-                    WHERE e.Id = @EmployeeId
+                    ef.GrossSalary,
+                    ef.BasicSalary2019,
+                    ef.InsuranceNumber,
+                    ef.BankName,
+                    ef.BankAccount      AS BankAccountNumber,
+                    ef.HasFellowshipFund,
+                    ef.HasMedicalFund,
+
+                efl.PersonalPhoto,
+                efl.NationalIdCardFront,
+                efl.NationalIdCardBack,
+                efl.QualificationFile,
+                efl.BirthCertificateFile,
+                efl.MilitaryFile,
+                efl.ContractFile,
+                efl.PoliceClearanceCertificate,
+                efl.MarriageDocument
+
+                FROM HR.Employees e
+                LEFT JOIN Organization.JobTitles        jt  ON jt.Id = e.JobTitleId
+                LEFT JOIN HR.EmployeeFinancials         ef  ON ef.EmployeeId = e.Id
+                LEFT JOIN HR.EmployeeQualifications     eq  ON eq.EmployeeId = e.Id
+                LEFT JOIN HR.QualificationTypes         qt  ON qt.Id = eq.QualificationTypeId
+                LEFT JOIN HR.EmployeeFiles              efl ON efl.EmployeeId = e.Id
+                WHERE e.Id = @EmployeeId
                 """;
 
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeForEditResponse>(sql, new { request.EmployeeId });

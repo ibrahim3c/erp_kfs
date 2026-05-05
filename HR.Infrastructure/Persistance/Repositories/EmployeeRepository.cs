@@ -11,23 +11,24 @@ namespace HR.Infrastructure.Persistance.Repositories
         {
             _dbContext = dbContext;
         }
-
         public async Task<Employee> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            // ملاحظة: لو كنت تستخدم Guid بدلاً من int لـ Id، قم بتعديل int إلى Guid هنا وفي الـ Interface
             return await _dbContext.Employees
                 .Include(e => e.EmployeeFamilies)
                 .Include(e => e.EmployeeQualifications)
                 .Include(e => e.EmployeeDecisions)
-                // .Include(e => e.LeadershipHistory)
-                .FirstOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
+                .Include(e => e.EmployeeFiles)
+                .Include(e => e.FinancialInfo)
+                .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
-
         public async Task<Employee> GetByNationalIdAsync(string nationalId, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Employees
                 .Include(e => e.EmployeeFamilies)
                 .Include(e => e.EmployeeQualifications)
+                .Include(e => e.EmployeeDecisions)
+                .Include(e => e.EmployeeFiles)
+                .Include(e => e.FinancialInfo)
                 .FirstOrDefaultAsync(e => e.NationalId == nationalId, cancellationToken);
         }
 
