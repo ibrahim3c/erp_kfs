@@ -23,15 +23,17 @@ namespace HR.Application.Employees.GetAllEmployees
                     e.Code,
                     e.Name,
                     e.IsActive,
+                    e.LeadershipPositionId,
                     jt.Name  AS JobTitleName,
                     jg.Name  AS JobGradeName,
                     ou.Name  AS OrgUnitName
                 FROM HR.Employees e
-                LEFT JOIN Organization.JobTitles    jt ON jt.Id = e.JobTitleId
-                LEFT JOIN Organization.JobGrades    jg ON jg.Id = e.JobGradeId
-                LEFT JOIN Organization.OrgUnits     ou ON ou.Id = e.OrgUnitId
+                LEFT JOIN Organization.JobTitles       jt ON jt.Id = e.JobTitleId
+                LEFT JOIN Organization.JobGrades       jg ON jg.Id = e.JobGradeId
+                LEFT JOIN Organization.OrgUnits        ou ON ou.Id = e.OrgUnitId
+                WHERE e.IsActive = 1
                 ORDER BY e.Code
-            """;
+                """;
 
             var response = await connection.QueryAsync<EmployeeListResponse>(sql);
 

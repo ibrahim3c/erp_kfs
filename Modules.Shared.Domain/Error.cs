@@ -6,4 +6,5 @@ public record Error(string Code, string Name)
 
     public static Error NullValue = new("Error.NullValue", "Null value was provided");
     public static Error EmptyId(string entity) => new("Error.EmptyId", $"{entity}Id cannot be empty.");
+    public static Error Conflict(string code, string message) => new(code, message);
 }

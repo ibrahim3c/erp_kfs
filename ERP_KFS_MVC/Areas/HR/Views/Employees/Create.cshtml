@@ -1,4 +1,4 @@
-@model ERP_KFS_MVC.Areas.HR.ViewModels.CreateEmployeeViewModel
+@model ERP_KFS_MVC.Areas.HR.ViewModels.CreateFullEmployeeViewModel
 
 @{
     ViewData["Title"] = "إضافة موظف جديد";
@@ -212,12 +212,6 @@
                                 <span asp-validation-for="HireDate" class="text-danger small"></span>
                             </div>
 
-                            <div class="col-md-6 hr-form-group">
-                                <label asp-for="JobGradeDate" class="hr-form-label">تاريخ الحصول على الدرجة</label>
-                                <input asp-for="JobGradeDate" type="date" class="form-control hr-form-control" />
-                                <small class="text-muted">هام جداً لاحتساب أقدمية الترقية</small>
-                                <span asp-validation-for="JobGradeDate" class="text-danger small"></span>
-                            </div>
                         </div>
                     </div>
 
@@ -476,7 +470,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.tab-pane').forEach(pane => {
                 const hasError = pane.querySelector('.is-invalid') ||
-                                 pane.querySelector('.text-danger:not(:empty)');
+                    pane.querySelector('.text-danger:not(:empty)');
                 if (hasError) {
                     const tabLink = document.getElementById('tab-' + pane.id);
                     if (tabLink) {

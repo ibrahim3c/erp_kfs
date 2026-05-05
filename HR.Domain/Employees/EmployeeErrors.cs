@@ -12,6 +12,15 @@ namespace HR.Domain.Employees
             "Employee.CodeEmpty",
             "كود الموظف مطلوب ولا يمكن أن يكون فارغاً");
 
+        public static readonly Error AlreadyDeleted
+            = new Error(
+                "Employee.AlreadyDeleted",
+                "الموظف محذوف مسبقاً");
+
+        public static readonly Error IsActive = new Error(
+            "Employee.IsActive",
+            "الموظف نشط بالفعل");
+
         public static readonly Error NameEmpty = new Error(
             "Employee.NameEmpty",
             "اسم الموظف مطلوب ولا يمكن أن يكون فارغاً");

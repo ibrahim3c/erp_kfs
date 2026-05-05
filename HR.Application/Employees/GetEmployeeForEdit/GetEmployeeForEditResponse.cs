@@ -24,8 +24,9 @@
         public Guid? EmploymentTypeId { get; init; }
         public Guid? FunctionalGroupId { get; init; }
 
+        public Guid? JobTitleId { get; init; }         // أضفه عشان الـ dropdown
         public string? JobTitleName { get; init; }
-        public string? QualificationName { get; init; }
+        public string? QualificationTypeName { get; init; }
 
         // Financial
         public decimal? GrossSalary { get; init; }
@@ -35,5 +36,14 @@
         public string? BankAccountNumber { get; init; }
         public bool HasFellowshipFund { get; init; }
         public bool HasMedicalFund { get; init; }
+        public string? PersonalPhoto { get; init; }
+        public string? NationalIdCardFront { get; init; }
+        public string? NationalIdCardBack { get; init; }
+        public string? QualificationFile { get; init; }
+        public string? BirthCertificateFile { get; init; }
+        public string? MilitaryFile { get; init; }
+        public string? ContractFile { get; init; }
+        public string? PoliceClearanceCertificate { get; init; }
+        public string? MarriageDocument { get; init; }
     }
 }

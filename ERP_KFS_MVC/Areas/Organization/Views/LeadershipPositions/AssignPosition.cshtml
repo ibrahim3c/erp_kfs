@@ -16,6 +16,25 @@
 
 <section class="content">
     <div class="container-fluid">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mx-3" role="alert">
+                <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        }
 
         <div class="card card-outline card-primary mb-4">
             <div class="card-header">
@@ -41,6 +60,16 @@
                                     <option value="">-- ابحث واختر المنصب --</option>
                                 </select>
                                 <span asp-validation-for="LeadershipPositionId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-4">
+                                <label asp-for="Notes" class="form-label">ملاحظات</label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"
+                                          placeholder="أدخل أي ملاحظات تخص هذا التعيين (اختياري)"></textarea>
                             </div>
                         </div>
                     </div>
@@ -77,6 +106,13 @@
                                     <td>@item.EmployeeName</td>
                                     <td><span class="badge badge-success">@item.PositionName</span></td>
                                     <td class="text-center">
+                                        <a asp-action="PositionHistory"
+                                           asp-route-employeeId="@item.EmployeeId"
+                                           asp-route-employeeName="@item.EmployeeName"
+                                           class="btn btn-sm btn-info me-1"
+                                           title="سجل المناصب">
+                                            <i class="fas fa-history"></i> السجل
+                                        </a>
                                         <form asp-action="RemovePosition" method="post" style="display:inline;">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="employeeId" value="@item.EmployeeId" />

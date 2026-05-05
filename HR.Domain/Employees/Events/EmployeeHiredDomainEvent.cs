@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CollegeControlSystem.Domain.Abstractions;
+
 
 namespace HR.Domain.Employees.Events
 {
-    internal class EmployeeHiredDomainEvent
-    {
-    }
+    public sealed record EmployeeHiredDomainEvent(
+     Guid EmployeeId,
+     DateTime HiredAt) : IDomainEvent;
 }

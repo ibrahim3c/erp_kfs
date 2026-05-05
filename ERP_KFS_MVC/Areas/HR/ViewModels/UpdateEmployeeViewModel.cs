@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace ERP_KFS_MVC.Areas.HR.ViewModels
 {
@@ -20,6 +21,7 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         public string? MaritalStatus { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public string? Email { get; set; }
         public bool IsActive { get; set; }
         public bool IsDisabled { get; set; }
 
@@ -28,11 +30,12 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         public DateTime? JobGradeDate { get; set; }
 
         public Guid? OrgUnitId { get; set; }
+        public Guid? JobTitleId { get; set; }
         public Guid? JobGradeId { get; set; }
         public Guid? EmploymentTypeId { get; set; }
+        public Guid? FunctionalGroupId { get; set; }
 
-        [Required(ErrorMessage = "المسمى الوظيفي مطلوب")]
-        public string JobTitleName { get; set; } = string.Empty;
+        public string? JobTitleName { get; set; }
         public string? QualificationName { get; set; }
 
         public decimal? GrossSalary { get; set; }
@@ -42,5 +45,27 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         public string? BankAccountNumber { get; set; }
         public bool HasFellowshipFund { get; set; }
         public bool HasMedicalFund { get; set; }
+
+        // الملفات الحالية (للعرض)
+        public string? CurrentPersonalPhoto { get; set; }
+        public string? CurrentNationalIdCardFront { get; set; }
+        public string? CurrentNationalIdCardBack { get; set; }
+        public string? CurrentQualificationFile { get; set; }
+        public string? CurrentBirthCertificateFile { get; set; }
+        public string? CurrentMilitaryFile { get; set; }
+        public string? CurrentContractFile { get; set; }
+        public string? CurrentPoliceClearance { get; set; }
+        public string? CurrentMarriageDocument { get; set; }
+
+        // الملفات الجديدة (للرفع)
+        public IFormFile? ProfileImage { get; set; }
+        public IFormFile? NationalIdCardFront { get; set; }
+        public IFormFile? NationalIdCardBack { get; set; }
+        public IFormFile? QualificationFile { get; set; }
+        public IFormFile? BirthCertificate { get; set; }
+        public IFormFile? MilitaryFile { get; set; }
+        public IFormFile? ContractFile { get; set; }
+        public IFormFile? PoliceClearance { get; set; }
+        public IFormFile? MarriageDocument { get; set; }
     }
 }

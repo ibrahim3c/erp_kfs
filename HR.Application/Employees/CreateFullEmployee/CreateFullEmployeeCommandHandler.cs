@@ -1,21 +1,22 @@
-using HR.Domain;
+﻿using HR.Domain;
 using HR.Domain.Employees;
 using Modules.Shared.Application.Interfaces;
 using Modules.Shared.Application.IService;
 using Modules.Shared.Application.Messaging;
 using Modules.Shared.Domain;
 
-namespace HR.Application.Employees.CreateEmployee
+
+namespace HR.Application.Employees.CreateFullEmployee
 {
 
-    public sealed class CreateEmployeeCommandHandler
-        : ICommandHandler<CreateEmployeeCommand, Guid>
+    public sealed class CreateFullEmployeeCommandHandler
+        : ICommandHandler<CreateFullEmployeeCommand, Guid>
     {
         private readonly IHRUnitOfWork _unitOfWork;
         private readonly IFileService _fileService;
         private readonly IIdentityService _identityService;
 
-        public CreateEmployeeCommandHandler(
+        public CreateFullEmployeeCommandHandler(
             IHRUnitOfWork unitOfWork,
             IFileService fileService,
             IIdentityService identityService)
@@ -26,7 +27,7 @@ namespace HR.Application.Employees.CreateEmployee
         }
 
         public async Task<Result<Guid>> Handle(
-            CreateEmployeeCommand request,
+            CreateFullEmployeeCommand request,
             CancellationToken cancellationToken)
         {
             // 1. التحقق من تكرار الرقم القومي
@@ -76,73 +77,73 @@ namespace HR.Application.Employees.CreateEmployee
             string? policeClearancePath = null;
             string? marriageDocumentPath = null;
 
-            if (request.ProfileImage != null)
+            if (request.ProfileImagePath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.ProfileImage, "employees/profiles");
+                var uploadResult = await _fileService.UploadFileAsync(request.ProfileImagePath, "employees/profiles");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 profileImagePath = uploadResult.Value;
             }
 
-            if (request.NationalIdCardFront != null)
+            if (request.NationalIdCardFrontPath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.NationalIdCardFront, "employees/national-ids-front");
+                var uploadResult = await _fileService.UploadFileAsync(request.NationalIdCardFrontPath, "employees/national-ids-front");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 nationalIdCardFrontPath = uploadResult.Value;
             }
 
-            if (request.NationalIdCardBack != null)
+            if (request.NationalIdCardBackPath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.NationalIdCardBack, "employees/national-ids-back");
+                var uploadResult = await _fileService.UploadFileAsync(request.NationalIdCardBackPath, "employees/national-ids-back");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 nationalIdCardBackPath = uploadResult.Value;
             }
 
-            if (request.QualificationFile != null)
+            if (request.QualificationFilePath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.QualificationFile, "employees/qualifications");
+                var uploadResult = await _fileService.UploadFileAsync(request.QualificationFilePath, "employees/qualifications");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 qualificationFilePath = uploadResult.Value;
             }
 
-            if (request.BirthCertificate != null)
+            if (request.BirthCertificatePath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.BirthCertificate, "employees/birth-certificates");
+                var uploadResult = await _fileService.UploadFileAsync(request.BirthCertificatePath, "employees/birth-certificates");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 birthCertificatePath = uploadResult.Value;
             }
 
-            if (request.MilitaryFile != null)
+            if (request.MilitaryFilePath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.MilitaryFile, "employees/military");
+                var uploadResult = await _fileService.UploadFileAsync(request.MilitaryFilePath, "employees/military");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 militaryFilePath = uploadResult.Value;
             }
 
-            if (request.ContractFile != null)
+            if (request.ContractFilePath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.ContractFile, "employees/contracts");
+                var uploadResult = await _fileService.UploadFileAsync(request.ContractFilePath, "employees/contracts");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 contractFilePath = uploadResult.Value;
             }
 
-            if (request.PoliceClearance != null)
+            if (request.PoliceClearancePath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.PoliceClearance, "employees/police-clearance");
+                var uploadResult = await _fileService.UploadFileAsync(request.PoliceClearancePath, "employees/police-clearance");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 policeClearancePath = uploadResult.Value;
             }
 
-            if (request.MarriageDocument != null)
+            if (request.MarriageDocumentPath != null)
             {
-                var uploadResult = await _fileService.UploadFileAsync(request.MarriageDocument, "employees/marriage");
+                var uploadResult = await _fileService.UploadFileAsync(request.MarriageDocumentPath, "employees/marriage");
                 if (uploadResult.IsFailure)
                     return Result<Guid>.Failure(uploadResult.Error);
                 marriageDocumentPath = uploadResult.Value;

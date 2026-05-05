@@ -16,6 +16,7 @@
         public DateTime HireDate { get; init; }
         public DateTime? DateOfBirth { get; init; }
 
+
         // Job
         public string? JobTitleName { get; init; }
         public string? JobGradeName { get; init; }
@@ -31,14 +32,26 @@
         public string? BankAccount { get; init; }
         public bool HasFellowshipFund { get; init; }
         public bool HasMedicalFund { get; init; }
+        // Qualification
+        public string? QualificationFullName { get; init; }
+        public string? QualificationTypeName { get; init; }
+        public string? Specialization { get; init; }
+        public string? University { get; init; }
+        public int? GraduationYear { get; init; }
+        public string? Grade { get; init; }
+        public DateTime? QualificationValidFrom { get; init; }
+        public DateTime? QualificationValidTo { get; init; }
+        public string? QualificationNotes { get; init; }
 
         // Files
         public string? PersonalPhoto { get; init; }
         public string? NationalIdCardFront { get; init; }
+        public string? NationalIdCardBack { get; init; }
         public string? QualificationFile { get; init; }
         public string? BirthCertificateFile { get; init; }
         public string? MilitaryFile { get; init; }
         public string? ContractFile { get; init; }
         public string? PoliceClearanceCertificate { get; init; }
+        public string? MarriageDocument { get; init; }
     }
 }
