@@ -49,16 +49,6 @@
         public string? BankAccount { get; init; }
         public bool HasFellowshipFund { get; init; }
         public bool HasMedicalFund { get; init; }
-        // Qualification
-        public string? QualificationFullName { get; init; }
-        public string? QualificationTypeName { get; init; }
-        public string? Specialization { get; init; }
-        public string? University { get; init; }
-        public int? GraduationYear { get; init; }
-        public string? Grade { get; init; }
-        public DateTime? QualificationValidFrom { get; init; }
-        public DateTime? QualificationValidTo { get; init; }
-        public string? QualificationNotes { get; init; }
 
         // Files
         public string? PersonalPhoto { get; init; }

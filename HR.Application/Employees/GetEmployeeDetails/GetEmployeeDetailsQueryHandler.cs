@@ -21,40 +21,34 @@ namespace HR.Application.Employees.GetEmployeeDetails
 
             // Note: Adjust the table name ("Employees") and column names if they differ in your actual database schema
             const string sql = """
-        SELECT
-            e.Id,
-            e.Code,
-            e.IsActive,
-            e.IsDisabled,
-            e.HireDate,
-            e.DateOfBirth,
+                    SELECT
+                        e.Id,
+                        e.Code,
+                        e.Name,
+                        e.Phone,
+                        e.Email,
+                        e.NationalId,
+                        e.Gender,
+                        e.Address,
+                        e.MaritalStatus,
+                        e.IsActive,
+                        e.IsDisabled,
+                        e.HireDate,
+                        e.DateOfBirth,
 
-            jt.Name AS JobTitleName,
-            jg.Name AS JobGradeName,
-            et.Name AS EmploymentTypeName,
-            ou.Name AS OrgUnitName,
-            fg.Name AS FunctionalGroupName,
+                        jt.Name  AS JobTitleName,
+                        jg.Name  AS JobGradeName,
+                        et.Name  AS EmploymentTypeName,
+                        ou.Name  AS OrgUnitName,
+                        fg.Name  AS FunctionalGroupName,
 
-            qt.Id AS QualificationTypeId,
-            qt.Name AS QualificationTypeName,
-
-            eq.QualificationFullName,
-            eq.Specialization AS QualificationSpecialization,
-            eq.University AS QualificationUniversity,
-            eq.GraduationYear AS QualificationGraduationYear,
-            eq.Grade AS QualificationGrade,
-            eq.IsVerified AS QualificationIsVerified,
-            eq.ValidFrom AS QualificationValidFrom,
-            eq.ValidTo AS QualificationValidTo,
-            eq.Notes AS QualificationNotes,
-
-            ef.GrossSalary,
-            ef.BasicSalary2019,
-            ef.InsuranceNumber,
-            ef.BankName,
-            ef.BankAccount,
-            ef.HasFellowshipFund,
-            ef.HasMedicalFund,
+                        ef.GrossSalary,
+                        ef.BasicSalary2019,
+                        ef.InsuranceNumber,
+                        ef.BankName,
+                        ef.BankAccount,
+                        ef.HasFellowshipFund,
+                        ef.HasMedicalFund,
 
                         efl.PersonalPhoto,
                         efl.NationalIdCardFront,
@@ -88,6 +82,8 @@ namespace HR.Application.Employees.GetEmployeeDetails
                     LEFT JOIN HR.QualificationTypes         qt  ON qt.Id = eq.QualificationTypeId
                     WHERE e.Id = @EmployeeId
                     """;
+
+
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeDetailsResponse>(sql, new { request.EmployeeId });
 
             if (response is null)

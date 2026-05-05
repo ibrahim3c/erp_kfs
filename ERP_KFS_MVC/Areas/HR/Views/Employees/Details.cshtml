@@ -248,59 +248,6 @@
                     </div>
                 </div>
 
-                <!-- 3. المؤهل الدراسي -->
-                <div class="tab-pane fade" id="d-qualification" role="tabpanel">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="hr-form-label text-muted small">نوع المؤهل</label>
-                            <p class="fw-bold mb-0">@(Model.QualificationTypeName ?? "—")</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="hr-form-label text-muted small">اسم المؤهل</label>
-                            <p class="fw-bold mb-0">@(Model.QualificationFullName ?? "—")</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="hr-form-label text-muted small">التخصص</label>
-                            <p class="fw-bold mb-0">@(Model.Specialization ?? "—")</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="hr-form-label text-muted small">الجامعة / المعهد</label>
-                            <p class="fw-bold mb-0">@(Model.University ?? "—")</p>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="hr-form-label text-muted small">سنة التخرج</label>
-                            <p class="fw-bold mb-0">@(Model.GraduationYear?.ToString() ?? "—")</p>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="hr-form-label text-muted small">التقدير</label>
-                            <p class="fw-bold mb-0">@(Model.Grade ?? "—")</p>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="hr-form-label text-muted small">صالح من</label>
-                            <p class="fw-bold mb-0">
-                                @(Model.QualificationValidFrom.HasValue
-                                    ? Model.QualificationValidFrom.Value.ToString("yyyy/MM/dd")
-                                    : "—")
-                            </p>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="hr-form-label text-muted small">صالح إلى</label>
-                            <p class="fw-bold mb-0">
-                                @(Model.QualificationValidTo.HasValue
-                                    ? Model.QualificationValidTo.Value.ToString("yyyy/MM/dd")
-                                    : "—")
-                            </p>
-                        </div>
-                        @if (!string.IsNullOrEmpty(Model.QualificationNotes))
-                        {
-                            <div class="col-12">
-                                <label class="hr-form-label text-muted small">ملاحظات</label>
-                                <p class="fw-bold mb-0">@Model.QualificationNotes</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-
                 <!-- 4. مسوغات التعيين (تم تعديلها لعرض الصور) -->
                 <div class="tab-pane fade" id="d-files" role="tabpanel">
                     <div class="row g-4">
