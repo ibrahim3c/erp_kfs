@@ -23,6 +23,7 @@ namespace HR.Application.Employees.UpdateEmployee
      Guid? FunctionalGroupId,
      decimal? GrossSalary,
      decimal? BasicSalary2019,
+     decimal? Incentives,
      string? InsuranceNumber,
      string? BankName,
      string? BankAccountNumber,

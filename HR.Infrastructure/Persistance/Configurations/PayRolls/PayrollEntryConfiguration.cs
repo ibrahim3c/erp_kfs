@@ -45,11 +45,12 @@ namespace HR.Infrastructure.Persistance.Configurations.PayRolls
             builder.HasMany(e => e.Adjustments)
                 .WithOne(a => a.Entry)
                 .HasForeignKey(a => a.EntryId)
-                .OnDelete(DeleteBehavior.Cascade); // عند حذف مفردات الراتب، تُحذف تسوياته
+                .OnDelete(DeleteBehavior.Cascade);
 
             // إخبار EF Core باستخدام الحقل الخاص
-            builder.Metadata.FindNavigation(nameof(PayrollEntry.Adjustments))
-                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(e => e.Adjustments)
+                .HasField("_adjustments")
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

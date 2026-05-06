@@ -39,6 +39,7 @@ namespace HR.Application.Employees.CreateFullEmployee
         // 4. Financial Information
         decimal? BasicSalary2019,
         decimal? GrossSalary,
+        decimal? Incentives,
         string InsuranceNumber,
         string BankName,
         string BankAccountNumber,

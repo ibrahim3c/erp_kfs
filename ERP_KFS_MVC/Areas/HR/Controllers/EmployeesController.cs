@@ -199,6 +199,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 // 4. Financial Information
                 BasicSalary2019: vm.BasicSalary2019,
                 GrossSalary: vm.GrossSalary,
+                Incentives: vm.Incentives,
                 InsuranceNumber: vm.InsuranceNumber,
                 BankName: vm.BankName,
                 BankAccountNumber: vm.BankAccountNumber,
@@ -328,6 +329,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
                 FunctionalGroupId: vm.FunctionalGroupId,
                 GrossSalary: vm.GrossSalary,
                 BasicSalary2019: vm.BasicSalary2019,
+                Incentives: vm.Incentives,
                 InsuranceNumber: vm.InsuranceNumber,
                 BankName: vm.BankName,
                 BankAccountNumber: vm.BankAccountNumber,

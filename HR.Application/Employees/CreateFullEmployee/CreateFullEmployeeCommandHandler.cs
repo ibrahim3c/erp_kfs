@@ -184,6 +184,7 @@ namespace HR.Application.Employees.CreateFullEmployee
             bool hasFinancialData =
                 request.GrossSalary.HasValue ||
                 request.BasicSalary2019.HasValue ||
+                request.Incentives.HasValue ||
                 !string.IsNullOrWhiteSpace(request.InsuranceNumber) ||
                 !string.IsNullOrWhiteSpace(request.BankName) ||
                 !string.IsNullOrWhiteSpace(request.BankAccountNumber);
@@ -197,7 +198,8 @@ namespace HR.Application.Employees.CreateFullEmployee
                     bankName: request.BankName,
                     bankAccount: request.BankAccountNumber,
                     hasFellowshipFund: request.HasFellowshipFund,
-                    hasMedicalFund: request.HasMedicalFund);
+                    hasMedicalFund: request.HasMedicalFund,
+                    incentives: request.Incentives);
 
                 if (financialResult.IsFailure)
                     return Result<Guid>.Failure(financialResult.Error);

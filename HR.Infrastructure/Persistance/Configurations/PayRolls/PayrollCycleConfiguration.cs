@@ -32,11 +32,13 @@ namespace HR.Infrastructure.Persistance.Configurations.PayRolls
                 .HasForeignKey(e => e.CycleId)
                 .OnDelete(DeleteBehavior.Cascade); // عند حذف شهر الرواتب (مثلاً كمسودة)، تُحذف كل مفردات رواتب الموظفين لهذا الشهر
 
-            builder.HasOne(c => c.EmploymentType)
-                .WithMany(e => e.PayrollCycles) 
-                .HasForeignKey(c => c.EmploymentTypeId)
-                .OnDelete(DeleteBehavior.Restrict); // لا نريد حذف نوع التوظيف إذا تم حذف شهر الرواتب
-           
+            builder.Property(x => x.EmploymentTypeId).IsRequired(false);
+            builder.HasOne(x => x.EmploymentType)
+                   .WithMany()
+                   .HasForeignKey(x => x.EmploymentTypeId)
+                   .IsRequired(false)
+                   .OnDelete(DeleteBehavior.SetNull);
+
             //// إخبار EF Core باستخدام الحقل الخاص (Private Field) لتعبئة القائمة
             //builder.Metadata.FindNavigation(nameof(PayrollCycle.Entries))
             //    ?.SetPropertyAccessMode(PropertyAccessMode.Field);

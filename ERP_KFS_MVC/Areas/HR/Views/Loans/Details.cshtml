@@ -81,7 +81,7 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="fas fa-calendar-alt me-1"></i> جدول الأقساط
-                    @* <span class="badge bg-info ms-1">@Model.Installments.Count قسط</span> *@
+                  <span class="badge bg-info ms-1">@Model.Installments.Count قسط</span> 
                 </h3>
             </div>
             <div class="card-body table-responsive p-0">
@@ -96,7 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @* @foreach (var inst in Model.Installments)
+                        @foreach (var inst in Model.Installments)
                         {
                             <tr class="@(inst.IsPaid ? "table-success" : "")">
                                 <td>@inst.InstallmentNumber</td>
@@ -118,7 +118,7 @@
                                 </td>
                                 <td>@(inst.PaidAt.HasValue ? inst.PaidAt.Value.ToString("dd/MM/yyyy") : "—")</td>
                             </tr>
-                        } *@
+                        }
                     </tbody>
                 </table>
             </div>

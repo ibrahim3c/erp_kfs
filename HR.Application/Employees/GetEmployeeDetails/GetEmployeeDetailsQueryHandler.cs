@@ -44,6 +44,7 @@ namespace HR.Application.Employees.GetEmployeeDetails
 
                         ef.GrossSalary,
                         ef.BasicSalary2019,
+                        ef.Incentives,
                         ef.InsuranceNumber,
                         ef.BankName,
                         ef.BankAccount,

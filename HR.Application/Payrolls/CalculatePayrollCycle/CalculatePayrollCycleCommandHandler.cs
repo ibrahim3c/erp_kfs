@@ -25,9 +25,18 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
         }
 
         public async Task<Result<Guid>> Handle(
-            CalculatePayrollCycleCommand request,
-            CancellationToken cancellationToken)
+      CalculatePayrollCycleCommand request,
+      CancellationToken cancellationToken)
         {
+            //  تحقق إن مسير لنفس الشهر مش موجود
+            var existingCycle = await _unitOfWork.PayrollRepository
+                .GetCycleByMonthYearAsync(request.Month, request.Year, cancellationToken);
+
+            if (existingCycle is not null)
+                return Result<Guid>.Failure(
+                    new Error("Payroll.AlreadyExists",
+                              $"يوجد مسير محسوب بالفعل لشهر {request.Month}/{request.Year}"));
+
             // 1. إنشاء الدورة
             var cycleResult = PayrollCycle.Create(
                 request.Month, request.Year, request.EmploymentTypeId);
@@ -37,9 +46,9 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
 
             var cycle = cycleResult.Value;
 
-            // 1. حساب الرواتب
+            // 2. حساب الرواتب
             var entries = await _calculationService.CalculateAsync(
-                request.Month, 
+                request.Month,
                 request.Year,
                 request.EmploymentTypeId,
                 cycle!.Id,
@@ -50,21 +59,21 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
 
             cycle.MarkAsCalculated();
 
-            // 2. خصم أقساط السلف فعلياً
+            // 3. خصم أقساط السلف فعلياً
             var activeLoans = await _unitOfWork.LoanRepository
                 .GetActiveLoansByMonthAsync(request.Month, request.Year, cancellationToken);
 
             foreach (var loan in activeLoans)
                 loan.PayNextInstallment(new DateTime(request.Year, request.Month, 1));
 
-            // 3. خصم أقساط شراء المدد فعلياً
+            // 4. خصم أقساط شراء المدد فعلياً
             var activePurchases = await _unitOfWork.InsurancePurchaseRepository
                 .GetApprovedByMonthAsync(request.Month, request.Year, cancellationToken);
 
             foreach (var purchase in activePurchases)
                 purchase.DeductMonthlyInstallment();
 
-            // 4. حفظ كل حاجة دفعة واحدة
+            // 5. حفظ كل حاجة دفعة واحدة
             _unitOfWork.PayrollRepository.AddPayrollCycle(cycle);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -50,7 +50,24 @@ public class HRDbContext : DbContext
     {
         try
         {
-           
+            foreach (var entry in ChangeTracker.Entries<PayrollAdjustment>())
+            {
+                Console.WriteLine($"=== ENTRY STATE: {entry.State} ===");
+                Console.WriteLine($"    ID: {entry.Entity.Id}");
+                Console.WriteLine($"    EntryId: {entry.Entity.EntryId}");
+
+                // الأهم — شوف الـ original values
+                if (entry.State == EntityState.Modified)
+                {
+                    Console.WriteLine("    --- ORIGINAL VALUES ---");
+                    foreach (var prop in entry.OriginalValues.Properties)
+                        Console.WriteLine($"    {prop.Name}: {entry.OriginalValues[prop]}");
+
+                    Console.WriteLine("    --- CURRENT VALUES ---");
+                    foreach (var prop in entry.CurrentValues.Properties)
+                        Console.WriteLine($"    {prop.Name}: {entry.CurrentValues[prop]}");
+                }
+            }
             // 1. اجمع الـ Events قبل الحفظ
             var domainEvents = ChangeTracker
                 .Entries<Entity>()

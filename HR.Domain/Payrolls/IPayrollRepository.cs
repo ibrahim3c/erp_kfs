@@ -10,6 +10,9 @@ namespace HR.Domain.Payrolls
     {
         Task<PayrollEntry> GetPayrollEntryByIdAsync(Guid entryId, CancellationToken cancellationToken = default);
         Task<PayrollCycle> GetPayrollCycleByIdAsync(Guid cycleId, CancellationToken cancellationToken = default);
+
+        Task<PayrollCycle?> GetCycleByMonthYearAsync(int month, int year, CancellationToken cancellationToken = default);
         void AddPayrollCycle(PayrollCycle payroll);
+        void AddPayrolAdjustment(PayrollAdjustment adjustment);
     }
 }

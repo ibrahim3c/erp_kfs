@@ -21,8 +21,8 @@ namespace HR.Application.Payrolls.AddPayrollAdjustment
         }
 
         public async Task<Result> Handle(
-            AddPayrollAdjustmentCommand request,
-            CancellationToken cancellationToken)
+     AddPayrollAdjustmentCommand request,
+     CancellationToken cancellationToken)
         {
             var entry = await _unitOfWork.PayrollRepository
                 .GetPayrollEntryByIdAsync(request.EntryId, cancellationToken);
@@ -30,8 +30,18 @@ namespace HR.Application.Payrolls.AddPayrollAdjustment
             if (entry is null)
                 return Result.Failure(PayrollErrors.EntryNotFound);
 
-            var result = entry.AddAdjustment(request.Type, request.Amount, request.Reason);
-            if (result.IsFailure) return result;
+            //  بدل ما تضيف عن طريق الـ aggregate، سجل مباشرة
+            var adjustment = PayrollAdjustment.Create(
+                request.EntryId,
+                request.Type,
+                request.Amount,
+                request.Reason);
+
+            if (!adjustment.IsSuccess)
+                return Result.Failure(adjustment.Error);
+
+
+             _unitOfWork.PayrollRepository.AddPayrolAdjustment(adjustment.Value);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return Result.Success();

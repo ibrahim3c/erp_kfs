@@ -24,16 +24,15 @@ namespace HR.Application.Payrolls.GetPayrollCycle
 
             // جلب الدورة
             var cycleSql = """
-                SELECT
-                    pc."Id"     AS CycleId,
-                    pc."Month"  AS Month,
-                    pc."Year"   AS Year,
-                    pc."Status" AS Status
-                FROM "HR"."PayrollCycles" pc
-                WHERE pc."Month" = @Month AND pc."Year" = @Year
-                ORDER BY pc."CreatedAt" DESC
-                LIMIT 1;
-                """;
+                    SELECT TOP 1
+                        pc.[Id]     AS CycleId,
+                        pc.[Month]  AS Month,
+                        pc.[Year]   AS Year,
+                        pc.[Status] AS Status
+                    FROM [HR].[PayrollCycles] pc
+                    WHERE pc.[Month] = @Month AND pc.[Year] = @Year
+                    ORDER BY pc.[CreatedAt] DESC;
+                    """;
 
             var cycle = await connection.QueryFirstOrDefaultAsync<dynamic>(
                 cycleSql,
@@ -43,77 +42,61 @@ namespace HR.Application.Payrolls.GetPayrollCycle
             if (cycle is null)
                 return Result<GetPayrollCycleResponse?>.Success(null);
 
-           // جلب مفردات الموظفين(مع حساب التسويات اليدوية)
+            // جلب مفردات الموظفين(مع حساب التسويات اليدوية)
             var entriesSql = """
-                SELECT 
-                    pe."Id"                         AS EntryId,
-                    e."Name"                        AS EmployeeName,
-                    
-                    pe."BasicSalary"                AS BasicSalary,
-                    pe."Incentives"                 AS Incentives,
-                    pe."Allowances"                 AS Allowances,
-                    
-                    -- جلب التسويات اليدوية (لو مفيش هترجع صفر
-                    COALESCE((
-                    SELECT SUM("Amount") FROM "HR"."PayrollAdjustments" 
-                    WHERE "EntryId" = pe."Id" AND "Type" = 'Addition'),
-                    0) AS ManualAdditions,
+                    SELECT 
+                        pe.[Id]                         AS EntryId,
+                        e.[Name]                        AS EmployeeName,
+    
+                        pe.[BasicSalary]                AS BasicSalary,
+                        pe.[Incentives]                 AS Incentives,
+                        pe.[Allowances]                 AS Allowances,
+    
+                        -- إجمالي الاستحقاق
+                        pe.[BasicSalary] 
+                            + pe.[Incentives] 
+                            + pe.[Allowances] 
+                            + COALESCE((
+                                SELECT SUM([Amount]) FROM [HR].[PayrollAdjustments] 
+                                WHERE [EntryId] = pe.[Id] AND [Type] = 'Addition'), 0)
+                                                        AS GrossSalary,
+    
+                        -- إجمالي الاستقطاعات
+                        pe.[InsuranceDeduction] 
+                            + pe.[TaxDeduction] 
+                            + pe.[LoanDeduction] 
+                            + pe.[InsurancePurchaseDeduction] 
+                            + pe.[PenaltyDeduction] 
+                            + COALESCE((
+                                SELECT SUM([Amount]) FROM [HR].[PayrollAdjustments] 
+                                WHERE [EntryId] = pe.[Id] AND [Type] = 'Deduction'), 0)
+                                                        AS TotalDeductions,
 
-                    COALESCE((
-                    SELECT SUM("Amount") FROM "HR"."PayrollAdjustments" 
-                    WHERE "EntryId" = pe."Id" AND "Type" = 'Deduction'), 
-                    0) AS ManualDeductions,
+                        -- صافي الراتب
+                        (pe.[BasicSalary] 
+                            + pe.[Incentives] 
+                            + pe.[Allowances] 
+                            + COALESCE((
+                                SELECT SUM([Amount]) FROM [HR].[PayrollAdjustments]
+                                WHERE [EntryId] = pe.[Id] AND [Type] = 'Addition'), 0))
+                        - (pe.[InsuranceDeduction] 
+                            + pe.[TaxDeduction] 
+                            + pe.[LoanDeduction] 
+                            + pe.[InsurancePurchaseDeduction] 
+                            + pe.[PenaltyDeduction] 
+                            + COALESCE((
+                                SELECT SUM([Amount]) FROM [HR].[PayrollAdjustments] 
+                                WHERE [EntryId] = pe.[Id] AND [Type] = 'Deduction'), 0))
+                                                        AS NetSalary,
 
-                    -- إجمالي الاستحقاقات (الأساسي + مكمل + بدلات + مكافآت يدوية
-                    pe."BasicSalary" 
-                        + pe."Incentives" 
-                        + pe."Allowances" 
-                        + COALESCE((
-                            SELECT SUM("Amount") FROM "HR"."PayrollAdjustments" 
-                            WHERE "EntryId" = pe."Id" AND "Type" = 'Addition'),
-                            0) AS GrossSalary,
-                    
-                    -- إجمالي الاستقطاعات
-                    pe."InsuranceDeduction" 
-                        + pe."TaxDeduction" 
-                        + pe."LoanDeduction" 
-                        + pe."InsurancePurchaseDeduction" 
-                        + pe."PenaltyDeduction" 
-                        + COALESCE((
-                            SELECT SUM("Amount") FROM "HR"."PayrollAdjustments" 
-                            WHERE "EntryId" = pe."Id" AND "Type" = 'Deduction'), 
-                            0) AS TotalDeductions,
-                    
-                    -- الصافي (الاستحقاقات - الاستقطاعات
-                    (pe."BasicSalary" 
-                        + pe."Incentives" 
-                        + pe."Allowances" 
-                        + COALESCE((
-                            SELECT SUM("Amount") FROM "HR"."PayrollAdjustments"
-                            WHERE "EntryId" = pe."Id" AND "Type" = 'Addition'),
-                            0)) AS TotalEarnings,
-                    - 
-                    (pe."InsuranceDeduction" 
-                        + pe."TaxDeduction" 
-                        + pe."LoanDeduction" 
-                        + pe."InsurancePurchaseDeduction" 
-                        + pe."PenaltyDeduction" 
-                        + COALESCE((
-                            SELECT SUM("Amount") FROM "HR"."PayrollAdjustments" 
-                            WHERE "EntryId" = pe."Id" AND "Type" = 'Deduction'), 
-                            0)) AS NetSalary,
+                        CASE WHEN pe.[PenaltyDeduction] > 0 THEN 1 ELSE 0 END AS HasPenalty
+                        
 
-                    -- تفاصيل الخصومات (باستخدام CONCAT بدل || عشان تتوافق مع أي SQL Engine)
-                    CASE
-                        WHEN pe."PenaltyDeduction" > 0 THEN CONCAT('(شامل ', pe."PenaltyDeduction", ' جنيه جزاءات)')
-                        ELSE '(تأمينات + ضرائب)'
-                    END                             AS DeductionDetails
-
-                FROM "HR"."PayrollEntries" pe
-                INNER JOIN "HR"."Employees" e ON pe."EmployeeId" = e."Id"
-                WHERE pe."CycleId" = @CycleId
-                ORDER BY e."Name";
-                """;
+                    FROM [HR].[PayrollEntries] pe
+                    INNER JOIN [HR].[Employees] e ON pe.[EmployeeId] = e.[Id]
+                    WHERE pe.[CycleId] = @CycleId
+                    ORDER BY e.[Name];
+                    """;
 
             var entries = (await connection.QueryAsync<PayrollEntryDto>(
                 entriesSql, 

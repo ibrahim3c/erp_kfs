@@ -44,6 +44,7 @@
         // Financial
         public decimal? GrossSalary { get; init; }
         public decimal? BasicSalary2019 { get; init; }
+        public decimal? Incentives { get; init; }
         public string? InsuranceNumber { get; init; }
         public string? BankName { get; init; }
         public string? BankAccount { get; init; }

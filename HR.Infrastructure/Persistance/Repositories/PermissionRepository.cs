@@ -40,11 +40,11 @@ namespace HR.Infrastructure.Persistance.Repositories
                 .Where(p => p.EmployeeId == employeeId
                     && p.Date.Month == month
                     && p.Date.Year == year)
-                .GroupBy(p => 1) // Grouping by a constant to get aggregate values
+                .GroupBy(p => 1)
                 .Select(g => new
                 {
                     Count = g.Count(),
-                    TotalMinutes = g.Sum(p => (int)(p.ToTime - p.FromTime).TotalMinutes)
+                    TotalMinutes = g.Sum(p => p.DurationMinutes) // تم التعديل هنا
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

@@ -40,6 +40,7 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
 
         public decimal? GrossSalary { get; set; }
         public decimal? BasicSalary2019 { get; set; }
+        public decimal? Incentives { get; set; }
         public string? InsuranceNumber { get; set; }
         public string? BankName { get; set; }
         public string? BankAccountNumber { get; set; }
