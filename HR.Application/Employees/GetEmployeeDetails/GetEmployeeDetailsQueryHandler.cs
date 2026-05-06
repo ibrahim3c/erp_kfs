@@ -83,6 +83,8 @@ namespace HR.Application.Employees.GetEmployeeDetails
                     LEFT JOIN HR.QualificationTypes         qt  ON qt.Id = eq.QualificationTypeId
                     WHERE e.Id = @EmployeeId
                     """;
+
+
             var response = await connection.QuerySingleOrDefaultAsync<GetEmployeeDetailsResponse>(sql, new { request.EmployeeId });
 
             if (response is null)
