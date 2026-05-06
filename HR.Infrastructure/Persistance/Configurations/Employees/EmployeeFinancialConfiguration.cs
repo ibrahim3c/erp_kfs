@@ -27,6 +27,10 @@ namespace HR.Infrastructure.Persistance.Configurations.Employees
                 .HasColumnType("decimal(18,2)")
                 .IsRequired(false);
 
+            builder.Property(e => e.Incentives)
+                .HasColumnType("decimal(18,2)")
+                .IsRequired(false);
+
             // تحديد أطوال النصوص (مهم جداً لتحسين أداء قاعدة البيانات)
             builder.Property(e => e.InsuranceNumber)
                 .HasMaxLength(50)

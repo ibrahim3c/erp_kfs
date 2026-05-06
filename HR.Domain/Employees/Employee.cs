@@ -306,6 +306,7 @@ namespace HR.Domain.Employees
     public Result AddFinancialInformation(
         decimal? basicSalary2019,
         decimal? grossSalary,
+        decimal? incentives,
         string insuranceNumber,
         string bankName,
         string bankAccount,
@@ -316,6 +317,7 @@ namespace HR.Domain.Employees
                 Id, // نمرر الـ ID الخاص بالموظف الحالي
                 basicSalary2019,
                 grossSalary,
+                incentives,
                 insuranceNumber,
                 bankName,
                 bankAccount,
@@ -331,6 +333,7 @@ namespace HR.Domain.Employees
         public Result UpdateFinancialInformation(
                 decimal? basicSalary2019,
                 decimal? grossSalary,
+                decimal? incentives,    
                 string? insuranceNumber,
                 string? bankName,
                 string? bankAccount,
@@ -339,12 +342,12 @@ namespace HR.Domain.Employees
         {
             if (FinancialInfo is null)
                 return AddFinancialInformation(
-                    basicSalary2019, grossSalary,
+                    basicSalary2019, grossSalary, incentives,
                     insuranceNumber, bankName, bankAccount,
                     hasFellowshipFund, hasMedicalFund);
 
             FinancialInfo.Update(
-                basicSalary2019, grossSalary,
+                basicSalary2019, grossSalary,incentives,
                 insuranceNumber, bankName, bankAccount,
                 hasFellowshipFund, hasMedicalFund);
 

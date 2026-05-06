@@ -6,6 +6,7 @@ namespace HR.Domain.Employees
     {
         public Guid EmployeeId { get; private set; }
         public decimal? BasicSalary2019 { get; private set; }
+        public decimal? Incentives { get; private set; }
         public decimal? GrossSalary { get; private set; }
         public string InsuranceNumber { get; private set; }
         public string BankName { get; private set; }
@@ -16,11 +17,12 @@ namespace HR.Domain.Employees
         private EmployeeFinancial() { } // For EF Core
 
         private EmployeeFinancial(Guid id, Guid employeeId, decimal? basicSalary2019,
-            decimal? grossSalary, string insuranceNumber, string bankName,
+            decimal? grossSalary, decimal? incentives, string insuranceNumber, string bankName,
             string bankAccount, bool hasFellowshipFund, bool hasMedicalFund) : base(id)
         {
             EmployeeId = employeeId;
             BasicSalary2019 = basicSalary2019;
+            Incentives = incentives;
             GrossSalary = grossSalary;
             InsuranceNumber = insuranceNumber;
             BankName = bankName;
@@ -33,6 +35,7 @@ namespace HR.Domain.Employees
             Guid employeeId,
             decimal? basicSalary2019,
             decimal? grossSalary,
+            decimal? incentives,
             string insuranceNumber,
             string bankName,
             string bankAccount,
@@ -50,6 +53,7 @@ namespace HR.Domain.Employees
                 employeeId,
                 basicSalary2019,
                 grossSalary,
+                incentives,
                 insuranceNumber,
                 bankName,
                 bankAccount,
@@ -60,10 +64,11 @@ namespace HR.Domain.Employees
         }
 
         // Business Behavior
-        public void Update(decimal? basic, decimal? gross, string insuranceNum, string bankName, string bankAccount, bool fellowship, bool medical)
+        public void Update(decimal? basic, decimal? gross, decimal? incentives, string insuranceNum, string bankName, string bankAccount, bool fellowship, bool medical)
         {
             BasicSalary2019 = basic;
             GrossSalary = gross;
+            Incentives = incentives;
             InsuranceNumber = insuranceNum;
             BankName = bankName;
             BankAccount = bankAccount;

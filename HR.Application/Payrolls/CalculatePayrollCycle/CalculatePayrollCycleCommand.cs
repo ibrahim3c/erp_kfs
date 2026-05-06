@@ -11,6 +11,6 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
     public record CalculatePayrollCycleCommand(
         int Month,
         int Year,
-        Guid EmploymentTypeId
+        Guid? EmploymentTypeId
     ) : ICommand<Guid>;
 }

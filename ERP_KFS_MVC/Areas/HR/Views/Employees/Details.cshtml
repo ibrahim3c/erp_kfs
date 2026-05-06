@@ -313,6 +313,19 @@
                                 }
                             </p>
                         </div>
+                        <div class="col-md-3">
+                            <label class="hr-form-label text-muted small">الحوافز</label>
+                            <p class="fw-bold mb-0">
+                                @if (Model.Incentives.HasValue)
+                                {
+                                    <span class="font-monospace">@($"{Model.Incentives.Value:N2} جم")</span>
+                                }
+                                else
+                                {
+                                    <span>لا يوجد</span>
+                                }
+                            </p>
+                        </div>
                         <div class="col-md-6">
                             <label class="hr-form-label text-muted small">صندوق الزمالة</label>
                             <p class="fw-bold mb-0">

@@ -95,6 +95,7 @@ namespace ERP_KFS_MVC.Areas.HR.ViewModels
         // ── 5. البيانات المالية ──────────────────────────────────
         public decimal? BasicSalary2019 { get; set; }
         public decimal? GrossSalary { get; set; }
+        public decimal? Incentives { get; set; }
         public string? InsuranceNumber { get; set; }
         public string? BankName { get; set; }
         public string? BankAccountNumber { get; set; }

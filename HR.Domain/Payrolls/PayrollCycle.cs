@@ -17,7 +17,7 @@ namespace HR.Domain.Payrolls
 
         private PayrollCycle() { }
 
-        private PayrollCycle(Guid id, int month, int year, Guid employmentTypeId) : base(id)
+        private PayrollCycle(Guid id, int month, int year, Guid? employmentTypeId) : base(id)
         {
             Month = month;
             Year = year;
@@ -30,7 +30,7 @@ namespace HR.Domain.Payrolls
         public int Year { get; private set; }
 
         /// <summary>فئة الموظفين — الكل / الدائمين / المؤقتين</summary>
-        public Guid EmploymentTypeId { get; private set; }
+        public Guid? EmploymentTypeId { get; private set; }
         public EmploymentType EmploymentType { get; private set; }
         public PayrollCycleStatus Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
@@ -45,7 +45,7 @@ namespace HR.Domain.Payrolls
         public decimal TotalNetSalary => _entries.Sum(e => e.NetSalary);
 
         // ─── Factory ───────────────────────────────────────────
-        public static Result<PayrollCycle> Create(int month, int year, Guid employmentTypeId)
+        public static Result<PayrollCycle> Create(int month, int year, Guid? employmentTypeId)
         {
             if (month is < 1 or > 12)
                 return Result<PayrollCycle>.Failure(PayrollErrors.InvalidMonth);

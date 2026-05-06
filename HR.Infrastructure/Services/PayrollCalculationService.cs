@@ -24,49 +24,51 @@ namespace HR.Infrastructure.Services
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<List<PayrollEntry>> CalculateAsync(int month, int year, Guid employmentTypeId, Guid cycleId, CancellationToken cancellationToken = default)
+        public async Task<List<PayrollEntry>> CalculateAsync(int month, int year, Guid? employmentTypeId, Guid cycleId, CancellationToken cancellationToken = default)
         {
             using var connection = _connectionFactory.CreateConnection();
 
             // جلب كل الموظفين مع بياناتهم المالية دفعة واحدة
             var sql = """
                 SELECT
-                    e."Id"           AS EmployeeId,
-                    e."BasicSalary"  AS BasicSalary,
-                    e."Incentives"   AS Incentives,
-                    e."Allowances"   AS Allowances,
+                    e.[Id]                                          AS EmployeeId,
+                    ISNULL(ef.[BasicSalary2019], 0)                AS BasicSalary,
+                    ISNULL(ef.[Incentives], 0)                     AS Incentives,
+                    ISNULL(ef.[GrossSalary], 0) 
+                        - ISNULL(ef.[BasicSalary2019], 0)          AS Allowances,
 
                     -- (1) أقساط السلف النشطة
                     COALESCE((
-                        SELECT SUM(l."InstallmentAmount")
-                        FROM "HR"."Loans" l
-                        WHERE l."EmployeeId" = e."Id"
-                          AND l."IsCompleted" = false
-                          AND l."StartDate" <= MAKE_DATE(@Year, @Month, 1)
+                        SELECT SUM(l.[InstallmentAmount])
+                        FROM [HR].[Loans] l
+                        WHERE l.[EmployeeId] = e.[Id]
+                          AND l.[IsCompleted] = 0
+                          AND l.[StartDate] <= DATEFROMPARTS(@Year, @Month, 1)
                     ), 0) AS LoanDeduction,
 
                     -- (2) أقساط شراء المدد التأمينية المعتمدة
                     COALESCE((
-                        SELECT SUM(ip."MonthlyInstallment")
-                        FROM "HR"."InsurancePeriodPurchases" ip
-                        WHERE ip."EmployeeId" = e."Id"
-                          AND ip."Status" = 'Approved'
-                          AND ip."DeductionStartDate" <= MAKE_DATE(@Year, @Month, 1)
+                        SELECT SUM(ip.[MonthlyInstallment])
+                        FROM [HR].[InsurancePeriodPurchases] ip
+                        WHERE ip.[EmployeeId] = e.[Id]
+                          AND ip.[Status] = 'Approved'
+                          AND ip.[DeductionStartDate] <= DATEFROMPARTS(@Year, @Month, 1)
                     ), 0) AS InsurancePurchaseDeduction,
 
-                  -- (3) جزاءات هذا الشهر
+                    -- (3) جزاءات هذا الشهر
                     COALESCE((
-                        SELECT SUM(pr."DeductionDays") * (e."BasicSalary" / 30.0)
-                        FROM "HR"."PenaltyRecords" pr
-                        WHERE pr."EmployeeId" = e."Id"
-                          AND pr."ActionType" IN (2, 3)     -- ( 2:الوقف (الخصم 3:)(العقوبات المالية فقط
-                          AND EXTRACT(MONTH FROM pr."ExecutionMonth") = @Month
-                          AND EXTRACT(YEAR  FROM pr."ExecutionMonth") = @Year
-                    ), 0)                       AS PenaltyDeduction
+                        SELECT SUM(pr.[DeductionDays]) * (ISNULL(ef.[BasicSalary2019], 0) / 30.0)
+                        FROM [HR].[PenaltyRecords] pr
+                        WHERE pr.[EmployeeId] = e.[Id]
+                          AND pr.[ActionType] IN (2, 3)
+                          AND MONTH(pr.[ExecutionMonth]) = @Month
+                          AND YEAR(pr.[ExecutionMonth])  = @Year
+                    ), 0) AS PenaltyDeduction
 
-                FROM "HR"."Employees" e
-                WHERE e."IsActive" = true
-                ORDER BY e."Name";
+                FROM [HR].[Employees] e
+                LEFT JOIN [HR].[EmployeeFinancials] ef ON ef.[EmployeeId] = e.[Id]
+                WHERE e.[IsActive] = 1
+                ORDER BY e.[Name];
                 """;
 
             var rows = await connection.QueryAsync(sql, new
@@ -81,15 +83,20 @@ namespace HR.Infrastructure.Services
             foreach (var row in rows)
             {
                 decimal basicSalary = (decimal)row.BasicSalary;
-                decimal insurance = Math.Round(basicSalary * 0.11m, 2); // 11% تأمينات
-                decimal tax = CalculateTax(basicSalary);           // شريحة ضريبية
+                decimal allowances = (decimal)row.Allowances;
+
+                // لو مفيش بيانات مالية، تجاهل الموظف
+                if (basicSalary == 0) continue;
+
+                decimal insurance = Math.Round(basicSalary * 0.11m, 2);
+                decimal tax = CalculateTax(basicSalary);
 
                 var entry = PayrollEntry.Create(
                     cycleId: cycleId,
                     employeeId: (Guid)row.EmployeeId,
                     basicSalary: basicSalary,
                     incentives: (decimal)row.Incentives,
-                    allowances: (decimal)row.Allowances,
+                    allowances: allowances,
                     insuranceDeduction: insurance,
                     taxDeduction: tax,
                     loanDeduction: (decimal)row.LoanDeduction,

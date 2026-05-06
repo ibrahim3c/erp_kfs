@@ -41,7 +41,7 @@ namespace HR.Application.Employees.UpdateEmployee
 
             // 2. البيانات المالية
             var financialResult = employee.UpdateFinancialInformation(
-                request.BasicSalary2019, request.GrossSalary,
+                request.BasicSalary2019, request.GrossSalary, request.Incentives,
                 request.InsuranceNumber, request.BankName, request.BankAccountNumber,
                 request.HasFellowshipFund, request.HasMedicalFund);
             if (!financialResult.IsSuccess) return financialResult;

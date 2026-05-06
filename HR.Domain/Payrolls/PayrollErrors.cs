@@ -32,5 +32,8 @@ namespace HR.Domain.Payrolls
 
         public static readonly Error AdjustmentReasonRequired =
             new("Payroll.AdjustmentReasonRequired", "سبب التسوية مطلوب");
+
+        public static readonly Error AlreadyExists =
+            new("Payroll.AlreadyExists", "يوجد مسير محسوب بالفعل لهذا الشهر والسنة");
     }
 }

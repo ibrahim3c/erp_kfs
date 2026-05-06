@@ -16,6 +16,7 @@ namespace HR.Application.Payrolls.GetPayrollCycle
         public decimal GrossSalary { get; init; }
         public decimal TotalDeductions { get; init; }
         public decimal NetSalary { get; init; }
-        public string DeductionDetails { get; init; } = string.Empty;
+        public int HasPenalty { get; init; }
+        public decimal PenaltyDeduction { get; init; }
     }
 }

@@ -16,7 +16,7 @@ namespace HR.Application.Payrolls.CalculatePayrollCycle
         Task<List<PayrollEntry>> CalculateAsync(
             int month,
             int year,
-            Guid employmentTypeId,
+            Guid? employmentTypeId,
             Guid cycleId,
             CancellationToken cancellationToken = default);
     }

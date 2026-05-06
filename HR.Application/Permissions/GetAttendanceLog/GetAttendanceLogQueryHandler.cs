@@ -26,32 +26,20 @@ namespace HR.Application.Permissions.GetAttendanceLog
 
             // Query بيحسب إجمالي الدقائق (Permissions + Late)
             var summarySql = """
-                    SELECT 
-                        -- مجموع دقائق الأذونات
-                        COALESCE(SUM(CASE WHEN src = 'P' THEN dur ELSE 0 END), 0) AS TotalPermissionMinutes,
+                SELECT 
+                    COALESCE(SUM(CASE WHEN src = 'P' THEN dur ELSE 0 END), 0) AS TotalPermissionMinutes,
+                    COALESCE(SUM(CASE WHEN src = 'L' THEN dur ELSE 0 END), 0) AS TotalLateMinutes
+                FROM ( 
+                    SELECT 'P' AS src, DurationMinutes AS dur       
+                    FROM HR.PermissionRequests 
+                    WHERE MONTH(Date) = @Month AND YEAR(Date) = @Year
 
-                        -- مجموع دقائق التأخير
-                        COALESCE(SUM(CASE WHEN src = 'L' THEN dur ELSE 0 END), 0) AS TotalLateMinutes
+                    UNION ALL 
 
-                    FROM ( 
-                        -- الجزء الأول: بيانات الأذونات
-                        SELECT 
-                            'P' AS src,                    -- نحدد نوع الصف (Permission)
-                            "DurationMinutes" AS dur       -- عدد الدقائق
-                        FROM "HR"."PermissionRequests" 
-                        WHERE EXTRACT(MONTH FROM "Date") = @Month   -- فلترة بالشهر
-                          AND EXTRACT(YEAR  FROM "Date") = @Year    -- فلترة بالسنة
-
-                        UNION ALL 
-
-                        -- الجزء الثاني: بيانات التأخير
-                        SELECT 
-                            'L' AS src,                    -- نحدد نوع الصف (Late)
-                            "LateMinutes" AS dur           -- عدد دقائق التأخير
-                        FROM "HR"."LateEntries" 
-                        WHERE EXTRACT(MONTH FROM "Date") = @Month 
-                          AND EXTRACT(YEAR  FROM "Date") = @Year 
-                    ) combined;                           -- جدول مؤقت مدمج
+                    SELECT 'L' AS src, LateMinutes AS dur           
+                    FROM HR.LateEntries 
+                    WHERE MONTH(Date) = @Month AND YEAR(Date) = @Year
+                ) combined
                 """;
 
             // تنفيذ الـ query وإرجاع أول row (فيه الإجماليات)
@@ -62,11 +50,11 @@ namespace HR.Application.Permissions.GetAttendanceLog
             // ─── عدد الموظفين اللي اتعاقبوا 
 
             var exceededSql = """
-                    SELECT COUNT(DISTINCT "EmployeeId")   -- عدد موظفين بدون تكرار
-                    FROM "HR"."LateEntries"
-                    WHERE EXTRACT(MONTH FROM "Date") = @Month 
-                      AND EXTRACT(YEAR  FROM "Date") = @Year 
-                      AND "IsTransferredToPenalty" = true;  -- بس اللي اتحولوا لجزاء
+                SELECT COUNT(DISTINCT EmployeeId)
+                FROM HR.LateEntries
+                WHERE MONTH(Date) = @Month 
+                  AND YEAR(Date) = @Year 
+                  AND IsTransferredToPenalty = 1
                 """;
 
             // تنفيذ query وإرجاع رقم واحد (int)
@@ -77,76 +65,42 @@ namespace HR.Application.Permissions.GetAttendanceLog
             // ─── Log Items (Permissions + Late مع بعض)
 
             var logSql = """
-                    -- ================= Permissions =================
-                    SELECT 
-                        pr."Id"                                     AS Id,             -- ID العملية
-                        pr."Date"                                   AS Date,           -- التاريخ
-                        e."Name"                                    AS EmployeeName,   -- اسم الموظف
+                SELECT 
+                    pr.Id, pr.Date, e.Name AS EmployeeName,
+                    'Permission'            AS Type,
+                    pr.PermissionType       AS SubType,
+                    FORMAT(pr.FromTime, 'hh\:mm') + ' : ' + FORMAT(pr.ToTime, 'hh\:mm') AS TimeRange,
+                    pr.DurationMinutes,
+                    pr.Notes,
+                    CASE pr.PermissionType 
+                        WHEN 'Personal' THEN 'مخصوم من الرصيد'
+                        WHEN 'Official' THEN 'عمل رسمي'
+                        WHEN 'Medical'  THEN 'إذن مرضي'
+                    END AS StatusLabel,
+                    CAST(0 AS BIT) AS IsTransferred
+                FROM HR.PermissionRequests pr 
+                INNER JOIN HR.Employees e ON pr.EmployeeId = e.Id
+                WHERE MONTH(pr.Date) = @Month AND YEAR(pr.Date) = @Year
 
-                        'Permission'                                AS Type,           -- نوع العملية
-                        pr."PermissionType"                         AS SubType,        -- نوع الإذن
+                UNION ALL 
 
-                        -- عرض الوقت بشكل readable
-                        TO_CHAR(pr."FromTime", 'HH12:MI AM') 
-                            || ' : ' 
-                            || TO_CHAR(pr."ToTime", 'HH12:MI AM')  AS TimeRange,
+                SELECT 
+                    le.Id, le.Date, e.Name AS EmployeeName,
+                    'Late'              AS Type,
+                    N'تأخير صباحي'     AS SubType,
+                    N'حضور ' + FORMAT(le.ActualArrivalTime, 'hh\:mm') AS TimeRange,
+                    le.LateMinutes      AS DurationMinutes,
+                    le.Notes,
+                    CASE le.IsTransferredToPenalty 
+                        WHEN 1 THEN N'مرحل للجزاء'
+                        ELSE N'قيد التجميع'
+                    END AS StatusLabel,
+                    le.IsTransferredToPenalty AS IsTransferred
+                FROM HR.LateEntries le 
+                INNER JOIN HR.Employees e ON le.EmployeeId = e.Id
+                WHERE MONTH(le.Date) = @Month AND YEAR(le.Date) = @Year
 
-                        pr."DurationMinutes"                        AS DurationMinutes, -- عدد الدقائق
-                        pr."Notes"                                  AS Notes,           -- ملاحظات
-
-                        -- تحويل النوع لنص مفهوم
-                        CASE pr."PermissionType" 
-                            WHEN 'Personal' THEN 'مخصوم من الرصيد'
-                            WHEN 'Official' THEN 'عمل رسمي'
-                            WHEN 'Medical'  THEN 'إذن مرضي'
-                        END                                         AS StatusLabel,
-
-                        false                                       AS IsTransferred   -- مفيش تحويل لجزاء هنا
-
-                    FROM "HR"."PermissionRequests" pr 
-                    INNER JOIN "HR"."Employees" e 
-                        ON pr."EmployeeId" = e."Id"                 -- ربط الموظف
-
-                    WHERE EXTRACT(MONTH FROM pr."Date") = @Month 
-                      AND EXTRACT(YEAR  FROM pr."Date") = @Year 
-
-
-                    UNION ALL 
-
-
-                    -- ================= Late =================
-                    SELECT 
-                        le."Id"                                     AS Id,
-                        le."Date"                                   AS Date,
-                        e."Name"                                    AS EmployeeName,
-
-                        'Late'                                      AS Type,           -- نوع العملية
-                        'تأخير صباحي'                              AS SubType,        -- ثابت
-
-                        -- عرض وقت الحضور
-                        'حضور ' 
-                            || TO_CHAR(le."ActualArrivalTime", 'HH12:MI AM') AS TimeRange,
-
-                        le."LateMinutes"                            AS DurationMinutes,
-                        le."Notes"                                  AS Notes,
-
-                        -- حالة التأخير
-                        CASE le."IsTransferredToPenalty" 
-                            WHEN true THEN 'مرحل للجزاء'
-                            ELSE 'قيد التجميع'
-                        END                                         AS StatusLabel,
-
-                        le."IsTransferredToPenalty"                 AS IsTransferred  -- هل اتحول لجزاء
-
-                    FROM "HR"."LateEntries" le 
-                    INNER JOIN "HR"."Employees" e 
-                        ON le."EmployeeId" = e."Id"
-
-                    WHERE EXTRACT(MONTH FROM le."Date") = @Month 
-                      AND EXTRACT(YEAR  FROM le."Date") = @Year 
-
-                    -- ترتيب النتائج من الأحدث للأقدم
-                    ORDER BY Date DESC; 
+                ORDER BY Date DESC
                 """;
 
             var items = (await connection.QueryAsync<AttendanceLogItem>(logSql, new { request.Month, request.Year })).ToList();

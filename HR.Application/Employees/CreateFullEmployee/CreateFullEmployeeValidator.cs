@@ -74,6 +74,10 @@ namespace HR.Application.Employees.CreateFullEmployee
                 .GreaterThan(0).WithMessage("الراتب الإجمالي يجب أن يكون قيمة موجبة")
                 .When(x => x.GrossSalary.HasValue);
 
+            RuleFor(x => x.Incentives)
+                .GreaterThanOrEqualTo(0).WithMessage("الحوافز لا يمكن أن تكون قيمة سالبة")
+                .When(x => x.Incentives.HasValue);
+
             RuleFor(x => x.BasicSalary2019)
                 .GreaterThan(0).WithMessage("الراتب الأساسي يجب أن يكون قيمة موجبة")
                 .LessThanOrEqualTo(x => x.GrossSalary ?? decimal.MaxValue)

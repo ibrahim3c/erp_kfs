@@ -7,7 +7,7 @@ namespace HR.Domain.Payrolls
     /// </summary>
     public class PayrollEntry : Entity
     {
-        private readonly List<PayrollAdjustment> _adjustments = new();
+        private List<PayrollAdjustment> _adjustments = new(); // with out readonly because we need to add adjustments after creation
 
         private PayrollEntry() { }
 
