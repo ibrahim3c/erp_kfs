@@ -59,5 +59,28 @@ Use only EmployeeQualification.FilePath.
 // when delete employee u can use background service to delete the employee files or using domain events to trigger the deletion of files after the employee is deleted.
 
 // TODO:
-make marriageDocument optional in employee files and update db
 check validations in create employee
+
+
+
+// for attendance
+📌 Queries
+GetDailyAttendance
+→ returns all employees attendance for a specific day (table data)
+GetDailyAttendanceStatsQuery
+→ returns dashboard widgets (present, absent, late, total)
+GetEmployeesLookupQuery
+→ returns employees list for the dropdown (manual entry modal)
+GetAbsenceReportQuery
+→ returns absence report data for printing/export
+📌 Commands
+CreateManualAttendanceCommand
+→ manual check-in / check-out from modal
+UpdateAttendanceRecordCommand
+→ edit attendance time or notes
+ImportAttendanceFromDeviceCommand
+→ import data from fingerprint machine
+ConvertLateToPermissionCommand
+→ convert late case into permission request
+ConvertAbsenceToVacationCommand
+→ convert absence into vacation/sick leave

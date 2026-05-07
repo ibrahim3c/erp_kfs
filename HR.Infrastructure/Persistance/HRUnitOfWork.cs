@@ -1,4 +1,5 @@
 ﻿using HR.Domain;
+using HR.Domain.Attendance;
 using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
@@ -28,6 +29,7 @@ namespace HR.Infrastructure.Persistance
         public IPenaltyRepository PenaltyRepository { get; private set; }
         public IPermissionRepository PermissionRepository { get; private set; }
         public ILateEntryRepository LateEntryRepository { get; private set; }
+        public IAttendanceRecordRepository AttendanceRecordRepository { get; private set; }
 
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
@@ -43,6 +45,7 @@ namespace HR.Infrastructure.Persistance
             PenaltyRepository = new PenaltyRepository(_dbContext);
             PermissionRepository = new PermissionRepository(_dbContext);
             LateEntryRepository = new LateEntryRepository(_dbContext);
+            AttendanceRecordRepository = new AttendanceRecordRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

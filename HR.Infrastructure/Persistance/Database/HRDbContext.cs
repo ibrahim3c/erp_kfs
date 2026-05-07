@@ -1,4 +1,5 @@
-﻿using HR.Domain.Candidates;
+﻿using HR.Domain.Attendance;
+using HR.Domain.Candidates;
 using HR.Domain.Employees;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
@@ -37,6 +38,7 @@ public class HRDbContext : DbContext
     public DbSet<PayrollEntry> PayrollEntries { get; set; }
     public DbSet<PermissionRequest> PermissionRequests { get; set; }
     public DbSet<LateEntry> LateEntries { get; set; }
+    public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

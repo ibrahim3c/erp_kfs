@@ -1,11 +1,29 @@
-﻿@{
+@model HR.Application.Attendance.Queries.GetDailyAttendance.DailyAttendanceResponse
+@{
     ViewData["Title"] = "سجل الحضور والانصراف اليومي";
+    var currentDate = Model?.CurrentDate ?? DateTime.Today;
+    var employees = ViewBag.Employees as SelectList;
+    var orgUnits = ViewBag.OrgUnitId as SelectList;
 }
 
-<!-- DataTables Styles -->
 <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+        <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <div class="content-header">
     <div class="container-fluid">
@@ -26,60 +44,50 @@
 <section class="content">
     <div class="container-fluid">
 
-        <!-- 1. شريط الإحصائيات (Widgets) -->
-        <div class="row">
+        <!-- Stats Widgets -->
+        <div class="row" id="statsWidgets">
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>150</h3>
+                        <h3>@(Model?.TotalWorkforce ?? 0)</h3>
                         <p>قوة العمل بالكامل</p>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
-                    </div>
+                    <div class="icon"><i class="fas fa-users"></i></div>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>120</h3>
+                        <h3>@(Model?.PresentCount ?? 0)</h3>
                         <p>حضور اليوم</p>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-user-check"></i>
-                    </div>
+                    <div class="icon"><i class="fas fa-user-check"></i></div>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>15</h3>
-                        <p>تأخير / أذن</p>
+                        <h3>@(Model?.LateCount ?? 0)</h3>
+                        <p>تأخير</p>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
+                    <div class="icon"><i class="fas fa-clock"></i></div>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>15</h3>
+                        <h3>@(Model?.AbsentOrVacationCount ?? 0)</h3>
                         <p>غياب / أجازة</p>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-user-slash"></i>
-                    </div>
+                    <div class="icon"><i class="fas fa-user-slash"></i></div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. الفلترة وأدوات التحكم -->
+        <!-- Filter Form -->
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-search mr-1"></i> البحث والتحكم
-                </h3>
+                <h3 class="card-title"><i class="fas fa-search mr-1"></i> البحث والتحكم</h3>
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -87,53 +95,63 @@
                 </div>
             </div>
             <div class="card-body">
-                <form>
+                <form method="get" asp-action="Index">
                     <div class="row align-items-end">
                         <div class="col-md-3 mb-3">
                             <label class="form-label">تاريخ اليوم</label>
-                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            <input type="date" name="date" class="form-control"
+                                   value="@currentDate.ToString("yyyy-MM-dd")">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">القسم / الإدارة</label>
-                            <select class="form-select select2">
-                                <option>-- الكل --</option>
-                                <option>نظم المعلومات</option>
-                                <option>الشئون الهندسية</option>
+                            <select name="orgUnitId" class="form-select select2">
+                                <option value="">-- الكل --</option>
+                                @if (orgUnits != null)
+                                {
+                                    foreach (var ou in orgUnits)
+                                    {
+                                        <option value="@ou.Value">@ou.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">حالة الحضور</label>
-                            <select class="form-select">
-                                <option>الكل</option>
-                                <option>حضور</option>
-                                <option>غياب</option>
-                                <option>تأخير</option>
+                            <select name="status" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="present">حضور</option>
+                                <option value="late">تأخير</option>
+                                <option value="absent">غياب</option>
+                                <option value="mission">مأمورية</option>
+                                <option value="vacation">أجازة</option>
+                                <option value="permission">إذن</option>
                             </select>
                         </div>
                         <div class="col-md-3 mb-3 d-grid gap-2">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> عرض</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter"></i> عرض
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- 3. جدول البيانات -->
+        <!-- Data Table -->
         <div class="card">
             <div class="card-header border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="card-title text-bold">سجلات الموظفين</h3>
                     <div class="btn-group">
-                        <!-- زرار Modal التسجيل اليدوي -->
                         <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#manualEntryModal">
                             <i class="fas fa-fingerprint"></i> تسجيل يدوي
                         </button>
-                        <button type="button" class="btn btn-info btn-sm">
+                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
                             <i class="fas fa-file-upload"></i> استيراد من الماكينة
                         </button>
-                        <button type="button" class="btn btn-secondary btn-sm">
+                        <a asp-action="AbsenceReport" class="btn btn-secondary btn-sm">
                             <i class="fas fa-print"></i> تقرير الغياب
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -154,84 +172,85 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- مثال 1: حضور منتظم -->
-                        <tr>
-                            <td>1</td>
-                            <td class="font-weight-bold text-end">محمد فؤاد ابراهيم</td>
-                            <td>نظم المعلومات</td>
-                            <td class="text-success">08:00 ص</td>
-                            <td class="text-danger">04:00 م</td>
-                            <td>8 س</td>
-                            <td>-</td>
-                            <td><span class="badge bg-success">حضور منتظم</span></td>
-                            <td>
-                                <button class="btn btn-outline-secondary btn-sm" title="تفاصيل"><i class="fas fa-list"></i></button>
-                            </td>
-                        </tr>
-
-                        <!-- مثال 2: تأخير -->
-                        <tr>
-                            <td>2</td>
-                            <td class="font-weight-bold text-end">فاطمة الشرباني</td>
-                            <td>التخطيط</td>
-                            <td class="text-warning font-weight-bold">08:45 ص</td>
-                            <td>04:00 م</td>
-                            <td>7.15 س</td>
-                            <td class="text-danger font-weight-bold">45 د</td>
-                            <td><span class="badge bg-warning text-dark">تأخير</span></td>
-                            <td>
-                                <!-- Dropdown BS5 -->
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">احتساب أذن</a></li>
-                                        <li><a class="dropdown-item" href="#">تعديل الموعد</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- مثال 3: غياب -->
-                        <tr class="bg-light">
-                            <td>3</td>
-                            <td class="font-weight-bold text-end">بهجت ابراهيم</td>
-                            <td>الحدائق</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>0</td>
-                            <td>-</td>
-                            <td><span class="badge bg-danger">غياب</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">تحويل لأجازة اعتيادي</a></li>
-                                        <li><a class="dropdown-item" href="#">تحويل لمرضي</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#">توقيع جزاء</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- مثال 4: مأمورية -->
-                        <tr>
-                            <td>4</td>
-                            <td class="font-weight-bold text-end">رانيا أبو النصر</td>
-                            <td>القانونية</td>
-                            <td>08:00 ص</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td><span class="badge bg-info text-dark">مأمورية خارجية</span></td>
-                            <td>
-                                <button class="btn btn-outline-secondary btn-sm" title="عرض خط السير"><i class="fas fa-car"></i></button>
-                            </td>
-                        </tr>
+                        @if (Model?.Items != null)
+                        {
+                            var i = 1;
+                            foreach (var item in Model.Items)
+                            {
+                                <tr class="@(item.Status == "غياب" ? "bg-light" : "")">
+                                    <td>@(i++)</td>
+                                    <td class="font-weight-bold text-end">@item.EmployeeName</td>
+                                    <td>@item.DepartmentName</td>
+                                    <td class="@(item.LateMinutes > 0 ? "text-warning font-weight-bold" : "text-success")">
+                                        @(string.IsNullOrEmpty(item.CheckIn) ? "-" : item.CheckIn)
+                                    </td>
+                                    <td class="text-danger">
+                                        @(string.IsNullOrEmpty(item.CheckOut) ? "-" : item.CheckOut)
+                                    </td>
+                                    <td>@(item.WorkedHours > 0 ? item.WorkedHours.ToString("F1") + " س" : "-")</td>
+                                    <td class="@(item.LateMinutes > 0 ? "text-danger font-weight-bold" : "")">
+                                        @(item.LateMinutes > 0 ? item.LateMinutes + " د" : "-")
+                                    </td>
+                                    <td>
+                                        <span class="badge @item.StatusClass">@item.Status</span>
+                                    </td>
+                                    <td>
+                                        @if (item.Status == "تأخير")
+                                        {
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                           onclick="openConvertLateModal('@item.EmployeeId', '@item.EmployeeName', '@currentDate.ToString("yyyy-MM-dd")')">
+                                                            احتساب أذن
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                           onclick="openUpdateModal('@item.EmployeeId', '@item.CheckIn', '@item.CheckOut', '@item.Notes')">
+                                                            تعديل الموعد
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        }
+                                        else if (item.Status == "غياب")
+                                        {
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                           onclick="openConvertAbsenceModal('@item.EmployeeId', 'regular')">
+                                                            تحويل لأجازة اعتيادي
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                           onclick="openConvertAbsenceModal('@item.EmployeeId', 'sick')">
+                                                            تحويل لمرضي
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-outline-secondary btn-sm" title="تفاصيل">
+                                                <i class="fas fa-list"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
                     </tbody>
                 </table>
             </div>
@@ -240,44 +259,61 @@
     </div>
 </section>
 
-<!-- Modal: تسجيل حضور يدوي -->
+<!-- Manual Entry Modal -->
 <div class="modal fade" id="manualEntryModal" tabindex="-1" aria-labelledby="manualEntryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="manualEntryModalLabel"><i class="fas fa-edit me-2"></i> تسجيل حضور/انصراف يدوي</h5>
+                <h5 class="modal-title" id="manualEntryModalLabel">
+                    <i class="fas fa-edit me-2"></i> تسجيل حضور/انصراف يدوي
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post">
+            <form method="post" asp-action="CreateManual">
+                @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">الموظف</label>
-                        <select class="form-select select2-modal" style="width:100%">
-                            <option>ابحث عن الموظف...</option>
-                            <option>محمد فؤاد</option>
-                            <option>فاطمة الشرباني</option>
+                        <label class="form-label">الموظف <span class="text-danger">*</span></label>
+                        <select name="employeeId" class="form-select select2-modal" style="width:100%" required>
+                            <option value="">-- اختر موظف --</option>
+                            @if (employees != null)
+                            {
+                                foreach (var emp in employees)
+                                {
+                                    <option value="@emp.Value">@emp.Text</option>
+                                }
+                            }
                         </select>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label">التاريخ</label>
-                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            <label class="form-label">التاريخ <span class="text-danger">*</span></label>
+                            <input type="date" name="date" class="form-control"
+                                   value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label">نوع الحركة</label>
-                            <select class="form-select">
-                                <option>دخول (Check In)</option>
-                                <option>خروج (Check Out)</option>
+                            <label class="form-label">نوع الحركة <span class="text-danger">*</span></label>
+                            @* <select name="movementType" class="form-select" required>
+                                <option value="CheckIn">دخول (Check In)</option>
+                                <option value="CheckOut">خروج (Check Out)</option>
+                            </select> *@
+                            <select name="MovementType" class="form-select">
+                                @foreach (MovementType type in Enum.GetValues(typeof(MovementType)))
+                                {
+                                    <option value="@type">@type</option>
+                                }
                             </select>
+
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">الوقت</label>
-                        <input type="time" class="form-control">
+                        <label class="form-label">الوقت <span class="text-danger">*</span></label>
+                        <input type="time" name="time" class="form-control" value="@DateTime.Now.ToString("HH:mm")" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">ملاحظات / سبب التعديل</label>
-                        <textarea class="form-control" rows="2" placeholder="مثال: البصمة لم تعمل، مأمورية..."></textarea>
+                        <textarea name="notes" class="form-control" rows="2"
+                                  placeholder="مثال: البصمة لم تعمل، مأمورية..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -289,10 +325,177 @@
     </div>
 </div>
 
+<!-- Update Attendance Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="updateModalLabel">
+                    <i class="fas fa-pen me-2"></i> تعديل وقت الحضور/الانصراف
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="Update">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="updateId" value="" />
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">وقت الدخول</label>
+                            <input type="time" name="checkIn" id="updateCheckIn" class="form-control">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">وقت الخروج</label>
+                            <input type="time" name="checkOut" id="updateCheckOut" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظات</label>
+                        <textarea name="notes" id="updateNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">تحديث السجل</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<!-- Convert Late to Permission Modal -->
+<div class="modal fade" id="convertLateModal" tabindex="-1" aria-labelledby="convertLateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="convertLateModalLabel">
+                    <i class="fas fa-exchange-alt me-2"></i> تحويل التأخير إلى إذن
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="ConvertLateToPermission">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="attendanceRecordId" id="lateAttendanceRecordId" value="" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف</label>
+                        <input type="text" class="form-control bg-light" id="lateEmployeeName" readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">التاريخ <span class="text-danger">*</span></label>
+                            <input type="date" name="date" id="lateDate" class="form-control" readonly>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">نوع الإذن <span class="text-danger">*</span></label>
+                            <select name="permissionType" class="form-select" required>
+                                <option value="1">إذن شخصي (يخصم من الرصيد)</option>
+                                <option value="2">إذن مأمورية عمل (لا يخصم)</option>
+                                <option value="3">إذن مرضي (عيادة)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">من وقت <span class="text-danger">*</span></label>
+                            <input type="time" name="fromTime" class="form-control" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">إلى وقت <span class="text-danger">*</span></label>
+                            <input type="time" name="toTime" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظات</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="سبب الإذن..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">تحويل إلى إذن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Convert Absence to Vacation Modal -->
+<div class="modal fade" id="convertAbsenceModal" tabindex="-1" aria-labelledby="convertAbsenceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="convertAbsenceModalLabel">
+                    <i class="fas fa-calendar-check me-2"></i> تحويل الغياب إلى أجازة
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="ConvertAbsenceToVacation">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="attendanceRecordId" id="absenceAttendanceRecordId" value="" />
+                <input type="hidden" name="vacationType" id="absenceVacationType" value="regular" />
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i>
+                        سيتم تحويل سجل الغياب إلى <strong id="absenceTypeLabel">أجازة اعتيادية</strong>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظات</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="ملاحظات إضافية..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-secondary">تأكيد التحويل</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Import from Device Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="importModalLabel">
+                    <i class="fas fa-file-upload me-2"></i> استيراد من جهاز البصمة
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="ImportFromDevice">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="alert alert-light border border-info">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        قم بلصق بيانات JSON المستخرجة من جهاز البصمة. الصيغة المتوقعة:
+                        <code>[{"employeeId":"...","date":"2024-01-01","time":"08:00","direction":"in"}, ...]</code>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">بيانات JSON</label>
+                        <textarea name="records" id="deviceJsonInput" class="form-control font-monospace" rows="8"
+                                  placeholder='[{"employeeId":"guid","date":"2024-01-01","time":"08:00","direction":"in"}]'></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-info" onclick="submitDeviceImport()">
+                        <i class="fas fa-upload me-1"></i> استيراد
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
     <script>
         $(function () {
-            // تهيئة الجدول
+            $('.select2').select2({ theme: 'bootstrap4' });
+            $('.select2-modal').select2({
+                theme: 'bootstrap4',
+                dropdownParent: $('#manualEntryModal')
+            });
+
             $("#attendanceTable").DataTable({
                 "responsive": true,
                 "lengthChange": true,
@@ -304,7 +507,87 @@
                 ],
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json"
-                }
+                },
+                "order": [[0, 'asc']]
             }).buttons().container().appendTo('#attendanceTable_wrapper .col-md-6:eq(0)');
         });
+
+        function openUpdateModal(id, checkIn, checkOut, notes) {
+            document.getElementById('updateId').value = id;
+            document.getElementById('updateCheckIn').value = checkIn || '';
+            document.getElementById('updateCheckOut').value = checkOut || '';
+            document.getElementById('updateNotes').value = notes || '';
+            $('#updateModal').modal('show');
+        }
+
+        function openConvertLateModal(recordId, employeeName, date) {
+            document.getElementById('lateAttendanceRecordId').value = recordId;
+            document.getElementById('lateEmployeeName').value = employeeName;
+            document.getElementById('lateDate').value = date;
+            $('#convertLateModal').modal('show');
+        }
+
+        function openConvertAbsenceModal(recordId, type) {
+            document.getElementById('absenceAttendanceRecordId').value = recordId;
+            document.getElementById('absenceVacationType').value = type;
+            document.getElementById('absenceTypeLabel').innerText =
+                type === 'sick' ? 'أجازة مرضية' : 'أجازة اعتيادية';
+            $('#convertAbsenceModal').modal('show');
+        }
+
+        function submitDeviceImport() {
+            var jsonText = document.getElementById('deviceJsonInput').value;
+            if (!jsonText) {
+                alert('الرجاء إدخال بيانات JSON');
+                return;
+            }
+            try {
+                var records = JSON.parse(jsonText);
+                if (!Array.isArray(records) || records.length === 0) {
+                    alert('الرجاء إدخال مصفوفة JSON صالحة تحتوي على سجل واحد على الأقل');
+                    return;
+                }
+                var form = document.createElement('form');
+                form.method = 'post';
+                form.action = '@Url.Action("ImportFromDevice")';
+
+                var token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                form.appendChild(token);
+
+                records.forEach(function (record, index) {
+                    var idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'records[' + index + '].EmployeeId';
+                    idInput.value = record.employeeId;
+                    form.appendChild(idInput);
+
+                    var dateInput = document.createElement('input');
+                    dateInput.type = 'hidden';
+                    dateInput.name = 'records[' + index + '].Date';
+                    dateInput.value = record.date;
+                    form.appendChild(dateInput);
+
+                    var timeInput = document.createElement('input');
+                    timeInput.type = 'hidden';
+                    timeInput.name = 'records[' + index + '].Time';
+                    timeInput.value = record.time;
+                    form.appendChild(timeInput);
+
+                    var dirInput = document.createElement('input');
+                    dirInput.type = 'hidden';
+                    dirInput.name = 'records[' + index + '].Direction';
+                    dirInput.value = record.direction;
+                    form.appendChild(dirInput);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            } catch (e) {
+                alert('خطأ في صيغة JSON: ' + e.message);
+            }
+        }
     </script>
+}
