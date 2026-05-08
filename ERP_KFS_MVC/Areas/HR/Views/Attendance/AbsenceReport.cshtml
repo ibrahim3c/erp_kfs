@@ -1,0 +1,188 @@
+@model HR.Application.Attendance.Queries.GetAbsenceReport.AbsenceReportResponse
+@{
+    ViewData["Title"] = "تقرير الغياب";
+    var orgUnits = ViewBag.OrgUnitId as SelectList;
+}
+
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">تقرير الغياب</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index">سجل الحضور</a></li>
+                    <li class="breadcrumb-item active">تقرير الغياب</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- Filter Form -->
+        <div class="card card-outline card-danger">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-filter me-1"></i> نطاق التقرير</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="get" asp-action="AbsenceReport">
+                    <div class="row align-items-end">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">من تاريخ</label>
+                            <input type="date" name="dateFrom" class="form-control"
+                                   value="@Model?.DateFrom.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">إلى تاريخ</label>
+                            <input type="date" name="dateTo" class="form-control"
+                                   value="@Model?.DateTo.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">القسم / الإدارة</label>
+                            <select name="orgUnitId" class="form-select">
+                                <option value="">-- الكل --</option>
+                                @if (orgUnits != null)
+                                {
+                                    foreach (var ou in orgUnits)
+                                    {
+                                        <option value="@ou.Value">@ou.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3 d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-search"></i> عرض التقرير
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (Model?.Items != null && Model.Items.Count > 0)
+        {
+            <!-- Summary Stats -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-box shadow-sm">
+                        <span class="info-box-icon bg-danger"><i class="fas fa-calendar-times"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">إجمالي أيام الغياب</span>
+                            <span class="info-box-number">@Model.TotalAbsenceDays <small>يوم</small></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box shadow-sm">
+                        <span class="info-box-icon bg-warning"><i class="fas fa-users-slash"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">عدد الموظفين المتغيبين</span>
+                            <span class="info-box-number">@Model.AffectedEmployeesCount <small>موظف</small></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box shadow-sm">
+                        <span class="info-box-icon bg-info"><i class="fas fa-calendar-alt"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">الفترة</span>
+                            <span class="info-box-number">
+                                @Model.DateFrom.ToString("dd/MM/yyyy") — @Model.DateTo.ToString("dd/MM/yyyy")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="card">
+                <div class="card-header border-0">
+                    <h3 class="card-title text-bold">تفاصيل الغياب</h3>
+                    <div class="card-tools">
+                        <button class="btn btn-success btn-sm" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="absenceReportTable" class="table table-bordered table-striped text-center">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th>م</th>
+                                <th>الموظف</th>
+                                <th>الوظيفة</th>
+                                <th>الإدارة</th>
+                                <th>أيام الغياب</th>
+                                <th>تواريخ الغياب</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var i = 1;
+                                foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@(i++)</td>
+                                        <td class="text-end fw-bold">@item.EmployeeName</td>
+                                        <td>@item.JobTitleName</td>
+                                        <td>@item.DepartmentName</td>
+                                        <td>
+                                            <span class="badge bg-danger" style="font-size:14px">
+                                                @item.AbsenceDays يوم
+                                            </span>
+                                        </td>
+                                        <td class="text-start" style="max-width:300px;">
+                                            @string.Join(" ، ", item.AbsentDates.Select(d => d.Replace("/", "-")))
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-1"></i>
+                لا توجد نتائج للفترة المحددة. قم بتعديل نطاق البحث.
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $("#absenceReportTable").DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "buttons": [
+                    { extend: 'excel', text: 'Excel', className: 'btn-success' },
+                    { extend: 'print', text: 'طباعة' }
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json"
+                },
+                "order": [[4, 'desc']]
+            }).buttons().container().appendTo('#absenceReportTable_wrapper .col-md-6:eq(0)');
+        });
+    </script>
+}

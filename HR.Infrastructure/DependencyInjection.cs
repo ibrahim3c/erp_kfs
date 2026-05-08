@@ -1,5 +1,6 @@
 ﻿using HR.Application.Payrolls.CalculatePayrollCycle;
 using HR.Domain;
+using HR.Domain.Attendance;
 using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
@@ -40,6 +41,7 @@ namespace HR.Infrastructure
             services.AddScoped<IPenaltyRepository, PenaltyRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<ILateEntryRepository, LateEntryRepository>();
+            services.AddScoped<IAttendanceRecordRepository, AttendanceRecordRepository>();
 
             services.AddScoped<IHRUnitOfWork, HRUnitOfWork>();
             services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();

@@ -1,4 +1,5 @@
-﻿using HR.Domain.Candidates;
+﻿using HR.Domain.Attendance;
+using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
 using HR.Domain.Incentives;
@@ -23,6 +24,7 @@ namespace HR.Domain
         IPenaltyRepository PenaltyRepository { get; }
         IPermissionRepository PermissionRepository { get; }
         ILateEntryRepository LateEntryRepository { get; }
+        IAttendanceRecordRepository AttendanceRecordRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
