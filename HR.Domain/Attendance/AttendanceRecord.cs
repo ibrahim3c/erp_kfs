@@ -88,8 +88,8 @@ namespace HR.Domain.Attendance
 
         public Result RecordCheckIn(TimeSpan time)
         {
-            if (CheckIn.HasValue)
-                return Result.Failure(AttendanceErrors.DuplicateRecord);
+            //if (CheckIn.HasValue)
+            //    return Result.Failure(AttendanceErrors.DuplicateRecord);
 
             CheckIn = time;
             CalculateDerivedValues();
@@ -159,7 +159,7 @@ namespace HR.Domain.Attendance
                     LateMinutes = 0;
 
                 if (CheckOut.HasValue)
-                    WorkedHours = Math.Round((CheckOut.Value - CheckIn.Value).TotalHours, 2);
+                    WorkedHours = Math.Round((CheckOut.Value - CheckIn.Value).TotalHours, 2);// 2h 30m => 2.5h
                 else
                     WorkedHours = 0;
             }

@@ -20,6 +20,8 @@ namespace HR.Application.Attendance.Commands.ConvertLateToPermission
             ConvertLateToPermissionCommand request,
             CancellationToken cancellationToken)
         {
+
+
             var record = await _unitOfWork.AttendanceRecordRepository
                 .GetByIdAsync(request.AttendanceRecordId, cancellationToken);
 

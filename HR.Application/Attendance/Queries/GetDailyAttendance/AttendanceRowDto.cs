@@ -2,6 +2,7 @@ namespace HR.Application.Attendance.Queries.GetDailyAttendance
 {
     public class AttendanceRowDto
     {
+        public Guid Id { get; init; }
         public Guid EmployeeId { get; init; }
         public string EmployeeName { get; init; } = string.Empty;
         public string DepartmentName { get; init; } = string.Empty;

@@ -1,5 +1,6 @@
 using HR.Domain;
 using HR.Domain.Attendance;
+using HR.Domain.Permissions;
 using Modules.Shared.Application.Messaging;
 using Modules.Shared.Domain;
 
@@ -37,6 +38,16 @@ namespace HR.Application.Attendance.Commands.CreateManualAttendance
                 if (!string.IsNullOrWhiteSpace(request.Notes))
                     existing.UpdateNotes(request.Notes);
 
+
+                if( isCheckIn && existing.Status == AttendanceStatus.Late)
+                {
+                    var lateEntry = LateEntry.Create(request.EmployeeId, request.Date, request.Time, request.Notes);
+                    if (lateEntry.IsSuccess)
+                        return Result<Guid>.Failure(lateEntry.Error);
+                   _unitOfWork.LateEntryRepository.Add(lateEntry.Value);
+                    existing.LinkLateEntry(lateEntry.Value.Id);
+                }
+
                 _unitOfWork.AttendanceRecordRepository.Update(existing);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 return Result<Guid>.Success(existing.Id);
@@ -50,13 +61,19 @@ namespace HR.Application.Attendance.Commands.CreateManualAttendance
             var createResult = AttendanceRecord.Create(
                 request.EmployeeId,
                 request.Date,
-                isCheckIn ? request.Time : null,
-                isCheckIn ? null : request.Time,
+                //isCheckIn ? request.Time : null,
+                //isCheckIn ? null : request.Time,
+                null,
+                null,
                 AttendanceStatus.Present,
                 request.Notes);
 
             if (createResult.IsFailure)
                 return Result<Guid>.Failure(createResult.Error);
+            if(isCheckIn)
+                createResult.Value!.RecordCheckIn(request.Time);
+            else
+                createResult.Value!.RecordCheckOut(request.Time);
 
             _unitOfWork.AttendanceRecordRepository.Add(createResult.Value!);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

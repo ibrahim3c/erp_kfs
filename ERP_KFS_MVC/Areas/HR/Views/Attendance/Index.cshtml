@@ -1,3 +1,4 @@
+@using HR.Application.Attendance.Commands.CreateManualAttendance
 @model HR.Application.Attendance.Queries.GetDailyAttendance.DailyAttendanceResponse
 @{
     ViewData["Title"] = "سجل الحضور والانصراف اليومي";
@@ -205,13 +206,13 @@
                                                 <ul class="dropdown-menu">
                                                     <li>
                                                         <a class="dropdown-item" href="#"
-                                                           onclick="openConvertLateModal('@item.EmployeeId', '@item.EmployeeName', '@currentDate.ToString("yyyy-MM-dd")')">
+                                                           onclick="openConvertLateModal('@item.Id', '@item.EmployeeName', '@currentDate.ToString("yyyy-MM-dd")')">
                                                             احتساب أذن
                                                         </a>
                                                     </li>
                                                     <li>
                                                         <a class="dropdown-item" href="#"
-                                                           onclick="openUpdateModal('@item.EmployeeId', '@item.CheckIn', '@item.CheckOut', '@item.Notes')">
+                                                           onclick="openUpdateModal('@item.Id', '@item.CheckIn', '@item.CheckOut', '@item.Notes')">
                                                             تعديل الموعد
                                                         </a>
                                                     </li>
@@ -228,13 +229,13 @@
                                                 <ul class="dropdown-menu">
                                                     <li>
                                                         <a class="dropdown-item" href="#"
-                                                           onclick="openConvertAbsenceModal('@item.EmployeeId', 'regular')">
+                                                           onclick="openConvertAbsenceModal('@item.Id', 'regular')">
                                                             تحويل لأجازة اعتيادي
                                                         </a>
                                                     </li>
                                                     <li>
                                                         <a class="dropdown-item" href="#"
-                                                           onclick="openConvertAbsenceModal('@item.EmployeeId', 'sick')">
+                                                           onclick="openConvertAbsenceModal('@item.Id', 'sick')">
                                                             تحويل لمرضي
                                                         </a>
                                                     </li>
@@ -269,58 +270,60 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" asp-action="CreateManual">
+            <form method="post" asp-area="HR" asp-controller="Attendance" asp-action="CreateManual">
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
+
                     <div class="mb-3">
                         <label class="form-label">الموظف <span class="text-danger">*</span></label>
                         <select name="employeeId" class="form-select select2-modal" style="width:100%" required>
                             <option value="">-- اختر موظف --</option>
-                            @if (employees != null)
+                            @if (ViewBag.Employees != null)
                             {
-                                foreach (var emp in employees)
+                                foreach (var emp in (IEnumerable<SelectListItem>)ViewBag.Employees)
                                 {
                                     <option value="@emp.Value">@emp.Text</option>
                                 }
                             }
                         </select>
                     </div>
+
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">التاريخ <span class="text-danger">*</span></label>
                             <input type="date" name="date" class="form-control"
                                    value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
                         </div>
+
                         <div class="col-6 mb-3">
                             <label class="form-label">نوع الحركة <span class="text-danger">*</span></label>
-                            @* <select name="movementType" class="form-select" required>
-                                <option value="CheckIn">دخول (Check In)</option>
-                                <option value="CheckOut">خروج (Check Out)</option>
-                            </select> *@
-                            <select name="MovementType" class="form-select">
-                                @foreach (MovementType type in Enum.GetValues(typeof(MovementType)))
+                            <select name="movementType" class="form-select" required>
+                                @foreach (var type in Enum.GetValues(typeof(MovementType)))
                                 {
                                     <option value="@type">@type</option>
                                 }
                             </select>
-
                         </div>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">الوقت <span class="text-danger">*</span></label>
                         <input type="time" name="time" class="form-control" value="@DateTime.Now.ToString("HH:mm")" required>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">ملاحظات / سبب التعديل</label>
                         <textarea name="notes" class="form-control" rows="2"
                                   placeholder="مثال: البصمة لم تعمل، مأمورية..."></textarea>
                     </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
                     <button type="submit" class="btn btn-success">حفظ السجل</button>
                 </div>
             </form>
+        
         </div>
     </div>
 </div>
@@ -398,11 +401,11 @@
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">من وقت <span class="text-danger">*</span></label>
-                            <input type="time" name="fromTime" class="form-control" required>
+                            <input type="time" name="fromTime" class="form-control" step="60" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">إلى وقت <span class="text-danger">*</span></label>
-                            <input type="time" name="toTime" class="form-control" required>
+                            <input type="time" name="toTime" class="form-control" step="60" required>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -418,6 +421,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Convert Absence to Vacation Modal -->
 <div class="modal fade" id="convertAbsenceModal" tabindex="-1" aria-labelledby="convertAbsenceModalLabel" aria-hidden="true">

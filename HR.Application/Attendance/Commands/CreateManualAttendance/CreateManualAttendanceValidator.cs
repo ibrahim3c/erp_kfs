@@ -14,9 +14,7 @@ namespace HR.Application.Attendance.Commands.CreateManualAttendance
                 .NotEmpty().WithMessage("التاريخ مطلوب");
 
             RuleFor(x => x.MovementType)
-                .NotEmpty().WithMessage("نوع الحركة مطلوب")
-                .Must(x => x == MovementType.CheckIn || x == MovementType.CheckOut)
-                .WithMessage("نوع الحركة يجب أن يكون in أو out");
+            .IsInEnum().WithMessage("نوع الحركة غير صحيح أو غير مدعوم");
         }
     }
 }

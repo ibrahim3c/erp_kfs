@@ -24,6 +24,7 @@ namespace HR.Application.Attendance.Queries.GetDailyAttendance
 
             var sql = """
                 SELECT
+                    ar.Id AS Id,
                     e.Id AS EmployeeId,
                     e.Name AS EmployeeName,
                     COALESCE(ou.Name, N'غير محدد') AS DepartmentName,

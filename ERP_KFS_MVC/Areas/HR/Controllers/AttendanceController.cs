@@ -89,16 +89,27 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
             Guid attendanceRecordId,
             int permissionType,
             DateTime date,
-            TimeSpan fromTime,
-            TimeSpan toTime,
+        //    TimeSpan fromTime,
+        //    TimeSpan toTime,
+        //    string? notes)
+        //{
+            string fromTime, // استقبال الوقت كـ string
+            string toTime,   // استقبال الوقت كـ string
             string? notes)
-        {
+           {
+            // تحويل النص إلى TimeSpan بشكل دقيق وصحيح يضمن الحفاظ على الساعة 12
+            if (!TimeSpan.TryParse(fromTime, out TimeSpan parsedFromTime) ||
+                !TimeSpan.TryParse(toTime, out TimeSpan parsedToTime))
+            {
+                TempData["ErrorMessage"] = "صيغة الوقت المدخلة غير صحيحة.";
+                return RedirectToAction(nameof(Index));
+            }
             var command = new ConvertLateToPermissionCommand(
                 attendanceRecordId,
                 (PermissionType)permissionType,
                 date,
-                fromTime,
-                toTime,
+                parsedFromTime,
+                parsedToTime,
                 notes);
 
             var result = await _mediator.Send(command);
