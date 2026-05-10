@@ -124,7 +124,7 @@ namespace HR.Application.Promotions.Commands
             }
 
             // ── 6. حفظ كل شيء في Transaction واحدة ──────────────────
-
+                   
                  uow.PromotionCycleRepository.Update(cycle);
                 await uow.PromotionHistoryRepository.AddRangeAsync(historyEntries, ct);
                 await uow.SaveChangesAsync(ct);

@@ -1,24 +1,15 @@
 ﻿using Dapper;
-using HR.Application.Employees.GetAllEmployees;
 using HR.Application.Promotions.DTOs;
 using HR.Domain;
-using HR.Domain.Employees;
-using HR.Domain.Penalties;
 using HR.Domain.Promotions.Entities;
 using HR.Domain.Promotions.Enum;
-using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Promotions.Services;
 using HR.Domain.Promotions.Snapshots;
 using HR.Domain.Promotions.ValueObjects;
-using MediatR;
 using Modules.Shared.Application.Database;
 using Modules.Shared.Application.Messaging;
 using Modules.Shared.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace HR.Application.Promotions.Queries
 {
@@ -107,18 +98,18 @@ namespace HR.Application.Promotions.Queries
                     EmptyResponse(cycleId));
 
             // ── 4. حصة العلاوة التشجيعية — 10% من كل درجة ───────────
-            // ✅ emp.GradeLevel موجود على الـ Snapshot مباشرة
+            //  emp.GradeLevel موجود على الـ Snapshot مباشرة
             var quotaTracker = employees
                 .GroupBy(e => e.GradeLevel)
                 .ToDictionary(
                     g => g.Key,
-                    g => (int)Math.Floor(g.Count() * 0.10m));
+                    g => (int)Math.Floor(g.Count() * 0.10m));  // 0.10m = 10%
 
             var results = new List<EligibilityResultDto>();
             var failures = new List<string>();
 
             // ── 5. تقييم كل موظف ─────────────────────────────────────
-            var allResults = new List<EligibilityResult>(); // ✅ قائمة منفصلة
+            var allResults = new List<EligibilityResult>(); //  قائمة منفصلة
 
             foreach (var emp in employees)
             {
@@ -127,7 +118,7 @@ namespace HR.Application.Promotions.Queries
 
                 var penaltyDays = await _uow.PenaltyRepository
                     .GetTotalDaysAsync(emp.Id,
-                        criteria.EligibilityDate.AddYears(-2),
+                        criteria.EligibilityDate.AddYears(-2),  // بيحسب مجموع أيام الجزاءات خلال آخر سنتين.
                         cancellationToken);
 
                 int quotaLeft = quotaTracker.GetValueOrDefault(emp.GradeLevel, 0);
@@ -149,7 +140,7 @@ namespace HR.Application.Promotions.Queries
                 if (eligResult.Status == EligibilityStatus.Eligible
                     && request.CycleType == CycleType.Incentive)
                 {
-                    quotaTracker[emp.GradeLevel] = Math.Max(0, quotaLeft - 1);
+                    quotaTracker[emp.GradeLevel] = Math.Max(0, quotaLeft - 1);  // لو الموظف اتقبل ينقص الحصة
                 }
 
                 results.Add(MapToDto(eligResult, emp));
@@ -188,7 +179,7 @@ namespace HR.Application.Promotions.Queries
                 Failures = new()
             };
 
-        private static EligibilityResultDto MapToDto(
+        private static EligibilityResultDto MapToDto(  // تحويل Domain Object إلى API DTO.
             EligibilityResult result, EmployeeSnapshot emp)
             => new()
             {

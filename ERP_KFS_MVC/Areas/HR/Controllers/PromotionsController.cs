@@ -77,7 +77,9 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
 
             var result = await _mediator.Send(command, ct);
 
-            // ✅ بنرجع JSON متوافق مع الـ JS
+            TempData[result.IsFailure ? "ErrorMessage" : "SuccessMessage"] =
+                result.IsFailure ? result.Error.Name : "تم الموافقه علي الترقيات بنجاح.";
+
             return result.IsSuccess
       ? RedirectToAction("Index", new { area = "HR" })
       : RedirectToAction("Index", new { area = "HR", error = result.Error.Name });

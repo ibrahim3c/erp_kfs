@@ -13,7 +13,7 @@ namespace HR.Domain.Promotions.ValueObjects
     /// GradeLevel: 1 = أعلى درجة (GD01) ← 12 = أدنى درجة (GD12)
     /// YearsNo: سنوات الاستحقاق مختلفة لكل درجة (من الجدول)
     /// </summary>
-    public sealed class JobGrade : IEquatable<JobGrade>
+    public sealed class JobGrade : IEquatable<JobGrade>  // الـ Entity بيتقارن بالـ Id.  /  لكن الـ Value Object بيتقارن بالقيم الداخلية.
     {
         public string Code { get; }   // GD01
         public string Name { get; }   // "الدرجة الثانية ب"
@@ -44,14 +44,14 @@ namespace HR.Domain.Promotions.ValueObjects
         public bool HasCompletedRequiredYears(decimal actualYears)
             => actualYears >= YearsNo;
 
-        // Value Object — يتقارن بالقيمة مش بالـ Id
+        // Value Object — يتقارن بالقيمة مش بال اي دي 
         public bool Equals(JobGrade? other)
             => other is not null
             && Code == other.Code
             && Level == other.Level;
 
         public override bool Equals(object? obj) => Equals(obj as JobGrade);
-        public override int GetHashCode() => HashCode.Combine(Code, Level);
-        public override string ToString() => Name;
+        public override int GetHashCode() => HashCode.Combine(Code, Level); // لازم أي Object يعمل Override لـ Equals  ->  يعمل Override لـ GetHashCode.
+       public override string ToString() => Name;
     }
 }
