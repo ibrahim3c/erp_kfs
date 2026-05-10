@@ -146,180 +146,67 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
-
-    {{!-- ✅ Libraries المطلوبة --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-
     <script>
         $(document).ready(function () {
-        $('#employeesTable').DataTable({
-        responsive: true,
-        columnDefs: [
-        { orderable: false, targets: [7] },
-        // ✅ نستثني عمود الخيارات من التصدير
-        { targets: [7], visible: true, searchable: false }
-        ],
-        language: {
-        sProcessing: "جاري التحميل...",
-        sLengthMenu: "عرض _MENU_",
-        sZeroRecords: "لا توجد نتائج",
-        sEmptyTable: "لا توجد بيانات",
-        sInfo: "سجل _START_ - _END_ من _TOTAL_",
-        sInfoEmpty: "سجل 0 - 0 من 0",
-        sInfoFiltered: "(من _MAX_)",
-        sSearch: "",
-        searchPlaceholder: "بحث...",
-        oPaginate: {
-        sFirst: "الأول", sLast: "الأخير",
-        sNext: "التالي", sPrevious: "السابق"
-        },
-        buttons: {
-        copyTitle: 'نسخ إلى الحافظة',
-        copySuccess: { 1: 'تم نسخ سطر واحد', _: 'تم نسخ %d سطر' }
-        }
-        },
-        dom: '<"hr-dt-top p-3 border-bottom w-100"B><"hr-dt-bottom p-3 d-flex align-items-center justify-content-between w-100"lf>rt<"p-3 d-flex flex-column align-items-center gap-2 w-100"pi>',
-        buttons: [
-        {
-        extend: 'copyHtml5',
-        text: '<i class="fas fa-copy"></i> نسخ',
-        className: 'hr-btn-dt',
-        // ✅ استثناء عمود الخيارات
-        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6] }
-        },
-        {
-        extend: 'excelHtml5',
-        text: '<i class="fas fa-file-excel"></i> إكسيل',
-        className: 'hr-btn-dt',
-        title: 'سجل الموظفين العام',
-        // ✅ استثناء عمود الخيارات
-        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6] },
-        // ✅ تنسيق الـ Excel
-        customize: function (xlsx) {
-        var sheet = xlsx.xl.worksheets['sheet1.xml'];
-
-        // تلوين صف العناوين
-        $('row:first c', sheet).attr('s', '2');
-        }
-        },
-        {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i> طباعة',
-        className: 'hr-btn-dt',
-        title: 'سجل الموظفين العام',
-        // ✅ استثناء عمود الخيارات
-        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6] },
-        // ✅ تنسيق صفحة الطباعة
-        customize: function (win) {
-        $(win.document.body).css({
-        'direction': 'rtl',
-        'font-family': 'Tajawal, Arial, sans-serif'
-        });
-        $(win.document.body).find('h1').css({
-        'text-align': 'center',
-        'font-size': '18px',
-        'margin-bottom': '20px'
-        });
-        $(win.document.body).find('table').css({
-        'border-collapse': 'collapse',
-        'width': '100%',
-        'font-size': '12px'
-        });
-        $(win.document.body).find('th').css({
-        'background': '#1a1a2e',
-        'color': '#fff',
-        'padding': '8px',
-        'text-align': 'center'
-        });
-        $(win.document.body).find('td').css({
-        'padding': '6px 8px',
-        'border': '1px solid #dee2e6',
-        'text-align': 'center'
-        });
-        // إضافة تاريخ الطباعة
-        $(win.document.body).prepend(
-        '<p style="text-align:center; color:#666; font-size:11px;">' +
-        'تاريخ الطباعة: ' + new Date().toLocaleDateString('ar-EG') +
-        '</p>'
-        );
-        }
-        },
-        {
-        extend: 'colvis',
-        text: '<i class="fas fa-columns"></i> الأعمدة',
-        className: 'hr-btn-dt',
-        // ✅ نخفي عمود الخيارات من القائمة
-        columns: [1, 2, 3, 4, 5, 6]
-        }
-        ]
-        });
+            $('#employeesTable').DataTable({
+                responsive: true,
+                columnDefs: [
+                    { orderable: false, targets: [7] }
+                ],
+                language: {
+                    sProcessing: "جاري التحميل...",
+                    sLengthMenu: "عرض _MENU_",
+                    sZeroRecords: "لا توجد نتائج",
+                    sEmptyTable: "لا توجد بيانات",
+                    sInfo: "سجل _START_ - _END_ من _TOTAL_",
+                    sInfoEmpty: "سجل 0 - 0 من 0",
+                    sInfoFiltered: "(من _MAX_)",
+                    sSearch: "",
+                    searchPlaceholder: "بحث...",
+                    oPaginate: {
+                        sFirst: "الأول", sLast: "الأخير",
+                        sNext: "التالي", sPrevious: "السابق"
+                    }
+                },
+                dom: '<"hr-dt-top p-3 border-bottom w-100"B><"hr-dt-bottom p-3 d-flex align-items-center justify-content-between w-100"lf>rt<"p-3 d-flex flex-column align-items-center gap-2 w-100"pi>',
+                buttons: [
+                    { extend: 'copy', text: '<i class="fas fa-copy"></i> نسخ', className: 'hr-btn-dt' },
+                    { extend: 'excel', text: '<i class="fas fa-file-excel"></i> إكسيل', className: 'hr-btn-dt' },
+                    { extend: 'print', text: '<i class="fas fa-print"></i> طباعة', className: 'hr-btn-dt' },
+                    { extend: 'colvis', text: '<i class="fas fa-columns"></i> الأعمدة', className: 'hr-btn-dt' }
+                ]
+            });
         });
     </script>
-
     <style>
-        /* ── Buttons Style ─────────────────────────────────── */
-        .hr-btn-dt {
-        background: #fff !important;
-        border: 1px solid #dee2e6 !important;
-        border-radius: 8px !important;
-        color: #495057 !important;
-        font-size: 0.83rem !important;
-        padding: 6px 14px !important;
-        margin-left: 6px !important;
-        transition: all .2s !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,.06) !important;
-        }
-
-        .hr-btn-dt:hover {
-        background: #f8f9fa !important;
-        border-color: #adb5bd !important;
-        transform: translateY(-1px) !important;
-        }
-
-        .hr-btn-dt i {
-        margin-left: 4px;
-        }
-
-        /* ── Grade Badges ──────────────────────────────────── */
         .hr-grade-badge {
-        display: inline-block;
-        padding: 4px 14px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 600;
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
         }
 
         .grade-first {
-        background: #fff3cd;
-        color: #856404;
+            background-color: #fff3cd;
+            color: #856404;
         }
 
         .grade-second {
-        background: #d1ecf1;
-        color: #0c5460;
+            background-color: #d1ecf1;
+            color: #0c5460;
         }
 
         .grade-third {
-        background: #e2d9f3;
-        color: #432874;
+            background-color: #e2d9f3;
+            color: #432874;
         }
 
         .grade-default {
-        background: #f0f0f0;
-        color: #555;
-        }
-
-        /* ── Print Style ───────────────────────────────────── */
-        @@media print {
-        .hr-btn-dt, .dropdown, button {
-        display: none !important;
-        }
+            background-color: #f0f0f0;
+            color: #555;
         }
     </style>
 }

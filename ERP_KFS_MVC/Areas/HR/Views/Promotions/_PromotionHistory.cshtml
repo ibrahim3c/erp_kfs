@@ -1,0 +1,257 @@
+﻿@model HR.Application.Promotions.DTOs.EmployeePromotionHistoryResponse
+
+<style>
+    .hist-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: #1a1a2e;
+        color: #fff;
+        border-radius: 10px 10px 0 0;
+        direction: rtl;
+    }
+
+        .hist-header .emp-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #3949ab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .hist-header .emp-info h5 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .hist-header .emp-info small {
+            font-size: 0.78rem;
+            opacity: .75;
+        }
+
+    .hist-body {
+        padding: 20px;
+        direction: rtl;
+        max-height: 420px;
+        overflow-y: auto;
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-right: 28px;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+    .tl-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+        .tl-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .tl-dot {
+        position: absolute;
+        right: -23px;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #dee2e6;
+    }
+
+        .tl-dot.promote {
+            background: #20c997;
+            box-shadow: 0 0 0 2px #20c997;
+        }
+
+        .tl-dot.periodic {
+            background: #007bff;
+            box-shadow: 0 0 0 2px #007bff;
+        }
+
+        .tl-dot.incentive {
+            background: #ffc107;
+            box-shadow: 0 0 0 2px #ffc107;
+        }
+
+    .tl-card {
+        background: #f8f9fa;
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        padding: 10px 14px;
+    }
+
+        .tl-card .tl-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .tl-card .tl-type {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+    .tl-type.promote {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .tl-type.periodic {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .tl-type.incentive {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .tl-card .tl-date {
+        font-size: 0.78rem;
+        color: #6c757d;
+        direction: ltr;
+    }
+
+    .tl-card .tl-grades {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.82rem;
+        color: #333;
+    }
+
+    .tl-grade-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 5px;
+        background: #e8eaf6;
+        color: #3949ab;
+        font-size: 0.76rem;
+        font-weight: 600;
+    }
+
+    .tl-arrow {
+        color: #aaa;
+        font-size: 0.75rem;
+    }
+
+    .tl-card .tl-notes {
+        margin-top: 5px;
+        font-size: 0.78rem;
+        color: #6c757d;
+        border-top: 1px solid #eee;
+        padding-top: 5px;
+    }
+
+    .hist-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: #aaa;
+        direction: rtl;
+    }
+
+        .hist-empty i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+            opacity: .4;
+        }
+</style>
+
+@{
+    string Initials(string name)
+    {
+        var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{parts[0][0]}{parts[1][0]}"
+            : name.Length >= 2 ? name[..2] : name;
+    }
+
+    string TypeClass(string type) => type switch
+    {
+        "ترقية" => "promote",
+        "علاوة دورية" => "periodic",
+        "علاوة تشجيعية" => "incentive",
+        _ => "periodic"
+    };
+}
+
+<div style="border-radius:10px; overflow:hidden; border: 1px solid #e9ecef;">
+
+    @* Header *@
+    <div class="hist-header">
+        <div class="emp-avatar">@Initials(Model.EmployeeName)</div>
+        <div class="emp-info">
+            <h5>@Model.EmployeeName</h5>
+            <small>الدرجة الحالية: @Model.CurrentGrade</small>
+        </div>
+        <span class="badge bg-secondary ms-auto" style="font-size:.75rem">
+            @Model.Items.Count حركة
+        </span>
+    </div>
+
+    @* Body *@
+    <div class="hist-body">
+        @if (!Model.Items.Any())
+        {
+            <div class="hist-empty">
+                <i class="fas fa-history"></i>
+                لا توجد حركات وظيفية مسجلة
+            </div>
+        }
+        else
+        {
+            <div class="timeline">
+                @foreach (var item in Model.Items)
+                {
+                    var cls = TypeClass(item.MovementType);
+                    <div class="tl-item">
+                        <div class="tl-dot @cls"></div>
+                        <div class="tl-card">
+                            <div class="tl-top">
+                                <span class="tl-type @cls">@item.MovementType</span>
+                                <span class="tl-date">@item.EffectiveDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="tl-grades">
+                                <span class="tl-grade-badge">@item.FromGrade</span>
+                                <span class="tl-arrow"><i class="fas fa-arrow-left"></i></span>
+                                <span class="tl-grade-badge">@item.ToGrade</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.Notes))
+                            {
+                                <div class="tl-notes">
+                                    <i class="fas fa-sticky-note me-1"></i>@item.Notes
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</div>

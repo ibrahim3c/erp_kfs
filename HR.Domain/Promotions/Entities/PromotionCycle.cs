@@ -27,7 +27,7 @@ namespace HR.Domain.Promotions.Entities
 
         // المعايير — مخزنة مع الكشف للمرجعية
         public int MinKpiScore { get; private set; }
-        public decimal? MaxPenaltyDays { get; private set; }
+        public int MaxPenaltyDays { get; private set; }
         public int KpiYearsToCheck { get; private set; }
 
         // Navigation
@@ -45,7 +45,7 @@ namespace HR.Domain.Promotions.Entities
             DateTime createdAt,
             Guid createdByUserId,
             int minKpiScore,
-            decimal? maxPenaltyDays,
+            int maxPenaltyDays,
             int kpiYearsToCheck) : base(id)
         {
             Type = type;

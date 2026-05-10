@@ -95,6 +95,20 @@
         </div>
 
     </div>
+
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border:none; border-radius:12px; overflow:hidden;">
+                <div class="modal-header" style="background:#1a1a2e; border:none; padding:12px 20px;">
+                    <h6 class="modal-title text-white mb-0">
+                        <i class="fas fa-history me-2"></i> سجل الحركات الوظيفية
+                    </h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3" id="historyModalBody"></div>
+            </div>
+        </div>
+    </div>
 </section>
 
 @section Scripts {
@@ -154,6 +168,24 @@
                     btn.innerHTML = '<i class="fas fa-search me-1"></i> عرض كشف المستحقين';
                 });
         }
+        // تفصيل سجل الحركات عند الضغط على زر "السجل"
+        $(document).on('click', '.btn-history', function () {
+            var empId = $(this).data('emp-id');
+
+            $('#historyModalBody').html(
+                '<div class="text-center py-4 text-muted">' +
+                '<i class="fas fa-spinner fa-spin fa-2x"></i></div>'
+            );
+
+            new bootstrap.Modal(document.getElementById('historyModal')).show();
+
+            $.get('/HR/Promotions/EmployeeHistory', { employeeId: empId })
+                .done(function (html) { $('#historyModalBody').html(html); })
+                .fail(function () {
+                    $('#historyModalBody').html(
+                        '<div class="alert alert-danger m-2">تعذر تحميل السجل</div>');
+                });
+        });
         function approveSelected() {
             const cycleId = document.getElementById('hiddenCycleId')?.value;
             const selected = [...document.querySelectorAll('.row-check:checked')]
@@ -199,26 +231,7 @@
         function initResultsTable() {
             if ($.fn.DataTable.isDataTable('#promoTable'))
                 $('#promoTable').DataTable().destroy();
-
-            $('#promoTable').DataTable({
-                language: { url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json' },
-                autoWidth: false,
-                responsive: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    { extend: 'excel', text: 'تصدير Excel', className: 'btn-success btn-sm' },
-                    { extend: 'print', text: 'طباعة', className: 'btn-default btn-sm' }
-                ]
-            });
-
-            document.getElementById('checkAll')?.addEventListener('change', function () {
-                document.querySelectorAll('.row-check:not(:disabled)')
-                    .forEach(cb => cb.checked = this.checked);
-                updateSelectedCount();
-            });
-
-            document.querySelectorAll('.row-check')
-                .forEach(cb => cb.addEventListener('change', updateSelectedCount));
+           
         }
 
         function updateSelectedCount() {
