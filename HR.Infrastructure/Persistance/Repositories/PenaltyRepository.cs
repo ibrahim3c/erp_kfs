@@ -41,6 +41,15 @@ namespace HR.Infrastructure.Persistance.Repositories
            return await dbContext.PenaltyRecords.Include(x =>x.Employee).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
+        public async Task<decimal?> GetTotalDaysAsync(Guid employeeId, DateTime fromDate, CancellationToken ct)
+        {
+            // يربط على جدول الجزاءات الموجود عندك
+            // عدّل اسم الجدول / الأعمدة حسب الـ schema
+            return await dbContext.PenaltyRecords
+                .Where(p => p.EmployeeId == employeeId
+                         && p.ViolationDate >= fromDate)
+                .SumAsync(p => p.DeductionDays, ct);
+        }
         public void Update(PenaltyRecord penalty)
         {
             dbContext.PenaltyRecords.Update(penalty);

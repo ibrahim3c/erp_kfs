@@ -1,4 +1,5 @@
 ﻿using HR.Domain.Employees;
+using HR.Domain.Promotions.Services;
 using HR.Infrastructure.Persistance.Database;
 using Microsoft.EntityFrameworkCore;
 namespace HR.Infrastructure.Persistance.Repositories
@@ -99,6 +100,13 @@ namespace HR.Infrastructure.Persistance.Repositories
         public async Task AddAsync(Employee employee, CancellationToken cancellationToken = default)
         {
             await _dbContext.Employees.AddAsync(employee, cancellationToken);
+        }
+
+        public async Task<Employee> GetIncludeDecisionsAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Employees
+                 .Include(e => e.EmployeeDecisions)
+                 .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
     }
 }
