@@ -1,10 +1,12 @@
 ﻿using HR.Domain.Attendance;
 using HR.Domain.Candidates;
+using HR.Domain.Decisions;
 using HR.Domain.Employees;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
+using HR.Domain.Promotions.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Application.Exceptions;
@@ -29,6 +31,7 @@ public class HRDbContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<EmployeeFile> EmployeeFiles { get; set; }
     public DbSet<EmployeeFinancial> EmployeeFinancials { get; set; }
+    public DbSet<DecisionType> DecisionTypes { get; set; }
     public DbSet<Loan> Loans { get; set; }
     public DbSet<InsurancePeriodPurchase> InsurancePeriodPurchases { get; set; }
     public DbSet<LoanInstallment> LoanInstallments { get; set; }
@@ -39,6 +42,10 @@ public class HRDbContext : DbContext
     public DbSet<PermissionRequest> PermissionRequests { get; set; }
     public DbSet<LateEntry> LateEntries { get; set; }
     public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+    public DbSet<KpiReport> KpiReports { get; set; }
+    public DbSet<PromotionCycle> PromotionCycles { get; set; }
+    public DbSet<EligibilityResult> EligibilityResults { get; set; }
+    public DbSet<PromotionHistory> PromotionHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

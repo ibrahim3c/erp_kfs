@@ -1,0 +1,251 @@
+﻿@{
+    ViewData["Title"] = "بحث استحقاق الترقيات والعلاوات";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-chart-line text-success me-2"></i>
+                    حركة الترقيات والعلاوات
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">الموارد البشرية</a></li>
+                    <li class="breadcrumb-item active">بحث الاستحقاق</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @* لوحة معايير البحث *@
+        <div class="card card-indigo">
+            <div class="card-header">
+                <h3 class="card-title">تحديد معايير الحركة</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">نوع الاستحقاق</label>
+                        <select class="form-select" id="cycleType" onchange="onTypeChange()">
+                            <option value="1">ترقية درجة وظيفية</option>
+                            <option value="2">علاوة دورية سنوية (7%)</option>
+                            <option value="3">علاوة تشجيعية (10%)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">تاريخ الاستحقاق</label>
+                        <input type="date" class="form-control" id="eligibilityDate"
+                               value="@(DateTime.Now.Year)-07-01">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">الحد الأدنى لتقرير الكفاءة</label>
+                        <select class="form-select" id="minKpiScore">
+                            <option value="90">ممتاز (90% فأكثر)</option>
+                            <option value="80" selected>كفء (80% فأكثر)</option>
+                            <option value="70">فوق المتوسط (70%)</option>
+                            <option value="0">الكل</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">الموقف من الجزاءات</label>
+                        <select class="form-select" id="maxPenaltyDays">
+                            <option value="0">عدم وجود جزاءات نهائياً</option>
+                            <option value="10" selected>لم يتخطَّ 10 أيام</option>
+                            <option value="999">الكل</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12"><hr /></div>
+
+                    <div class="col-md-6">
+                        <div id="incentiveAlert" class="alert alert-warning d-none py-2">
+                            <i class="fas fa-info-circle me-1"></i>
+                            العلاوة التشجيعية تُمنح لأفضل <strong>10%</strong>
+                            من كل درجة بتقدير <strong>ممتاز</strong> عن آخر عامين.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 text-end">
+                        <button type="button" class="btn btn-outline-secondary me-2"
+                                onclick="resetForm()">
+                            إفراغ الشروط
+                        </button>
+                        <button type="button" class="btn btn-indigo bg-indigo"
+                                id="btnSearch" onclick="runSearch()">
+                            <i class="fas fa-search me-1"></i> عرض كشف المستحقين
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* منطقة النتائج — تتملى AJAX *@
+        <div id="resultsArea">
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-search fa-3x mb-3 d-block opacity-25"></i>
+                <p>حدد المعايير واضغط "عرض كشف المستحقين"</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        function onTypeChange() {
+            const type = document.getElementById('cycleType').value;
+            const isIncentive = type === '3';
+            document.getElementById('incentiveAlert').classList.toggle('d-none', !isIncentive);
+            if (isIncentive) document.getElementById('minKpiScore').value = '90';
+            if (type === '2') document.getElementById('minKpiScore').value = '0';
+        }
+
+        function runSearch() {
+            const btn = document.getElementById('btnSearch');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> جاري البحث...';
+
+            const data = {
+                cycleType: document.getElementById('cycleType').value,
+                eligibilityDate: document.getElementById('eligibilityDate').value,
+                minKpiScore: document.getElementById('minKpiScore').value,
+                maxPenaltyDays: document.getElementById('maxPenaltyDays').value
+            };
+
+            fetch('@Url.Action("Search", "Promotions", new { area = "HR" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document
+                        .querySelector('meta[name="request-token"]')?.content ?? ''
+                },
+                body: new URLSearchParams(data)
+            })
+                .then(r => {
+                    // ✅ اقرأ الـ status والـ response كـ text دايماً
+                    return r.text().then(text => ({ status: r.status, body: text }));
+                })
+                .then(({ status, body }) => {
+                    console.log('Status:', status);
+                    console.log('Response:', body);
+
+                    if (status >= 400) {
+                        // ✅ عرض الـ error الحقيقي في الصفحة
+                        showError(`Error ${status}: ${body}`);
+                        return;
+                    }
+
+                    document.getElementById('resultsArea').innerHTML = body;
+                    initResultsTable();
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showError('خطأ في الاتصال: ' + err.message);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-search me-1"></i> عرض كشف المستحقين';
+                });
+        }
+        function approveSelected() {
+            const cycleId = document.getElementById('hiddenCycleId')?.value;
+            const selected = [...document.querySelectorAll('.row-check:checked')]
+                .map(cb => cb.dataset.empId);
+
+            if (!selected.length) {
+                Swal.fire('تنبيه', 'يجب اختيار موظف واحد على الأقل', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: `اعتماد ${selected.length} موظف؟`,
+                text: 'لا يمكن التراجع بعد الاعتماد',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'اعتماد',
+                cancelButtonText: 'إلغاء'
+            }).then(r => {
+                if (!r.isConfirmed) return;
+
+                const params = new URLSearchParams();
+                params.append('cycleId', cycleId);
+                selected.forEach((id, i) => params.append(`selectedIds[${i}]`, id));
+                params.append('__RequestVerificationToken',
+                    document.querySelector('meta[name="request-token"]')?.content ?? '');
+
+                fetch('@Url.Action("Approve", "Promotions", new { area = "HR" })', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success)
+                            Swal.fire('تم ✅', data.message, 'success')
+                                .then(() => runSearch());
+                        else
+                            Swal.fire('خطأ', data.message, 'error');
+                    });
+            });
+        }
+
+        function initResultsTable() {
+            if ($.fn.DataTable.isDataTable('#promoTable'))
+                $('#promoTable').DataTable().destroy();
+
+            $('#promoTable').DataTable({
+                language: { url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json' },
+                autoWidth: false,
+                responsive: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    { extend: 'excel', text: 'تصدير Excel', className: 'btn-success btn-sm' },
+                    { extend: 'print', text: 'طباعة', className: 'btn-default btn-sm' }
+                ]
+            });
+
+            document.getElementById('checkAll')?.addEventListener('change', function () {
+                document.querySelectorAll('.row-check:not(:disabled)')
+                    .forEach(cb => cb.checked = this.checked);
+                updateSelectedCount();
+            });
+
+            document.querySelectorAll('.row-check')
+                .forEach(cb => cb.addEventListener('change', updateSelectedCount));
+        }
+
+        function updateSelectedCount() {
+            const count = document.querySelectorAll('.row-check:checked').length;
+            const badge = document.getElementById('selectedCount');
+            if (badge) badge.textContent = count;
+        }
+
+        function resetForm() {
+            document.getElementById('cycleType').value = '1';
+            document.getElementById('minKpiScore').value = '80';
+            document.getElementById('maxPenaltyDays').value = '10';
+            document.getElementById('eligibilityDate').value =
+                new Date().getFullYear() + '-07-01';
+            document.getElementById('incentiveAlert').classList.add('d-none');
+            document.getElementById('resultsArea').innerHTML = `
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-search fa-3x mb-3 d-block opacity-25"></i>
+                        <p>حدد المعايير واضغط "عرض كشف المستحقين"</p>
+                    </div>`;
+        }
+
+        function showError(msg) {
+            document.getElementById('resultsArea').innerHTML =
+                `<div class="alert alert-danger m-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>${msg}
+                    </div>`;
+        }
+    </script>
+}

@@ -17,7 +17,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Decisions
 
             // 3. Properties
 
-            builder.Property(d => d.Name)
+            builder.Property(d => d.Code)
                 .HasMaxLength(200)
                 .IsRequired();
 
@@ -42,7 +42,7 @@ namespace HR.Infrastructure.Persistance.Configurations.Decisions
 
             // 4. Indexes
 
-            builder.HasIndex(d => d.Name)
+            builder.HasIndex(d => d.Code)
                 .IsUnique(); // مهم جدًا عشان ميتكررش نفس نوع القرار
 
             builder.HasIndex(d => d.IsActive);

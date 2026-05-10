@@ -8,6 +8,7 @@ using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
+using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
@@ -31,6 +32,12 @@ namespace HR.Infrastructure.Persistance
         public ILateEntryRepository LateEntryRepository { get; private set; }
         public IAttendanceRecordRepository AttendanceRecordRepository { get; private set; }
 
+        public IKpiReportRepository KpiReportRepository { get; private set; }
+
+        public IPromotionCycleRepository PromotionCycleRepository { get; private set; }
+
+        public IPromotionHistoryRepository PromotionHistoryRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -46,6 +53,9 @@ namespace HR.Infrastructure.Persistance
             PermissionRepository = new PermissionRepository(_dbContext);
             LateEntryRepository = new LateEntryRepository(_dbContext);
             AttendanceRecordRepository = new AttendanceRecordRepository(_dbContext);
+            KpiReportRepository = new KpiReportRepository(_dbContext);
+            PromotionCycleRepository = new PromotionCycleRepository(_dbContext);
+            PromotionHistoryRepository = new PromotionHistoryRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -57,5 +67,6 @@ namespace HR.Infrastructure.Persistance
         {
             _dbContext.Dispose();
         }
+
     }
 }

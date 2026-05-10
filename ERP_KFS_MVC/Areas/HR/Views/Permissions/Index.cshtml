@@ -10,9 +10,11 @@
     var prevYear = month == 1 ? year - 1 : year;
     var nextMonth = month == 12 ? 1 : month + 1;
     var nextYear = month == 12 ? year + 1 : year;
+
+    var permItems = Model?.Items?.Where(x => x.Type == "Permission").ToList();
+    var lateItems = Model?.Items?.Where(x => x.Type != "Permission").ToList();
 }
 
-<!-- تنبيهات النجاح والخطأ -->
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
@@ -34,13 +36,19 @@
             <div class="col-sm-6">
                 <h1 class="m-0 text-dark d-flex align-items-center">
                     متابعة الأذونات والتأخيرات
-                    <span class="badge bg-secondary ms-2" style="font-size: 0.5em;margin-right:13px;">@monthName</span>
+                    <span class="badge bg-secondary ms-2" style="font-size:0.5em;margin-right:13px;">@monthName</span>
                 </h1>
             </div>
             <div class="col-sm-6 text-end">
                 <div class="d-inline-flex">
-                    <a href="@Url.Action("Index", new { month = prevMonth, year = prevYear })" class="btn btn-sm btn-outline-secondary me-1" style="margin-left: 8px;"><i class="fas fa-chevron-right"></i> السابق</a>
-                    <a href="@Url.Action("Index", new { month = nextMonth, year = nextYear })" class="btn btn-sm btn-outline-secondary">التالي <i class="fas fa-chevron-left"></i></a>
+                    <a href="@Url.Action("Index", new { month = prevMonth, year = prevYear })"
+                       class="btn btn-sm btn-outline-secondary me-1" style="margin-left:8px;">
+                        <i class="fas fa-chevron-right"></i> السابق
+                    </a>
+                    <a href="@Url.Action("Index", new { month = nextMonth, year = nextYear })"
+                       class="btn btn-sm btn-outline-secondary">
+                        التالي <i class="fas fa-chevron-left"></i>
+                    </a>
                 </div>
                 <ol class="breadcrumb float-sm-end ms-3 d-inline-flex mb-0">
                     <li class="breadcrumb-item"><a href="#">الموارد البشرية</a></li>
@@ -54,7 +62,7 @@
 <section class="content">
     <div class="container-fluid">
 
-        <!-- 1. إحصائيات سريعة (للشهر الحالي) -->
+        <!-- إحصائيات -->
         <div class="row">
             <div class="col-md-4">
                 <div class="info-box shadow-sm">
@@ -76,7 +84,9 @@
                     <span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">دقائق التأخير (للجميع)</span>
-                        <span class="info-box-number text-danger">@(Model?.TotalLateMinutes ?? 0) <small>دقيقة</small></span>
+                        <span class="info-box-number text-danger">
+                            @(Model?.TotalLateMinutes ?? 0) <small>دقيقة</small>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -85,280 +95,371 @@
                     <span class="info-box-icon bg-danger"><i class="fas fa-file-invoice-dollar"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">تجاوز الحد المسموح (جزاءات)</span>
-                        <span class="info-box-number">@(Model?.EmployeesExceededLimit ?? 0) <small>موظفين</small></span>
+                        <span class="info-box-number">
+                            @(Model?.EmployeesExceededLimit ?? 0) <small>موظفين</small>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. منطقة التسجيل (Tabbed Form) -->
+        <!-- التبويبات -->
         <div class="card card-primary card-tabs">
             <div class="card-header p-0 pt-1">
-                <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                <ul class="nav nav-tabs" id="main-tabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="tab-permission" data-bs-toggle="pill" href="#content-permission" role="tab">
-                            <i class="fas fa-plus-circle me-1"></i> تسجيل طلب إذن خروج
+                        <a class="nav-link active" id="tab-permission"
+                           data-bs-toggle="pill" href="#content-permission" role="tab">
+                            <i class="fas fa-plus-circle me-1"></i> الأذونات
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="tab-late" data-bs-toggle="pill" href="#content-late" role="tab">
-                            <i class="fas fa-user-clock me-1"></i> تسجيل تأخير (من البصمة)
+                        <a class="nav-link" id="tab-late"
+                           data-bs-toggle="pill" href="#content-late" role="tab">
+                            <i class="fas fa-user-clock me-1"></i> التأخيرات
                         </a>
                     </li>
                 </ul>
             </div>
-            <div class="card-body">
+
+            <div class="card-body p-0">
                 <div class="tab-content">
 
-                    <!-- TAB 1: تسجيل إذن (Permission) -->
+                    <!-- TAB 1: الأذونات -->
                     <div class="tab-pane fade show active" id="content-permission" role="tabpanel">
-                        <form method="post" asp-action="CreatePermission" asp-controller="Permissions" asp-area="HR">
-                            @Html.AntiForgeryToken()
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label>اسم الموظف <span class="text-danger">*</span></label>
-                                    <select name="employeeId" class="form-select select2" style="width:100%" required>
-                                        <option value="">-- اختر موظف --</option>
-                                        @if (ViewBag.Employees != null)
+
+                        <!-- نموذج الإذن -->
+                        <div class="p-3 border-bottom bg-light">
+                            <h5 class="mb-3 text-primary">
+                                <i class="fas fa-plus-circle me-1"></i> تسجيل طلب إذن خروج
+                            </h5>
+                            <form method="post" asp-action="CreatePermission"
+                                  asp-controller="Permissions" asp-area="HR">
+                                @Html.AntiForgeryToken()
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label>اسم الموظف <span class="text-danger">*</span></label>
+                                        <select name="employeeId" class="form-select select2-perm"
+                                                style="width:100%" required>
+                                            <option value="">-- اختر موظف --</option>
+                                            @if (ViewBag.Employees != null)
+                                            {
+                                                foreach (var emp in ViewBag.Employees)
+                                                {
+                                                    <option value="@emp.Id">@emp.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>نوع الإذن <span class="text-danger">*</span></label>
+                                        <select name="permissionType" class="form-select" required>
+                                            <option value="Personal">إذن شخصي (يخصم من الرصيد)</option>
+                                            <option value="Official">إذن مأمورية عمل (لا يخصم)</option>
+                                            <option value="Medical">إذن مرضي (عيادة)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>التاريخ <span class="text-danger">*</span></label>
+                                        <input type="date" name="date" class="form-control"
+                                               value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>وقت الخروج (من) <span class="text-danger">*</span></label>
+                                        <input type="time" name="fromTime" class="form-control"
+                                               id="permFrom" onchange="calcDuration()" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>وقت العودة (إلى) <span class="text-danger">*</span></label>
+                                        <input type="time" name="toTime" class="form-control"
+                                               id="permTo" onchange="calcDuration()" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label>المدة المحسوبة</label>
+                                        <input type="text" readonly
+                                               class="form-control bg-white text-primary fw-bold"
+                                               id="permTotal">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label>ملاحظات</label>
+                                        <input type="text" name="notes" class="form-control"
+                                               placeholder="سبب الإذن..." />
+                                    </div>
+                                    <div class="col-md-12 text-end mt-1">
+                                        <small class="text-danger d-block mb-2 text-start">
+                                            * الحد الأقصى للأذونات الشخصية 4 ساعات شهرياً أو مرتين في الشهر.
+                                        </small>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-1"></i> تسجيل الإذن
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- جدول الأذونات -->
+                        <div class="p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 text-bold">سجل الأذونات (@monthName)</h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if (permItems?.Any() == true)
+                                    {
+                                        <span class="badge bg-light text-dark border">
+                                            @permItems.Count سجل
+                                        </span>
+                                    }
+                                    <!-- ✅ زر Excel الحقيقي -->
+                                    <button class="btn btn-success btn-sm"
+                                            onclick="exportToExcel('permTable', 'سجل_الأذونات_@monthName')">
+                                        <i class="fas fa-file-excel me-1"></i> تصدير Excel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <table id="permTable"
+                                   class="table table-bordered table-hover text-center table-striped">
+                                <thead class="bg-dark text-white">
+                                    <tr>
+                                        <th>التاريخ</th>
+                                        <th>الموظف</th>
+                                        <th>النوع</th>
+                                        <th>التوقيت</th>
+                                        <th>المدة (دقيقة)</th>
+                                        <th>ملاحظات</th>
+                                        <th>الحالة</th>
+                                        <th>خيارات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (permItems != null)
+                                    {
+                                        foreach (var item in permItems)
                                         {
-                                            foreach (var emp in ViewBag.Employees)
+                                            <tr>
+                                                <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-end fw-bold">@item.EmployeeName</td>
+                                                <td>
+                                                    @if (item.SubType?.Contains("Official") == true || item.SubType?.Contains("مأمورية") == true)
+                                                    {
+                                                        <span class="badge bg-success">مأمورية عمل</span>
+                                                    }
+                                                    else if (item.SubType?.Contains("Medical") == true || item.SubType?.Contains("مرضي") == true)
+                                                    {
+                                                        <span class="badge bg-info text-dark">إذن مرضي</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-primary">إذن شخصي</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @{
+                                                        string timeDisplay = item.TimeRange;
+                                                        try
+                                                        {
+                                                            if (!string.IsNullOrEmpty(timeDisplay))
+                                                            {
+                                                                string nr = timeDisplay.Replace(" - ", "|").Replace(" : ", "|").Replace("-", "|");
+                                                                var parts = nr.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                                                                if (parts.Length == 2 &&
+                                                                    DateTime.TryParse(parts[0].Trim(), out DateTime s) &&
+                                                                    DateTime.TryParse(parts[1].Trim(), out DateTime e))
+                                                                {
+                                                                    var ci = new System.Globalization.CultureInfo("ar-EG");
+                                                                    timeDisplay = $"{s.ToString("hh:mm tt", ci)} : {e.ToString("hh:mm tt", ci)}";
+                                                                }
+                                                            }
+                                                        }
+                                                        catch { }
+                                                    }
+                                                    <span dir="rtl">@timeDisplay</span>
+                                                </td>
+                                                <td class="@(item.DurationMinutes >= 120 ? "text-danger fw-bold" : "")">
+                                                    @item.DurationMinutes دقيقة
+                                                </td>
+                                                <td>@(string.IsNullOrEmpty(item.Notes) ? "—" : item.Notes)</td>
+                                                <td>
+                                                    @{
+                                                        string statusLabel = item.StatusLabel ?? "";
+                                                        if (item.SubType?.Contains("Official") == true)
+                                                        {
+                                                            <span class="badge bg-success">عمل رسمي</span>
+                                                        }
+                                                        else if (item.SubType?.Contains("Medical") == true)
+                                                        {
+
+                                                            <span class="badge bg-info text-dark">عذر طبي</span>
+                                                        }
+                                                        else if (item.SubType?.Contains("Personal") == true)
+                                                        {
+
+                                                            <span class="badge bg-secondary">مخصوم من الرصيد</span>
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <span class="badge bg-light text-dark border">مسجل</span>
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <form method="post"
+                                                          asp-action="DeletePermission"
+                                                          asp-controller="Permissions"
+                                                          asp-area="HR" style="display:inline;">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-default"
+                                                                onclick="return confirm('هل تريد حذف هذا الإذن؟')">
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: التأخيرات -->
+                    <div class="tab-pane fade" id="content-late" role="tabpanel">
+
+                        <!-- نموذج التأخير -->
+                        <div class="p-3 border-bottom bg-light">
+                            <h5 class="mb-3 text-warning">
+                                <i class="fas fa-user-clock me-1"></i> تسجيل تأخير (من البصمة)
+                            </h5>
+                            <div class="alert alert-light border border-warning mb-3">
+                                <i class="fas fa-info-circle text-warning me-2"></i>
+                                يتم تجميع دقائق التأخير شهرياً، وكل 180 دقيقة تأخير (3 ساعات) تحتسب يوم جزاء.
+                            </div>
+                            <form method="post" asp-action="CreateLateEntry"
+                                  asp-controller="Permissions" asp-area="HR">
+                                @Html.AntiForgeryToken()
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label>اسم الموظف <span class="text-danger">*</span></label>
+                                        <select name="employeeId" class="form-select select2-late"
+                                                style="width:100%" required>
+                                            <option value="">ابحث عن الموظف...</option>
+                                            @foreach (var emp in employees)
                                             {
                                                 <option value="@emp.Id">@emp.Name</option>
                                             }
-                                        }
-                                    </select>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>تاريخ التأخير <span class="text-danger">*</span></label>
+                                        <input type="date" name="date" class="form-control"
+                                               value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>ميعاد الحضور الفعلي <span class="text-danger">*</span></label>
+                                        <input type="time" name="actualArrivalTime" class="form-control"
+                                               id="lateTime" onchange="calcLate()" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label>دقائق التأخير</label>
+                                        <input type="text" readonly
+                                               class="form-control border-danger text-danger fw-bold"
+                                               id="lateTotal">
+                                        <small class="text-muted">الدوام الرسمي 8:00 ص</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>ملاحظات</label>
+                                        <input type="text" name="notes" class="form-control"
+                                               placeholder="سبب التأخير..." />
+                                    </div>
+                                    <div class="col-md-6 mb-3 pt-4 text-end">
+                                        <button type="submit" class="btn btn-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            حفظ في سجل التأخيرات
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label>نوع الإذن <span class="text-danger">*</span></label>
-                                    <select name="permissionType" class="form-select" required>
-                                        <option value="Personal">إذن شخصي (يخصم من الرصيد)</option>
-                                        <option value="Official">إذن مأمورية عمل (لا يخصم)</option>
-                                        <option value="Medical">إذن مرضي (عيادة)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label>التاريخ <span class="text-danger">*</span></label>
-                                    <input type="date" name="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
-                                </div>
+                            </form>
+                        </div>
 
-                                <div class="col-md-3 mb-3">
-                                    <label>وقت الخروج (من) <span class="text-danger">*</span></label>
-                                    <input type="time" name="fromTime" class="form-control" id="permFrom" onchange="calcDuration()" required>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label>وقت العودة (إلى) <span class="text-danger">*</span></label>
-                                    <input type="time" name="toTime" class="form-control" id="permTo" onchange="calcDuration()" required>
-                                </div>
-                                <div class="col-md-2 mb-3">
-                                    <label>المدة المحسوبة</label>
-                                    <input type="text" readonly class="form-control bg-light text-primary fw-bold" id="permTotal">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label>ملاحظات</label>
-                                    <input type="text" name="notes" class="form-control" placeholder="سبب الإذن..." />
-                                </div>
-
-                                <div class="col-md-12 text-end mt-2">
-                                    <small class="text-danger d-block mb-2 text-start">* الحد الأقصى للأذونات الشخصية 4 ساعات شهرياً أو مرتين في الشهر.</small>
-                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> تسجيل الإذن</button>
+                        <!-- جدول التأخيرات -->
+                        <div class="p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 text-bold">سجل التأخيرات (@monthName)</h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if (lateItems?.Any() == true)
+                                    {
+                                        <span class="badge bg-light text-dark border">
+                                            @lateItems.Count سجل
+                                        </span>
+                                    }
+                                    <!-- ✅ زر Excel الحقيقي -->
+                                    <button class="btn btn-success btn-sm"
+                                            onclick="exportToExcel('lateTable', 'سجل_التأخيرات_@monthName')">
+                                        <i class="fas fa-file-excel me-1"></i> تصدير Excel
+                                    </button>
                                 </div>
                             </div>
-                        </form>
-                    </div>
 
-                    <!-- TAB 2: تسجيل تأخير (Late Entry) -->
-                    <div class="tab-pane fade" id="content-late" role="tabpanel">
-                        <form method="post" asp-action="CreateLateEntry" asp-controller="Permissions" asp-area="HR">
-                            @Html.AntiForgeryToken()
-                            <div class="alert alert-light border border-warning">
-                                <i class="fas fa-info-circle text-warning me-2"></i> يتم تجميع دقائق التأخير شهرياً، وكل 180 دقيقة تأخير (3 ساعات) تحتسب يوم جزاء (أو حسب اللائحة).
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label>اسم الموظف <span class="text-danger">*</span></label>
-                                    <select name="employeeId" class="form-select select2" style="width:100%" required>
-                                        <option value="">ابحث عن الموظف...</option>
-                                        @foreach (var emp in employees)
+                            <table id="lateTable"
+                                   class="table table-bordered table-hover text-center table-striped">
+                                <thead class="bg-dark text-white">
+                                    <tr>
+                                        <th>التاريخ</th>
+                                        <th>الموظف</th>
+                                        <th>ميعاد الحضور الفعلي</th>
+                                        <th>دقائق التأخير</th>
+                                        <th>ملاحظات</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (lateItems != null)
+                                    {
+                                        foreach (var item in lateItems)
                                         {
-                                            <option value="@emp.Id">@emp.Name</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label>تاريخ التأخير <span class="text-danger">*</span></label>
-                                    <input type="date" name="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label>ميعاد الحضور الفعلي <span class="text-danger">*</span></label>
-                                    <input type="time" name="actualArrivalTime" class="form-control" id="lateTime" onchange="calcLate()" required>
-                                </div>
-                                <div class="col-md-2 mb-3">
-                                    <label>دقائق التأخير</label>
-                                    <input type="text" readonly class="form-control border-danger text-danger fw-bold" id="lateTotal">
-                                    <small class="text-muted">الدوام الرسمي 8:00 ص</small>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label>ملاحظات</label>
-                                    <input type="text" name="notes" class="form-control" placeholder="سبب التأخير..." />
-                                </div>
-
-                                <div class="col-md-6 mb-3 pt-4 text-end">
-                                    <button type="submit" class="btn btn-warning"><i class="fas fa-exclamation-triangle me-1"></i> حفظ في سجل التأخيرات</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. الجدول التجميعي (Log) -->
-        <div class="card card-outline card-secondary">
-            <div class="card-header border-0">
-                <h3 class="card-title text-bold">سجل حركة الأذونات والتأخير (@monthName)</h3>
-                <div class="card-tools">
-                    @if (Model?.Items?.Any() == true)
-                    {
-                        <span class="badge bg-light text-dark border me-2">@Model.Items.Count سجل</span>
-                    }
-                    <button class="btn btn-success btn-sm"><i class="fas fa-file-excel me-1"></i> Excel</button>
-                </div>
-            </div>
-            <div class="card-body">
-                <table id="permTable" class="table table-bordered table-hover text-center table-striped">
-                    <thead class="bg-dark text-white">
-                        <tr>
-                            <th>التاريخ</th>
-                            <th>الموظف</th>
-                            <th>النوع</th>
-                            <th>التوقيت</th>
-                            <th>المدة (دقيقة)</th>
-                            <th>ملاحظات</th>
-                            <th>الحالة</th>
-                            <th>خيارات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model?.Items != null)
-                        {
-                            foreach (var item in Model.Items)
-                            {
-                                <tr>
-                                    <td>@item.Date.ToString("dd/MM/yyyy")</td>
-                                    <td class="text-end fw-bold">@item.EmployeeName</td>
-
-                                    <!-- 1. تعديل النوع ليظهر بالعربي -->
-                                    <td>
-                                        @if (item.Type == "Permission")
-                                        {
-                                            if (item.SubType?.Contains("Official") == true || item.SubType?.Contains("مأمورية") == true || item.SubType?.Contains("رسمي") == true)
-                                            {
-                                                <span class="badge bg-success">مأمورية عمل</span>
-                                            }
-                                            else if (item.SubType?.Contains("Medical") == true || item.SubType?.Contains("مرضي") == true)
-                                            {
-                                                <span class="badge bg-purple">إذن مرضي</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-primary">إذن شخصي</span>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-warning text-dark">تأخير</span>
-                                        }
-                                    </td>
-
-                                    <!-- 2. تعديل التوقيت ليظهر بنظام 12 ساعة (ص / م) -->
-                                    <td>
-                                        @{
-                                            string timeDisplay = item.TimeRange;
-                                            try
-                                            {
-                                                if (!string.IsNullOrEmpty(timeDisplay))
-                                                {
-                                                    // توحيد الفواصل لضمان انقسام النص بشكل صحيح سواء كان الفاصل (-) أو ( : )
-                                                    string normalizedRange = timeDisplay.Replace(" - ", "|").Replace(" : ", "|").Replace("-", "|");
-                                                    var parts = normalizedRange.Split('|', StringSplitOptions.RemoveEmptyEntries);
-
-                                                    if (parts.Length == 2)
-                                                    {
-                                                        // تحويل الجزء الأول والثاني إلى توقيت
-                                                        if (DateTime.TryParse(parts[0].Trim(), out DateTime startTime) &&
-                                                            DateTime.TryParse(parts[1].Trim(), out DateTime endTime))
+                                            <tr>
+                                                <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-end fw-bold">@item.EmployeeName</td>
+                                                <td>
+                                                    @{
+                                                        string ltd = item.TimeRange;
+                                                        try
                                                         {
-                                                            var cultureInfo = new System.Globalization.CultureInfo("ar-EG");
-
-                                                            // تنسيق الوقت ليصبح مثلاً "10:26 ص"
-                                                            string startFormatted = startTime.ToString("hh:mm tt", cultureInfo);
-                                                            string endFormatted = endTime.ToString("hh:mm tt", cultureInfo);
-
-                                                            // دمجهم بالشكل المطلوب
-                                                            timeDisplay = $"{startFormatted} : {endFormatted}";
+                                                            if (!string.IsNullOrEmpty(ltd) &&
+                                                                DateTime.TryParse(ltd.Trim(), out DateTime arr))
+                                                            {
+                                                                var ci = new System.Globalization.CultureInfo("ar-EG");
+                                                                ltd = arr.ToString("hh:mm tt", ci);
+                                                            }
                                                         }
+                                                        catch { }
                                                     }
-                                                }
-                                            }
-                                            catch { } // في حال وجود نص غير متوقع يتم عرض النص الأصلي
+                                                    <span dir="rtl">@ltd</span>
+                                                </td>
+                                                <td class="@(item.DurationMinutes >= 60 ? "text-danger fw-bold" : "")">
+                                                    @item.DurationMinutes دقيقة
+                                                </td>
+                                                <td>@(string.IsNullOrEmpty(item.Notes) ? "—" : item.Notes)</td>
+                                                <td>
+                                                    @if (item.IsTransferred)
+                                                    {
+                                                        <span class="badge bg-danger">مرحل للجزاء</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-warning text-dark">قيد الاحتساب</span>
+                                                    }
+                                                </td>
+                                            </tr>
                                         }
-                                        <span dir="rtl">@timeDisplay</span>
-                                    </td>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                                    <td class="@(item.DurationMinutes >= 120 ? "text-danger fw-bold" : "")">@item.DurationMinutes دقيقة</td>
-                                    <td>@(string.IsNullOrEmpty(item.Notes) ? "—" : item.Notes)</td>
-
-                                    <!-- 3. حل مشكلة (???? ???) في الحالة بتعويضها بنص عربي صريح -->
-                                    <td>
-                                        @{
-                                            string statusLabel = item.StatusLabel ?? "";
-
-                                            if (statusLabel.Contains("رسمي") || statusLabel.Contains("Official") || item.SubType?.Contains("Official") == true)
-                                            {
-                                                <span class="badge bg-success">عمل رسمي</span>
-                                            }
-                                            else if (statusLabel.Contains("جزاء") || item.IsTransferred || item.Type != "Permission")
-                                            {
-                                                <span class="badge bg-danger">مرحل للجزاء</span>
-                                            }
-                                            else if (item.SubType?.Contains("Medical") == true)
-                                            {
-                                                <span class="badge bg-info text-dark">عذر طبي مقبول</span>
-                                            }
-                                            else if (statusLabel.Contains("مخصوم") || item.SubType?.Contains("Personal") == true)
-                                            {
-                                                <span class="badge bg-secondary">مخصوم من الرصيد</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-light text-dark border">مسجل</span>
-                                            }
-                                        }
-                                    </td>
-
-                                    <td>
-                                        @if (item.Type == "Permission")
-                                        {
-                                            <form method="post" asp-action="DeletePermission" asp-controller="Permissions" asp-area="HR" style="display:inline;">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@item.Id" />
-                                                <button type="submit" class="btn btn-sm btn-default" onclick="return confirm('هل تريد حذف هذا الإذن؟')">
-                                                    <i class="fas fa-times text-danger"></i>
-                                                </button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">—</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
+                </div>
             </div>
         </div>
 
@@ -366,60 +467,144 @@
 </section>
 
 @section Scripts {
+    <!--  SheetJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <script>
         $(function () {
-            // تفعيل البحث في القوائم
-            $('.select2').select2({
-                theme: 'bootstrap4'
-            });
+        $('.select2-perm').select2({ theme: 'bootstrap4' });
+        $('.select2-late').select2({ theme: 'bootstrap4' });
 
-            // تفعيل الجدول
-            $("#permTable").DataTable({
-                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
-                "autoWidth": false,
-                "lengthChange": false,
-                "pageLength": 10
-            });
+        $("#permTable").DataTable({
+        language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+        autoWidth: false,
+        lengthChange: false,
+        pageLength: 10,
+        //  نخفي عمود "خيارات" من التصدير
+        columnDefs: [{ targets: -1, orderable: false }]
         });
 
-        // دالة بسيطة لحساب مدة الإذن
-        function calcDuration() {
-            var startTime = document.getElementById("permFrom").value;
-            var endTime = document.getElementById("permTo").value;
+        $("#lateTable").DataTable({
+        language: { url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+        autoWidth: false,
+        lengthChange: false,
+        pageLength: 10
+        });
+        });
 
-            if (startTime && endTime) {
-                var start = new Date("2000-01-01 " + startTime);
-                var end = new Date("2000-01-01 " + endTime);
-                var diffMs = end - start;
+        //  دالة التصدير الرئيسية
+        function exportToExcel(tableId, fileName) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
 
-                if (diffMs <= 0) {
-                    document.getElementById("permTotal").value = "خطأ!";
-                    return;
-                }
+        // ── بناء بيانات نظيفة بدون أيقونات أو أزرار ──────────
+        const headers = [];
+        const rows = [];
 
-                var diffMins = Math.round(diffMs / 60000);
-                var hours = Math.floor(diffMins / 60);
-                var minutes = diffMins % 60;
+        // Headers — نشيل عمود "خيارات" لو كان جدول الأذونات
+        const ths = table.querySelectorAll('thead th');
+        ths.forEach((th, i) => {
+        const txt = th.innerText.trim();
+        // نشيل عمود "خيارات"
+        if (txt !== 'خيارات') headers.push(txt);
+        });
 
-                document.getElementById("permTotal").value = hours + "س " + minutes + "د";
-            }
+        // Rows — كل الصفوف (مش بس الصفحة الحالية)
+        // نجيب البيانات من الـ DataTable كاملة
+        const dtInstance = $.fn.DataTable.isDataTable('#' + tableId)
+        ? $('#' + tableId).DataTable()
+        : null;
+
+        if (dtInstance) {
+        // ✅ نجيب كل الصفوف من الـ DataTable مش بس المعروضة
+        dtInstance.rows().every(function () {
+        const rowNode = this.node();
+        const cells = rowNode.querySelectorAll('td');
+        const rowData = [];
+
+        cells.forEach((td, i) => {
+        // نشيل عمود الأزرار (آخر عمود في permTable)
+        const headerText = ths[i]?.innerText.trim();
+        if (headerText === 'خيارات') return;
+
+        // نجيب النص النظيف بدون HTML
+        let text = td.innerText.trim();
+
+        // تنظيف النص من الرموز الزائدة
+        text = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+
+        rowData.push(text);
+        });
+
+        if (rowData.length > 0) rows.push(rowData);
+        });
         }
 
-        // دالة حساب التأخير تلقائيا بناءً على 08:00 صباحاً
-        function calcLate() {
-            var arrival = document.getElementById("lateTime").value;
-            if (arrival) {
-                var official = new Date('2000-01-01 08:00');
-                var actual = new Date('2000-01-01 ' + arrival);
-                var diffMins = (actual - official) / 60000;
+        if (rows.length === 0) {
+        alert('لا توجد بيانات للتصدير');
+        return;
+        }
 
-                var el = document.getElementById("lateTotal");
-                if (diffMins > 0) {
-                    el.value = diffMins;
-                } else {
-                    el.value = "0";
-                }
-            }
+        // ── بناء الـ Workbook ──────────────────────────────────
+        const wb = XLSX.utils.book_new();
+
+        // إضافة عنوان الكشف
+        const sheetTitle = fileName.replace(/_/g, ' ');
+
+        // بناء الـ Sheet Data
+        const sheetData = [
+        [sheetTitle],                    // صف العنوان
+        [],                              // صف فاضي
+        headers,                         // رؤوس الأعمدة
+        ...rows                          // البيانات
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+        // ── التنسيق ────────────────────────────────────────────
+
+        // عرض الأعمدة تلقائي
+        const colWidths = headers.map((h, colIdx) => {
+        let maxLen = h.length;
+        rows.forEach(row => {
+        const cellLen = (row[colIdx] || '').toString().length;
+        if (cellLen > maxLen) maxLen = cellLen;
+        });
+        return { wch: Math.min(maxLen + 4, 40) };
+        });
+        ws['!cols'] = colWidths;
+
+        // دمج خلايا العنوان
+        ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }
+        ];
+
+        // ── إضافة الـ Sheet للـ Workbook ──────────────────────
+        const safeSheetName = sheetTitle.substring(0, 31); // Excel limit
+        XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
+
+        // ── تحميل الملف ───────────────────────────────────────
+        const safeFileName = fileName.replace(/[\\/:*?"<>|]/g, '_') + '.xlsx';
+        XLSX.writeFile(wb, safeFileName);
+        }
+
+        function calcDuration() {
+        var s = document.getElementById("permFrom").value;
+        var e = document.getElementById("permTo").value;
+        if (s && e) {
+        var diff = (new Date("2000-01-01 " + e) - new Date("2000-01-01 " + s)) / 60000;
+        if (diff <= 0) { document.getElementById("permTotal").value = "خطأ!"; return; }
+        document.getElementById("permTotal").value =
+        Math.floor(diff / 60) + "س " + (diff % 60) + "د";
+        }
+        }
+
+        function calcLate() {
+        var a = document.getElementById("lateTime").value;
+        if (a) {
+        var diff = (new Date('2000-01-01 ' + a) - new Date('2000-01-01 08:00')) / 60000;
+        document.getElementById("lateTotal").value = diff > 0 ? diff : "0";
+        }
         }
     </script>
 }

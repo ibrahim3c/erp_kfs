@@ -9,6 +9,8 @@ using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
+using HR.Domain.Promotions.Interfaces;
+using HR.Domain.Promotions.Services;
 using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance;
 using HR.Infrastructure.Persistance.Database;
@@ -42,9 +44,15 @@ namespace HR.Infrastructure
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<ILateEntryRepository, LateEntryRepository>();
             services.AddScoped<IAttendanceRecordRepository, AttendanceRecordRepository>();
+            services.AddScoped<IKpiReportRepository, KpiReportRepository>();
+            services.AddScoped<IPromotionCycleRepository, PromotionCycleRepository>();
+            services.AddScoped<IPromotionHistoryRepository, PromotionHistoryRepository>();
 
             services.AddScoped<IHRUnitOfWork, HRUnitOfWork>();
             services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();
+
+            // Domain Services
+            services.AddScoped<EligibilityEngine>();
 
             return services;
         }

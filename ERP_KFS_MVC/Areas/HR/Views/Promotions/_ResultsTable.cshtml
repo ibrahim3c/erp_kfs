@@ -1,0 +1,463 @@
+﻿@model HR.Application.Promotions.DTOs.CheckEligibilityResponse
+
+<input type="hidden" id="hiddenCycleId" value="@Model.CycleId" />
+
+<style>
+    /* ── Summary Bar ─────────────────────────────────────── */
+    .promo-summary {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 14px 20px;
+        background: #fff;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .promo-summary .title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+    .stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+        .stat-pill.eligible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stat-pill.excluded {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stat-pill.selected {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .stat-pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .stat-pill.eligible .dot {
+            background: #28a745;
+        }
+
+        .stat-pill.excluded .dot {
+            background: #dc3545;
+        }
+
+        .stat-pill.selected .dot {
+            background: #17a2b8;
+        }
+
+    .btn-approve {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        color: #fff;
+        padding: 7px 18px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity .2s, transform .1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-approve:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .btn-approve:active {
+            transform: translateY(0);
+        }
+
+    /* ── Table ───────────────────────────────────────────── */
+    .promo-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(0,0,0,.07);
+    }
+
+    #promoTable {
+        margin: 0 !important;
+        font-size: 0.875rem;
+    }
+
+        #promoTable thead tr {
+            background: #1a1a2e !important;
+        }
+
+        #promoTable thead th {
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 13px 12px;
+            white-space: nowrap;
+            border: none !important;
+            text-align: center;
+        }
+
+        #promoTable tbody tr {
+            transition: background .15s;
+        }
+
+            #promoTable tbody tr:hover {
+                background: #f8f9ff !important;
+            }
+
+            #promoTable tbody tr.excluded-row {
+                background: #fafafa;
+                opacity: .75;
+            }
+
+        #promoTable tbody td {
+            padding: 11px 12px;
+            vertical-align: middle;
+            border-color: #f0f0f0 !important;
+            text-align: center;
+        }
+
+    /* اسم الموظف */
+    .emp-name {
+        font-weight: 700;
+        color: #1a1a2e;
+        font-size: 0.9rem;
+        text-align: right !important;
+    }
+
+        .emp-name.crossed {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+    /* الدرجة */
+    .grade-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: #e8eaf6;
+        color: #3949ab;
+    }
+
+    /* مدة البقاء */
+    .years-good {
+        color: #28a745;
+        font-weight: 700;
+    }
+
+    .years-warn {
+        color: #e67e22;
+        font-weight: 700;
+    }
+
+    /* KPI Badge */
+    .kpi-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .kpi-excellent {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .kpi-good {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .kpi-poor {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* أيام الجزاء */
+    .penalty-high {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .penalty-ok {
+        color: #6c757d;
+    }
+
+    /* الإجراء المقترح */
+    .action-promote {
+        color: #20c997;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-allowance {
+        color: #007bff;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* الحالة */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-eligible {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-excluded {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Checkbox */
+    .form-check-input {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    /* DataTables overrides */
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        padding: 4px 8px;
+    }
+
+    .dataTables_wrapper .dt-buttons .btn {
+        border-radius: 8px;
+        font-size: 0.82rem;
+        padding: 5px 14px;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+        margin: 8px 0;
+    }
+</style>
+
+<div class="promo-card">
+
+    {{!-- Summary Bar --}}
+    <div class="promo-summary">
+        {{!-- الأزرار يمين --}}
+        <button class="btn-approve" onclick="approveSelected()">
+            <i class="fas fa-check-double"></i>
+            اعتماد الكشف المختار
+        </button>
+
+        {{!-- الإحصاءات --}}
+        <span class="stat-pill selected">
+            <span class="dot"></span>
+            المختار: <span id="selectedCount">0</span>
+        </span>
+        <span class="stat-pill excluded">
+            <span class="dot"></span>
+            مستبعد: @Model.TotalExcluded
+        </span>
+        <span class="stat-pill eligible">
+            <span class="dot"></span>
+            مستحق: @Model.TotalEligible
+        </span>
+
+        {{!-- العنوان يسار --}}
+        <h3 class="title">نتيجة البحث — المرشحين للحركة الوظيفية</h3>
+    </div>
+
+    {{!-- الجدول --}}
+    <div style="padding: 16px;">
+        <table id="promoTable"
+               class="table table-bordered table-hover text-center w-100">
+            <thead>
+                <tr>
+                    <th style="width:42px">
+                        <input class="form-check-input" type="checkbox" id="checkAll"
+                               title="تحديد الكل">
+                    </th>
+                    <th>الموظف</th>
+                    <th>الإدارة</th>
+                    <th>الدرجة الحالية</th>
+                    <th>تاريخ شغل الدرجة</th>
+                    <th>مدة البقاء</th>
+                    <th>متوسط الكفاءة</th>
+                    <th>أيام الجزاء</th>
+                    <th>الإجراء المقترح</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr class="@(!item.IsEligible ? "excluded-row" : "")">
+
+                        {{!-- Checkbox --}}
+                        <td>
+                            <input class="form-check-input row-check"
+                                   type="checkbox"
+                                   data-emp-id="@item.EmployeeId"
+                            @(!item.IsEligible ? "disabled" : "") />
+                        </td>
+
+                        {{!-- الموظف --}}
+                        <td class="emp-name @(!item.IsEligible ? "crossed" : "")">
+                            @item.EmployeeName
+                        </td>
+
+                        {{!-- الإدارة --}}
+                        <td style="color:#555">@item.Department</td>
+
+                        {{!-- الدرجة الحالية --}}
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.CurrentGrade))
+                            {
+                                <span class="grade-badge">@item.CurrentGrade</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+
+                        {{!-- تاريخ شغل الدرجة --}}
+                        <td style="color:#555; direction:ltr">
+                            @item.GradeStartDate.ToString("dd/MM/yyyy")
+                        </td>
+
+                        {{!-- مدة البقاء --}}
+                        <td>
+                            @{
+                                var yearsClass = item.YearsInGrade >= 4
+                                    ? "years-good" : "years-warn";
+                            }
+                            <span class="@yearsClass">
+                                @item.YearsInGrade سنة
+                            </span>
+                        </td>
+
+                        {{!-- متوسط الكفاءة --}}
+                        <td>
+                            @{
+                                var kpiClass = item.AvgKpiScore >= 90
+                                    ? "kpi-excellent"
+                                    : item.AvgKpiScore >= 70
+                                        ? "kpi-good"
+                                        : "kpi-poor";
+                            }
+                            <span class="kpi-badge @kpiClass">
+                                @item.AvgKpiScore.ToString("0")%
+                            </span>
+                        </td>
+
+                        {{!-- أيام الجزاء --}}
+                        <td>
+                            <span class="@(item.PenaltyDays > 10 ? "penalty-high" : "penalty-ok")">
+                                @item.PenaltyDays يوم
+                            </span>
+                        </td>
+
+                        {{!-- الإجراء المقترح --}}
+                        <td>
+                            @if (item.IsEligible)
+                            {
+                                @if (item.ProposedAction.Contains("ترقية"))
+                                {
+                                    <span class="action-promote">
+                                        <i class="fas fa-level-up-alt"></i>
+                                        @item.ProposedAction
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="action-allowance">
+                                        <i class="fas fa-plus-circle"></i>
+                                        @item.ProposedAction
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+
+                        {{!-- الحالة --}}
+                        <td>
+                            @if (item.IsEligible)
+                            {
+                                <span class="status-badge status-eligible">
+                                    <i class="fas fa-check-circle"></i> مستوفي
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-excluded">
+                                    <i class="fas fa-times-circle"></i>
+                                    @(string.IsNullOrEmpty(item.ExclusionReason)
+                                        ? "مستبعد"
+                                        : item.ExclusionReason)
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    {{!-- Failures (لو في موظفين فشل تقييمهم) --}}
+    @if (Model.Failures?.Any() == true)
+    {
+        <div class="mx-3 mb-3">
+            <div class="alert alert-warning" style="border-radius:8px; font-size:.85rem;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>@Model.Failures.Count موظف فشل تقييمهم:</strong>
+                <ul class="mb-0 mt-1">
+                    @foreach (var f in Model.Failures)
+                    {
+                        <li>@f</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>

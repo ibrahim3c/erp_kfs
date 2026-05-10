@@ -8,7 +8,7 @@ namespace HR.Domain.Decisions
 
         private DecisionType(
             Guid id,
-            string name,
+            string code,
             string description,
             bool affectsEmploymentType,
             bool affectsSalary,
@@ -16,7 +16,7 @@ namespace HR.Domain.Decisions
             bool hasEndDate,
             bool isActive) : base(id)
         {
-            Name = name;
+            Code = code;
             Description = description;
             AffectsEmploymentType = affectsEmploymentType;
             AffectsSalary = affectsSalary;
@@ -25,7 +25,7 @@ namespace HR.Domain.Decisions
             IsActive = isActive;
         }
 
-        public string Name { get; private set; }
+        public string Code { get; private set; }
 
         public string Description { get; private set; }
 
@@ -44,19 +44,19 @@ namespace HR.Domain.Decisions
         // ---------------------------
 
         public static Result<DecisionType> Create(
-            string name,
+            string code,
             string description,
             bool affectsEmploymentType,
             bool affectsSalary,
             bool affectsPosition,
             bool hasEndDate)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return Result<DecisionType>.Failure(DecisionErrors.NameEmpty);
+            if (string.IsNullOrWhiteSpace(code))
+                return Result<DecisionType>.Failure(DecisionErrors.CodeEmpty);
 
             var decisionType = new DecisionType(
                 Guid.NewGuid(),
-                name,
+                code,
                 description,
                 affectsEmploymentType,
                 affectsSalary,
@@ -73,13 +73,13 @@ namespace HR.Domain.Decisions
         // ---------------------------
 
         public Result UpdateDetails(
-            string name,
+            string code,
             string description)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return Result.Failure(DecisionErrors.NameEmpty);
+            if (string.IsNullOrWhiteSpace(code))
+                return Result.Failure(DecisionErrors.CodeEmpty);
 
-            Name = name;
+            Code = code;
             Description = description;
 
             return Result.Success();

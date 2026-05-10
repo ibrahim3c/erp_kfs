@@ -28,6 +28,9 @@ namespace HR.Domain.Decisions
 
         public static readonly Error NumberEmpty =
             new("Decision.NumberEmpty", "رقم القرار مطلوب");
+        public static readonly Error CodeEmpty =
+            new("Decision.CodeEmpty ", "رقم القرار مطلوب");
+
         public static readonly Error DecisionTypeEmpty =
             new("Decision.TypeEmpty", "نوع القرار مطلوب");
         public static readonly Error DecisionAuthorityEmpty =

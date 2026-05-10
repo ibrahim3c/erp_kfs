@@ -7,6 +7,7 @@ using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
+using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Terminations;
 
 namespace HR.Domain
@@ -25,7 +26,11 @@ namespace HR.Domain
         IPermissionRepository PermissionRepository { get; }
         ILateEntryRepository LateEntryRepository { get; }
         IAttendanceRecordRepository AttendanceRecordRepository { get; }
+        IKpiReportRepository KpiReportRepository { get; }
+        IPromotionCycleRepository PromotionCycleRepository { get; }
+        IPromotionHistoryRepository PromotionHistoryRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        
     }
 }

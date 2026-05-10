@@ -8,6 +8,7 @@
         public bool IsActive { get; init; }
         public string? JobTitleName { get; init; } 
         public string? JobGradeName { get; init; }
+        public int? GradeLevel { get; init; }
         public string? OrgUnitName { get; init; }
         public Guid? LeadershipPositionId { get; init; }
     }

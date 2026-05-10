@@ -1,3 +1,4 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -8,6 +9,8 @@
     <meta name="description" content="المنصة الرقمية الموحدة لمحافظة كفر الشيخ - نظام ERP شامل لإدارة الموارد البشرية، المخازن، الشئون القانونية، والحملة">
     <meta name="keywords" content="ERP, كفر الشيخ, موارد بشرية, مخازن, حكومة الكترونية, تحول رقمي">
     <meta name="author" content="الإدارة العامة لنظم المعلومات والتحول الرقمي">
+    <meta name="request-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
     <!-- Bootstrap -->
     <link rel="stylesheet" href="~/css/bootstrap/bootstrap.min.css">
     <!-- Font Awesome -->
@@ -193,7 +196,7 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <!-- كشوف المستحقين للترقية -->
-                                    <a asp-area="HR" asp-controller="Promotions" asp-action="Eligibility" class="nav-link text-success">
+                                    <a asp-area="HR" asp-controller="Promotions" asp-action="Index" class="nav-link text-success">
                                         <i class="fas fa-arrow-up nav-icon"></i>
                                         <p>بحث الترقيات والعلاوات</p>
                                     </a>
