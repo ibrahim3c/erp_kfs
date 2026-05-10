@@ -18,7 +18,7 @@ namespace HR.Infrastructure.Persistance.Repositories
         public async Task AddRangeAsync(List<PromotionHistory> histories, CancellationToken ct)
         {
             await _db.PromotionHistories.AddRangeAsync(histories, ct);
-            await _db.SaveChangesAsync(ct);
+ 
         }
 
         public async Task<PromotionHistory?> GetLastByEmployeeAsync(

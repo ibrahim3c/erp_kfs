@@ -27,7 +27,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
        CycleType cycleType,
        string eligibilityDate,
        int minKpiScore,
-       decimal? maxPenaltyDays,
+       int maxPenaltyDays,
        CancellationToken ct)
         {
             var userId = GetCurrentUserId();
@@ -65,10 +65,10 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
             CancellationToken ct)
         {
             if (cycleId == Guid.Empty)
-                return Json(new { success = false, message = "الكشف غير محدد" });
+                return new BadRequestObjectResult(new { success = false, message = "معرف الدورة غير صالح" });
 
             if (selectedIds is null || !selectedIds.Any())
-                return Json(new { success = false, message = "يجب اختيار موظف واحد على الأقل" });
+                return new BadRequestObjectResult(new { success = false, message = "يجب اختيار موظف واحد على الأقل" });
 
             var command = new ApprovePromotionCommand(
                 cycleId,
@@ -79,19 +79,23 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
 
             // ✅ بنرجع JSON متوافق مع الـ JS
             return result.IsSuccess
-                ? Json(new
-                {
-                    success = true,
-                    message = result.Value.Message,
-                    count = result.Value.ApprovedCount
-                })
-                : Json(new
-                {
-                    success = false,
-                    message = result.Error.Name
-                });
+      ? RedirectToAction("Index", new { area = "HR" })
+      : RedirectToAction("Index", new { area = "HR", error = result.Error.Name });
         }
+        [HttpGet]
+        public async Task<IActionResult> EmployeeHistory(Guid employeeId, CancellationToken ct)
+        {
+            if (employeeId == Guid.Empty)
+                return BadRequest();
 
+            var result = await _mediator.Send(
+                new GetPromotionHistoryQuery(employeeId), ct);
+
+            if (result.IsFailure)
+                return NotFound();
+
+            return PartialView("_PromotionHistory", result.Value);
+        }
         // ── Helper ────────────────────────────────────────────────
         private Guid GetCurrentUserId()
         {

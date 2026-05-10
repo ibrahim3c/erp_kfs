@@ -68,7 +68,7 @@ namespace HR.Application.Promotions.Commands
                     const string sql = "SELECT Id FROM Organization.JobGrades WHERE GradeLevel = @level";
                     
                     var proposed = await connection.QuerySingleOrDefaultAsync<GetJobGradResponse>(
-                        sql, new { result.ProposedGradeLevel.Value });
+                        sql, new { level = result.ProposedGradeLevel.Value });
 
                     if (proposed is null)
                         return Result<ApprovePromotionResult>.Failure(new Error("ProposedGradeNotFound", "الدرجة المقترحة غير موجودة"));
@@ -84,7 +84,8 @@ namespace HR.Application.Promotions.Commands
                 string decisionDescription = BuildDecisionDescription(
                     cycle.Type, result, targetGradeId);
 
-                var decisionResult = employee.RecordDecision(
+                var decisionResult = EmployeeDecision.Create(
+                    employeeId: result.EmployeeId,
                     decisionId: decisionTypeId,
                     description: decisionDescription,
                     validFrom: cycle.EligibilityDate,
@@ -92,14 +93,12 @@ namespace HR.Application.Promotions.Commands
                     status: EmployeeDecisionStatus.Active,
                     notes: $"صادر باعتماد كشف رقم {cycle.Id}");
 
+
                 if (decisionResult.IsFailure)
                     return Result<ApprovePromotionResult>.Failure(new Error("DecisionCreationFailed", $"فشل إنشاء قرار للموظف: {decisionResult.Error.Name}"));
 
                 // جيب الـ Decision اللي اتضافت للتو (آخر واحدة)
-                var newDecision = employee.EmployeeDecisions
-                    .OrderByDescending(d => d.Id)
-                    .First();
-
+                var newDecision = decisionResult.Value;
                 decisionsByEmpId[result.EmployeeId] = newDecision.Id;
 
                 // 5c. تحديث درجة الموظف (للترقية فقط)

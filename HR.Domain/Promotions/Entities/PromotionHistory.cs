@@ -27,8 +27,27 @@ namespace HR.Domain.Promotions.Entities
         // Navigations
         public PromotionCycle Cycle { get; private set; } = null!;
 
-        private PromotionHistory(Guid id, Guid employeeId, Guid fromGradeId, Guid toGradeId, DateTime effectiveDate,
-            CycleType movementType, Guid promotionCycleId, Guid? linkedDecisionId, string? notes) : base(id) { } // EF
+     private PromotionHistory(
+        Guid id,
+        Guid employeeId,
+        Guid fromGradeId,
+        Guid toGradeId,
+        DateTime effectiveDate,
+        CycleType movementType,
+        Guid promotionCycleId,
+        Guid? linkedDecisionId,
+        string? notes) : base(id)
+        {
+            
+            EmployeeId = employeeId;
+            FromGradeId = fromGradeId;
+            ToGradeId = toGradeId;
+            EffectiveDate = effectiveDate;
+            MovementType = movementType;
+            PromotionCycleId = promotionCycleId;
+            LinkedDecisionId = linkedDecisionId;
+            Notes = notes;
+        }
 
         public static Result<PromotionHistory> Create(
             Guid employeeId,

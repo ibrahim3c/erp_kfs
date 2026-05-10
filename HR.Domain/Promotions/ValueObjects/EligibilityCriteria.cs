@@ -13,13 +13,13 @@ namespace HR.Domain.Promotions.ValueObjects
     public sealed class EligibilityCriteria
     {
         public int MinKpiScore { get; }
-        public decimal? MaxPenaltyDays { get; }
+        public int MaxPenaltyDays { get; }
         public DateTime EligibilityDate { get; }
         public int KpiYearsToCheck { get; }
 
 
         private EligibilityCriteria(
-            int minKpiScore, decimal? maxPenaltyDays,
+            int minKpiScore, int maxPenaltyDays,
             DateTime eligibilityDate, int kpiYearsToCheck)
         {
             MinKpiScore = minKpiScore;
@@ -41,7 +41,7 @@ namespace HR.Domain.Promotions.ValueObjects
                    eligibilityDate: date, kpiYearsToCheck: 2);
 
         public static EligibilityCriteria Custom(
-            int minKpiScore, decimal? maxPenaltyDays,
+            int minKpiScore, int maxPenaltyDays,
             DateTime date, int kpiYearsToCheck = 2)
             => new(minKpiScore, maxPenaltyDays, date, kpiYearsToCheck);
     }

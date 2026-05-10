@@ -13,7 +13,7 @@ namespace HR.Application.Promotions.Queries
      CycleType CycleType,
      DateTime EligibilityDate,
      int MinKpiScore,
-     decimal? MaxPenaltyDays,
+     int MaxPenaltyDays,
      Guid RequestByUserId   
  ) : IQuery<CheckEligibilityResponse>;
 }
