@@ -39,5 +39,11 @@ namespace HR.Infrastructure.Persistance.Repositories
 
             return decision;
         }
+
+        public void AddEmployeeDecision(EmployeeDecision employeeDecision)
+        {
+             dbContext.EmployeeDecisions.Add(employeeDecision);
+           
+        }
     }
 }

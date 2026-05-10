@@ -40,7 +40,7 @@ namespace HR.Domain.Promotions.Entities
 
         private EligibilityResult() : base(Guid.NewGuid()) { } // EF only
 
-        // ✅ Constructor الحقيقي — بيعين كل الـ properties
+        //  Constructor الحقيقي — بيعين كل الـ properties
         private EligibilityResult(
             Guid cycleId,
             Guid employeeId,
@@ -70,15 +70,15 @@ namespace HR.Domain.Promotions.Entities
             IsSelected = false;
         }
 
-        // ✅ Factory Methods — بياخدوا JobGrade object مباشرة
+        //  Factory Methods 
         public static Result<EligibilityResult> CreateEligible(
-      Guid cycleId,
-      Guid employeeId,
-      JobGradeSnapshot currentGrade,    // ← Snapshot مش JobGrade VO
-      int? proposedGradeLevel,
-      decimal avgKpi,
-      decimal? penaltyDays,
-      decimal yearsInGrade)
+          Guid cycleId,
+          Guid employeeId,
+          JobGradeSnapshot currentGrade,    // ← Snapshot مش JobGrade VO
+          int? proposedGradeLevel,
+          decimal avgKpi,
+          decimal? penaltyDays,
+          decimal yearsInGrade)
         {
             var result = new EligibilityResult(
                 cycleId, employeeId,

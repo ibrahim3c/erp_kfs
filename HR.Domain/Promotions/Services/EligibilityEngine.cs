@@ -20,18 +20,19 @@ namespace HR.Domain.Promotions.Services
     public sealed class EligibilityEngine
     {
         public Result<EligibilityResult> Evaluate(
-      PromotionCycle cycle,
-      EmployeeSnapshot employee,
-      EligibilityCriteria criteria,
-      List<KpiReportDto> kpiReports,
-      decimal? penaltyDays,
-      int incentiveQuotaRemaining)
+          PromotionCycle cycle,
+          EmployeeSnapshot employee,
+          EligibilityCriteria criteria,
+          List<KpiReportDto> kpiReports,
+          decimal? penaltyDays,
+          int incentiveQuotaRemaining)
         {
-            // ✅ بنبني Value Object من الـ Flat Snapshot
+            //  بنبني Value Object من الـ Flat Snapshot
             var currentGrade = JobGrade.FromSnapshot(employee.ToGradeSnapshot());
 
             decimal avgKpi = kpiReports.Any()
                                     ? kpiReports.Average(k => k.Score) : 0;
+
             decimal yearsInGrade = CalculateYears(
                                     employee.GradeStartDate,
                                     criteria.EligibilityDate);
@@ -61,6 +62,7 @@ namespace HR.Domain.Promotions.Services
                     avgKpi, penaltyDays, yearsInGrade);
 
             int? proposedGradeLevel = null;
+
             if (cycle.Type == CycleType.Promotion)
             {
                 if (!currentGrade.HasNextGrade())
@@ -70,6 +72,7 @@ namespace HR.Domain.Promotions.Services
                         avgKpi, penaltyDays, yearsInGrade);
 
                 var nextResult = currentGrade.NextGradeLevel();
+
                 if (nextResult.IsFailure)
                     return Result<EligibilityResult>.Failure(nextResult.Error);
 
@@ -97,11 +100,10 @@ namespace HR.Domain.Promotions.Services
         {
             var months = ((reference.Year - start.Year) * 12)
                        + reference.Month - start.Month;
-            return Math.Round(months / 12m, 1);
+            return Math.Round(months / 12m, 1);  // 12m عشان النتيجة تكون decimal مش int
         }
     }
 
-    // DTO بسيط بيجي من الـ DB — ملوش هوية Domain
-    
+    // DTO بسيط بيجي من الـ DB — ملوش هوية Domain  
     public record KpiReportDto(int Year, decimal Score);
 }

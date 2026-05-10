@@ -5,5 +5,6 @@ namespace HR.Domain.Decisions
     public interface IDecisionRepository
     {
         Task<Guid> GetIdByMovementTypeAsync(CycleType type, CancellationToken ct);
+        void AddEmployeeDecision(EmployeeDecision employeeDecision);
     }
 }
