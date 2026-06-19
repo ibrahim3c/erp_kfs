@@ -103,10 +103,10 @@ namespace Identity.Infrastructure
                 // check if token have specific data
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = configuration["JWT:Issuer"],
-                    ValidAudience = configuration["JWT:Audience"],
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    //ValidIssuer = configuration["JWT:Issuer"],
+                    //ValidAudience = configuration["JWT:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"])),
 
                     // if u want when the token expire he does not give me مهله بعض الوقت 
