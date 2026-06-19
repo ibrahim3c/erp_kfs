@@ -20,6 +20,10 @@ namespace ERP_KFS_MVC
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             builder.Services.AddSharedInfrastructure(builder.Configuration);
             builder.Services.AddSharedApplication();
             builder.Services.AddHRInfrastructure(builder.Configuration);
@@ -28,6 +32,17 @@ namespace ERP_KFS_MVC
             builder.Services.AddGeographyInfrastructure(builder.Configuration);
             builder.Services.AddOrganizationInfrastructure(builder.Configuration);
             builder.Services.AddOrganizationApplication();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
 
             var app = builder.Build();
 
@@ -40,11 +55,16 @@ namespace ERP_KFS_MVC
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ERP API V1");
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
 

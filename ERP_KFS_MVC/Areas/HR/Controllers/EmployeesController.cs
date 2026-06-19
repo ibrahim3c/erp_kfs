@@ -407,6 +407,7 @@ namespace ERP_KFS_MVC.Areas.HR.Controllers
         // ─────────────────────────────────────────
         // GET API: /HR/Employees/VillagesByCityCenter/{id}
         // ─────────────────────────────────────────
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/geography/villages-by-city-center/{cityCenterId:guid}")]
         public async Task<IActionResult> VillagesByCityCenter(Guid cityCenterId)
         {
