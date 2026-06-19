@@ -31,6 +31,9 @@ namespace Identity.Domain
         public static readonly Error InvalidCredentials =
             new("Auth.InvalidCredentials", "Invalid email or password");
 
+        public static readonly Error InvalidToken =
+            new("Auth.InvalidToken", "Invalid token");
+
         public static readonly Error AccountLockedOut =
             new("Auth.AccountLockedOut", "Your account has been temporarily locked due to multiple failed login attempts. Please try again later.");
 
