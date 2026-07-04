@@ -1,8 +1,10 @@
+using System.Reflection;
 using ERP_KFS_MVC.Extensions;
 using Geography.Infrastructure;
 using HR.Application;
 using HR.Infrastructure;
 using Identity.Infrastructure;
+using Microsoft.OpenApi.Models;
 using Modules.Shared.Application;
 using Modules.Shared.Infrastructure;
 using Organization.Application;
@@ -22,7 +24,22 @@ namespace ERP_KFS_MVC
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "ERP KFS API",
+                    Version = "v1",
+                    Description = "ERP system for Kafr El-Sheikh Governorate. Provides endpoints for HR management (attendance, employees), authentication, and geography lookups."
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
+            builder.Configuration.AddJsonFile("Secret.json", optional: false, reloadOnChange: true);
+
 
             builder.Services.AddSharedInfrastructure(builder.Configuration);
             builder.Services.AddSharedApplication();
