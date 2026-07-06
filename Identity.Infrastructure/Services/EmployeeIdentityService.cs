@@ -32,7 +32,7 @@ namespace Identity.Infrastructure.Services
 
             var user = new AppUser
             {
-                UserName = fullName,
+                UserName = resolvedEmail,
                 Email = resolvedEmail,
                 FullName = fullName,
                 EmailConfirmed = true

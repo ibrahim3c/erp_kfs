@@ -1,11 +1,10 @@
-﻿using Azure.Core;
+﻿using Dapper;
 using Identity.Application.Dtos;
 using Identity.Application.IServices;
 using Identity.Domain;
-using Identity.Infrastructure.Integration;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Modules.Shared.Application.Database;
 using Modules.Shared.Domain;
 
 namespace Identity.Infrastructure.Services
@@ -15,12 +14,17 @@ namespace Identity.Infrastructure.Services
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
-        public AuthService(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,ITokenGenerator tokenGenerator)
+        public AuthService(SignInManager<AppUser> signInManager,
+            UserManager<AppUser> userManager,
+            ITokenGenerator tokenGenerator,
+            ISqlConnectionFactory sqlConnectionFactory)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _tokenGenerator = tokenGenerator;
+            _sqlConnectionFactory = sqlConnectionFactory;
         }
 
         public async Task<Result<bool>> LoginAsync(LoginDto request)
@@ -85,10 +89,35 @@ namespace Identity.Infrastructure.Services
 
             var token = await _tokenGenerator.GenerateJwtTokenAsync(user);
 
+            // get employee info from db using dapper
+            using var connection = _sqlConnectionFactory.CreateConnection();
+
+            const string sql = """
+                    SELECT
+                        e.Id,
+                        e.Name,
+                        e.Phone,
+                        e.Email,
+                        e.NationalId,
+                        e.IsActive,
+                        e.HireDate,
+                        e.DateOfBirth,
+
+                        jt.Name  AS JobTitleName
+
+
+                    FROM HR.Employees e
+                    LEFT JOIN Organization.JobTitles     jt  ON jt.Id  = e.JobTitleId
+ 
+                    WHERE e.UserId = @EmployeeId
+                    """;
+
+            var response = await connection.QuerySingleOrDefaultAsync<EmployeeAuthResponse>(sql, new { EmployeeId = user.Id });
 
             var authResult = new AuthResponse
             {
-                Token = token
+                Token = token,
+                EmployeeDetails = response
             };
             // check if user has already active refresh token 
             // so no need to give him new refresh token
