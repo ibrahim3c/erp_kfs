@@ -231,6 +231,9 @@ namespace HR.Application.Employees.CreateFullEmployee
                 employee.LinkUserId(createUserResult.Value);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
+            else
+               return Result<Guid>.Failure(createUserResult.Error);
+
 
             return Result<Guid>.Success(employee.Id);
         }
