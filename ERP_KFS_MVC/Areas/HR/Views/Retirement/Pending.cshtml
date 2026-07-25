@@ -1,10 +1,30 @@
-﻿@{
+﻿@using HR.Application.Retriement.Query.GetPendingRetirement
+@model List<PendingRetirementDto>
+@{
     ViewData["Title"] = "الموظفون المحالون للمعاش (الموشكون على التقاعد)";
 }
 
-<!-- DataTables CSS -->
 <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+
+<div id="loadingOverlay" style="
+    display:flex;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,.8);
+    z-index:99999;
+    justify-content:center;
+    align-items:center;">
+
+    <div class="text-center">
+        <div class="spinner-border text-primary" style="width:4rem;height:4rem;"></div>
+        <div class="mt-3 fw-bold">جاري تحميل بيانات الموظفين...</div>
+    </div>
+
+</div>
 
 <div class="content-header">
     <div class="container-fluid">
@@ -25,17 +45,22 @@
 <section class="content">
     <div class="container-fluid">
 
-        <!-- 1. فلتر السنة (Forecast) -->
         <div class="card bg-gradient-navy">
             <div class="card-body">
                 <div class="row align-items-end">
                     <div class="col-md-3">
                         <label class="mb-1 text-light">استعرض الخروج للمعاش لعام:</label>
-                        <select class="form-control form-control-sm font-weight-bold">
-                            <option selected>2024</option>
-                            <option>2025</option>
-                            <option>2026</option>
-                        </select>
+                        <form asp-action="Pending" method="get" id="yearForm">
+                            <select name="year" class="form-control form-control-sm font-weight-bold" onchange="submitYearForm()">
+                                @{
+                                    var selectedYear = Context.Request.Query["year"].FirstOrDefault() ?? DateTime.Now.Year.ToString();
+                                }
+                                @for (int y = DateTime.Now.Year - 2; y <= DateTime.Now.Year + 2; y++)
+                                {
+                                    <option value="@y" selected="@(y.ToString() == selectedYear)">@y</option>
+                                }
+                            </select>
+                        </form>
                     </div>
                     <div class="col-md-9 text-light">
                         <i class="fas fa-info-circle ms-2"></i> يعرض هذا التقرير أسماء الموظفين الذين سيتمون سن الستين خلال العام المحدد، للبدء في إجراءات تسوية مستحقاتهم وتجهيز البديل.
@@ -43,16 +68,24 @@
                 </div>
             </div>
         </div>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
-        <!-- 2. جدول الموشكون على الخروج -->
         <div class="card card-outline card-warning">
             <div class="card-header border-0">
-                <h3 class="card-title text-bold">قائمة الموظفين (سن 60) - العام الحالي</h3>
-                <div class="card-tools">
-                    <button class="btn btn-tool" title="تصدير" data-widget="chat-pane-toggle">
-                        <i class="fas fa-download"></i> تصدير للكشف
-                    </button>
-                </div>
+                <h3 class="card-title text-bold">قائمة الموظفين (سن 60) - العام المحدد</h3>
             </div>
             <div class="card-body p-0">
                 <table id="retirementTable" class="table table-hover table-striped text-center align-middle">
@@ -69,106 +102,125 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- حالة 1: قريب جداً -->
-                        <tr class="bg-white border-left-danger" style="border-left: 5px solid #dc3545;">
-                            <td>1</td>
-                            <td class="text-end fw-bold">فاطمة عبدالفتاح الشرباني</td>
-                            <td>مدير عام التخطيط</td>
-                            <td>01/08/1964</td>
-                            <td class="text-danger fw-bold">01/08/2024</td>
-                            <td><span class="badge bg-danger p-2">أقل من شهر</span></td>
-                            <td>
-                                <span class="badge bg-warning text-dark">جاري تجهيز الملف</span>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#checklistModal">
-                                    <i class="fas fa-tasks me-1"></i> متابعة الإجراءات
-                                </button>
-                            </td>
-                        </tr>
+                        @{
+                            int i = 1;
+                        }
+                        @foreach (var emp in Model)
+                        {
+                            var remainingDays = (emp.RetirementDate - DateTime.Now).TotalDays;
+                            var isUrgent = remainingDays <= 30;
 
-                        <!-- حالة 2: أمامه بضعة أشهر -->
-                        <tr>
-                            <td>2</td>
-                            <td class="text-end fw-bold">موظف كبير أخصائيين</td>
-                            <td>مراجع مالي</td>
-                            <td>15/12/1964</td>
-                            <td class="text-primary fw-bold">15/12/2024</td>
-                            <td><span class="badge bg-info p-2">5 شهور</span></td>
-                            <td><span class="badge bg-secondary">لم يبدأ</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#checklistModal">
-                                    <i class="fas fa-tasks me-1"></i> بدء الملف
-                                </button>
-                            </td>
-                        </tr>
+                            var statusText = emp.FileStatus switch
+                            {
+                                null => "لم يبدأ",
+                                "PendingReview" => "جاري تجهيز الملف",
+                                "UnderFinancialReview" => "تحت المراجعة المالية",
+                                "AwaitingSignatures" => "في انتظار التوقيعات",
+                                "DeliveredToAuthority" => "تم التسليم",
+                                "Rejected" => "مرتد",
+                                _ => emp.FileStatus
+                            };
+                            var statusClass = emp.FileStatus switch
+                            {
+                                null => "bg-secondary",
+                                "DeliveredToAuthority" => "bg-success",
+                                "Rejected" => "bg-danger",
+                                _ => "bg-warning text-dark"
+                            };
+
+                            <tr class="@(isUrgent ? "bg-white" : "")" style="@(isUrgent ? "border-left: 5px solid #dc3545;" : "")">
+                                <td>@i</td>
+                                <td class="text-end fw-bold">@emp.EmployeeName</td>
+                                <td>@emp.JobTitle</td>
+                                <td>@emp.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                                <td class="@(isUrgent ? "text-danger fw-bold" : "text-primary fw-bold")">@emp.RetirementDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (remainingDays <= 30)
+                                    {
+                                        <span class="badge bg-danger p-2">أقل من شهر</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info p-2">@((int)(remainingDays / 30)) شهور</span>
+                                    }
+                                </td>
+                                <td><span class="badge @statusClass">@statusText</span></td>
+                                <td>
+                                    @if (emp.RetirementFileId is null)
+                                    {
+                                        <form asp-action="CreateFile"
+                                              asp-controller="Retirement"
+                                              asp-area="HR"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden" name="employeeId" value="@emp.EmployeeId" />
+                                            <input type="hidden" name="referralDate" value="@emp.RetirementDate.ToString("yyyy-MM-dd")" />
+
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-plus me-1"></i>
+                                                بدء الملف
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Files" class="btn btn-sm btn-outline-dark">
+                                            <i class="fas fa-tasks me-1"></i> متابعة الإجراءات
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                            i++;
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
 </section>
 
-<!-- Modal: Checklist تجهيز ملف المعاش -->
-<div class="modal fade" id="checklistModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title"><i class="fas fa-file-export me-2"></i> استمارة تجهيز ملف المعاش</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-info">
-                    الموظف: <strong>فاطمة الشرباني</strong> <br>
-                    تاريخ الاحالة: <strong>01/08/2024</strong>
-                </div>
 
-                <h6 class="border-bottom pb-2">قائمة المستندات المطلوبة (Checklist):</h6>
+<!-- Script منفصل لإخفاء الـ Overlay - بدون أي اعتماد على jQuery أو DataTables -->
+<script>
+    (function() {
+        function hideOverlay() {
+            var overlay = document.getElementById("loadingOverlay");
+            if (overlay) overlay.style.display = "none";
+        }
+        // نخفيه أول ما الـ DOM يخلص تحميل، مش لازم ننتظر كل الـ resources (صور، خطوط..)
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            hideOverlay();
+        } else {
+            document.addEventListener("DOMContentLoaded", hideOverlay);
+        }
+        // شبكة أمان: لو لأي سبب فشل الأول، اخفيه على أي حال بعد ثانيتين
+        setTimeout(hideOverlay, 2000);
+    })();
+</script>
 
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="c1" checked>
-                    <label class="form-check-label" for="c1">استمارة (103) ع.ح</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="c2">
-                    <label class="form-check-label" for="c2">إقرار الذمة المالية (نهاية الخدمة)</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="c3">
-                    <label class="form-check-label" for="c3">إخلاء الطرف من المخازن والعهدة</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="c4">
-                    <label class="form-check-label" for="c4">حساب مدة الخبرة السابقة (الضم)</label>
-                </div>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="c5">
-                    <label class="form-check-label" for="c5">بيان الأجور عن آخر 5 سنوات (الخمس علاوات)</label>
-                </div>
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
 
-                <hr />
-                <div class="form-group">
-                    <label>ملاحظات مسئول الملف</label>
-                    <textarea class="form-control" rows="2" placeholder="تم تسليم الملف للتأمينات بتاريخ..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">حفظ مؤقت</button>
-                <button type="button" class="btn btn-success"><i class="fas fa-check-double me-1"></i> تم التسليم وإنهاء الخدمة</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script>
-        $(function () {
+<script>
+    $(function() {
+        try {
             $("#retirementTable").DataTable({
                 "lengthChange": false,
                 "autoWidth": false,
                 "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" }
             });
-        });
-    </script>
+        } catch (e) {
+            console.error("DataTable init error:", e);
+        }
+    });
+
+    function submitYearForm() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+        setTimeout(function() {
+            document.getElementById("yearForm").submit();
+        }, 300);
+    }
+</script>

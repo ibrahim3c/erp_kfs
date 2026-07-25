@@ -206,7 +206,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" asp-area="Admin" style="display:inline;">
+                            <form asp-controller="Accounts" asp-action="Logout" asp-area="Admin" style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-link nav-link text-white w-100 text-left" style="margin: 0; padding: .5rem 1rem;">
                                     <i class="far fa-circle nav-icon"></i>
@@ -218,7 +218,7 @@
                 </li>
 
                 <li class="nav-item mt-2">
-                    <form asp-controller="Account" asp-action="Logout" asp-area="Admin" method="post" class="nav-link p-0">
+                    <form asp-controller="Accounts" asp-action="Logout" asp-area="Admin" method="post" class="nav-link p-0">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-link text-white w-100 text-left" style="margin: 0; padding: .5rem 1rem;">
                             <i class="nav-icon fas fa-sign-out-alt"></i>

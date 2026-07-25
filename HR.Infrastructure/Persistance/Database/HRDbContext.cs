@@ -7,6 +7,8 @@ using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
 using HR.Domain.Promotions.Entities;
+using HR.Domain.Retirement.Entities;
+using HR.Domain.Secondments;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Application.Exceptions;
@@ -47,6 +49,9 @@ public class HRDbContext : DbContext
     public DbSet<PromotionCycle> PromotionCycles { get; set; }
     public DbSet<EligibilityResult> EligibilityResults { get; set; }
     public DbSet<PromotionHistory> PromotionHistories { get; set; }
+    public DbSet<RetirementFile> RetirementFiles { get; set; }
+    public DbSet<RetirementSalaryRecord> RetirementSalaryRecords { get; set; }
+    public DbSet<Secondment> Secondments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

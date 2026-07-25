@@ -61,7 +61,7 @@
                 <li><hr class="dropdown-divider my-2"></li>
 
                 <li>
-                    <form asp-controller="Account" asp-action="Logout" asp-area="Admin" class="m-0">
+                    <form asp-controller="Accounts" asp-action="Logout" asp-area="Admin" class="m-0">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="dropdown-item text-danger fw-bold d-flex align-items-center py-2 rounded-2 logout-btn">
                             <i class="fas fa-sign-out-alt ms-2"></i>
@@ -75,7 +75,7 @@
     else
     {
         <li class="nav-item ms-2">
-            <a class="btn btn-login-nav d-flex fw-bold align-items-center gap-2 rounded-pill px-4 py-2" asp-controller="Account" asp-action="Login" asp-area="Admin">
+            <a class="btn btn-login-nav d-flex fw-bold align-items-center gap-2 rounded-pill px-4 py-2" asp-controller="Accounts" asp-action="Login" asp-area="Admin">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:1.1rem;height:1.1rem;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                 </svg>

@@ -1,0 +1,138 @@
+﻿@using HR.Application.Secondments.Query.GetEmployeesForSelect
+@{
+    ViewData["Title"] = "تسجيل ندب / إعارة جديد";
+    var employees = ViewBag.Employees as List<EmployeeSelectDto> ?? new();
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-file-contract text-primary me-2"></i> قرار ندب / إعارة جديد
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a asp-action="Index">الندب والإعارات</a></li>
+                    <li class="breadcrumb-item active">تسجيل جديد</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="card card-outline card-primary">
+            <div class="card-body">
+
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الموظف</label>
+                            <select class="form-select" name="employeeId" required>
+                                <option value="">-- اختر الموظف --</option>
+                                @foreach (var emp in employees)
+                                {
+                                    <option value="@emp.Id">@emp.Name — @emp.JobTitle</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">نوع الحركة</label>
+                            <select class="form-select" name="type" id="moveType" required>
+                                <option value="Internal">ندب داخلي (بين المصالح الحكومية)</option>
+                                <option value="External">إعارة خارجية (سفر / قطاع خاص)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">الجهة المنتدب إليها</label>
+                            <input type="text" class="form-control" name="hostEntityName" placeholder="اسم الوزارة / الشركة..." required>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ البدء</label>
+                            <input type="date" class="form-control" name="startDate" id="startDate" onchange="calcEndDate()" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">تاريخ الانتهاء</label>
+                            <input type="date" class="form-control" name="endDate" id="endDate" required>
+                        </div>
+
+                        <div class="col-12"><hr class="my-2" /></div>
+                        <h6 class="text-primary mb-3">الترتيبات المالية:</h6>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">تحمل الراتب الأساسي</label>
+                            <select class="form-select" name="salaryBearer" id="salaryBearer" required>
+                                <option value="OriginalEntity">جهتنا (جهة العمل الأصلية)</option>
+                                <option value="HostEntity">الجهة المستعيرة (المنتدب إليها)</option>
+                                <option value="Unpaid">بدون راتب (إعارة)</option>
+                            </select>
+                            <small class="text-muted">ملحوظة: الإعارة الخارجية لا يمكن أن تكون على حساب جهتنا.</small>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">الحوافز والمكافآت</label>
+                            <select class="form-select" name="incentiveBearer" required>
+                                <option value="HostEntity">تتحملها الجهة المستعيرة</option>
+                                <option value="OriginalEntity">تتحملها جهتنا</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">مرفق عقد الإعارة / الندب</label>
+                            <input type="file" class="form-control" name="file" accept=".pdf,.jpg,.jpeg,.png">
+                            <small class="text-muted">PDF أو صورة فقط.</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> حفظ الحركة وتجميد الموظف
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function calcEndDate() {
+        var startVal = document.getElementById("startDate").value;
+        if (startVal) {
+            var d = new Date(startVal);
+            d.setFullYear(d.getFullYear() + 1);
+            d.setDate(d.getDate() - 1);
+            document.getElementById("endDate").value = d.toISOString().split('T')[0];
+        }
+    }
+
+    // إعارة خارجية = بدون راتب إجباريًا (اتساقًا مع قاعدة العمل في السيرفر)
+    document.getElementById("moveType").addEventListener("change", function () {
+        var salarySelect = document.getElementById("salaryBearer");
+        if (this.value === "External") {
+            salarySelect.value = "Unpaid";
+            salarySelect.querySelector('option[value="OriginalEntity"]').disabled = true;
+        } else {
+            salarySelect.querySelector('option[value="OriginalEntity"]').disabled = false;
+        }
+    });
+</script>

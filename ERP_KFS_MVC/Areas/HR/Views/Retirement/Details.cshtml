@@ -1,0 +1,168 @@
+﻿@using HR.Application.Retriement.Query.GetRetirementFileDetails
+@model RetirementFileDetailsDto
+@{
+    ViewData["Title"] = "تجهيز ملف المعاش - " + Model.EmployeeName;
+    var currentYear = DateTime.Now.Year;
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-clipboard-check text-primary me-2"></i>
+                    تجهيز ملف المعاش - <span class="text-warning">@Model.EmployeeName</span>
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a asp-action="Files">ملفات المعاشات</a></li>
+                    <li class="breadcrumb-item active">تفاصيل الملف</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+
+                <!-- Tabs - بدون أي JS إضافي، Bootstrap Tabs جاهزة -->
+                <ul class="nav nav-pills nav-fill mb-3" id="pills-tab">
+                    <li class="nav-item">
+                        <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#step1" type="button">1. مراجعة التدرج</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#step2" type="button">2. البيانات المالية</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#step3" type="button">3. الطباعة والتسليم</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content border p-3 rounded bg-light">
+
+                    <!-- Step 1: Checklist -->
+                    <div class="tab-pane fade show active" id="step1">
+                        <form asp-action="UpdateChecklist" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="retirementFileId" value="@Model.Id" />
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-primary">أ. بيانات التعيين والضم</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="joinPeriodsAdded"
+                                               id="chkJoin" value="true" checked="@Model.JoinPeriodsAdded" />
+                                        <label class="form-check-label" for="chkJoin">تم ضم جميع مدد الخدمة السابقة (قرار ضم)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-primary">ب. التسويات والأجازات</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="specialLeavesReviewed"
+                                               id="chkLeaves" value="true" checked="@Model.SpecialLeavesReviewed" />
+                                        <label class="form-check-label" for="chkLeaves">تم مراجعة الأجازات الخاصة (بدون أجر)</label>
+                                    </div>
+                                    <small class="text-danger ms-4">هام: يتم استبعاد مدة الأجازات الخاصة من حساب المعاش.</small>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-save me-1"></i> حفظ بيانات المراجعة
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Step 2: البيانات المالية -->
+                    <div class="tab-pane fade" id="step2">
+                        <form asp-action="UpdateFinancialData" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="retirementFileId" value="@Model.Id" />
+
+                            <table class="table table-sm table-bordered text-center bg-white">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>السنة</th>
+                                        @for (int y = currentYear - 4; y <= currentYear; y++)
+                                        {
+                                            <th>@y</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold bg-light">أساسي تأميني</td>
+                                        @for (int y = currentYear - 4; y <= currentYear; y++)
+                                        {
+                                            var existing = Model.SalaryRecords.FirstOrDefault(r => r.Year == y);
+                                            <td>
+                                                <input type="hidden" name="years" value="@y" />
+                                                <input type="number" step="0.01" name="amounts" class="form-control form-control-sm text-center"
+                                                       value="@(existing?.BasicInsuredSalary)" />
+                                            </td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-save me-1"></i> حفظ البيانات المالية
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Step 3: التسليم -->
+                    <div class="tab-pane fade" id="step3">
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                            <p class="lead">الملف جاهز للإرسال.</p>
+
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <button class="btn btn-outline-dark" type="button">
+                                    <i class="fas fa-print me-1"></i> طباعة خطاب التسليم (نموذج 103)
+                                </button>
+
+                                <form asp-action="CloseFile" method="post"
+                                      onsubmit="return confirm('هل أنت متأكد من إنهاء الملف وتحويله للأرشيف؟');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="retirementFileId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-archive me-1"></i> حفظ وتغيير الحالة إلى "تم التسليم"
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer text-muted small">
+                آخر تحديث: @DateTime.Now.ToShortDateString()
+            </div>
+        </div>
+
+        <a asp-action="Files" class="btn btn-secondary mt-3">
+            <i class="fas fa-arrow-right me-1"></i> رجوع لقائمة الملفات
+        </a>
+
+    </div>
+</section>
