@@ -40,6 +40,9 @@ namespace Identity.Domain
         public static readonly Error NotAllowedToLogin =
             new("Auth.NotAllowedToLogin", "غير مسموح لك بتسجيل الدخول (تأكد من تفعيل البريد الإلكتروني).");
 
+        public static readonly Error EmailAlreadyExists = 
+            new("Auth.EmailAlreadyExists", "Email is already registered");
+
 
     }
 

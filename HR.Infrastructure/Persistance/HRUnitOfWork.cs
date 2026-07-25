@@ -9,6 +9,8 @@ using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
 using HR.Domain.Promotions.Interfaces;
+using HR.Domain.Retirement.Entities;
+using HR.Domain.Secondments;
 using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
@@ -38,6 +40,10 @@ namespace HR.Infrastructure.Persistance
 
         public IPromotionHistoryRepository PromotionHistoryRepository { get; private set; }
 
+        public IRetriementRepository RetriementRepository { get; private set; }
+
+        public ISecondmentRepository SecondmentRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -56,6 +62,8 @@ namespace HR.Infrastructure.Persistance
             KpiReportRepository = new KpiReportRepository(_dbContext);
             PromotionCycleRepository = new PromotionCycleRepository(_dbContext);
             PromotionHistoryRepository = new PromotionHistoryRepository(_dbContext);
+            RetriementRepository = new RetriementRepository(_dbContext);
+            SecondmentRepository = new SecondmentRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1291,6 +1291,116 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.ToTable("PromotionHistory", "HR");
                 });
 
+            modelBuilder.Entity("HR.Domain.Retirement.Entities.RetirementFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("JoinPeriodsAdded")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("ReferralDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ResponsibleEmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("SpecialLeavesReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("RetirementFiles", "HR");
+                });
+
+            modelBuilder.Entity("HR.Domain.Secondments.Secondment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("ClearanceCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HostEntityName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("IncentiveBearer")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("SalaryBearer")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("Secondments", "HR");
+                });
+
             modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1636,6 +1746,38 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .IsRequired();
 
                     b.Navigation("Cycle");
+                });
+
+            modelBuilder.Entity("HR.Domain.Retirement.Entities.RetirementFile", b =>
+                {
+                    b.OwnsMany("HR.Domain.Retirement.Entities.RetirementSalaryRecord", "SalaryRecords", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<decimal>("BasicInsuredSalary")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<Guid>("RetirementFileId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Year")
+                                .HasColumnType("int");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("RetirementFileId");
+
+                            b1.ToTable("RetirementSalaryRecords", "HR");
+
+                            b1.WithOwner()
+                                .HasForeignKey("RetirementFileId");
+                        });
+
+                    b.Navigation("SalaryRecords");
                 });
 
             modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>

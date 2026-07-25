@@ -1,10 +1,12 @@
+
+using ERP_KFS_MVC.Areas.Admin.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ERP_KFS_MVC.Areas.Admin.ViewModels;
 
 namespace ERP_KFS_MVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class HomeController : Controller
     {
         [HttpGet]
@@ -12,12 +14,12 @@ namespace ERP_KFS_MVC.Areas.Admin.Controllers
         {
             if (User.Identity?.IsAuthenticated != true)
             {
-                return RedirectToAction("Login", "Account", new { area = "Admin", returnUrl = Url.Action("Index", "Home", new { area = "Admin" }) });
+                return RedirectToAction("Login", "Accounts", new { area = "Admin", returnUrl = Url.Action("Index", "Home", new { area = "Admin" }) });
             }
 
             if (!User.IsInRole("Admin") && !User.IsInRole("HR"))
             {
-                return RedirectToAction("AccessDenied", "Account", new { area = "Admin" });
+                return RedirectToAction("AccessDenied", "Accounts", new { area = "Admin" });
             }
 
             var model = new AdminDashboardViewModel

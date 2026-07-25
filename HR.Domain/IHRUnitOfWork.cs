@@ -8,6 +8,8 @@ using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
 using HR.Domain.Promotions.Interfaces;
+using HR.Domain.Retirement.Entities;
+using HR.Domain.Secondments;
 using HR.Domain.Terminations;
 
 namespace HR.Domain
@@ -29,6 +31,8 @@ namespace HR.Domain
         IKpiReportRepository KpiReportRepository { get; }
         IPromotionCycleRepository PromotionCycleRepository { get; }
         IPromotionHistoryRepository PromotionHistoryRepository { get; }
+        IRetriementRepository RetriementRepository { get; }
+        ISecondmentRepository SecondmentRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         

@@ -1,5 +1,7 @@
 ﻿using Identity.Application.Dtos;
 using Identity.Application.IServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERP_KFS_MVC.Areas.Apis.Controllers
@@ -25,6 +27,7 @@ namespace ERP_KFS_MVC.Areas.Apis.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             var result = await authService.LoginJwtAsync(loginDto);

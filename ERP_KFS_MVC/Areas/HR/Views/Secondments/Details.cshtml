@@ -1,0 +1,261 @@
+﻿@using HR.Application.Secondments.Query.GetSecondmentDetails
+@model SecondmentDetailsDto
+@{
+    ViewData["Title"] = "تفاصيل الندب - " + Model.EmployeeName;
+
+    var isInternal = Model.Type == "Internal";
+    var isActive = Model.Status == "Active";
+
+    // نسبة تقدم الفترة (لو الحركة فعّالة)
+    var totalDays = (Model.EndDate - Model.StartDate).TotalDays;
+    var elapsedDays = (DateTime.Now.Date - Model.StartDate.Date).TotalDays;
+    var progress = totalDays > 0 ? Math.Clamp((elapsedDays / totalDays) * 100, 0, 100) : 0;
+    var remainingDays = (Model.EndDate.Date - DateTime.Now.Date).Days;
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-briefcase text-primary me-2"></i> تفاصيل الحركة - <span class="text-primary">@Model.EmployeeName</span>
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a asp-action="Index">الندب والإعارات</a></li>
+                    <li class="breadcrumb-item active">تفاصيل</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- كارت الملخص العلوي -->
+        <div class="card @(isActive ? "card-outline card-success" : "card-outline card-secondary") mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-1 text-center mb-2 mb-md-0">
+                        <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                    </div>
+                    <div class="col-md-7 mb-2 mb-md-0">
+                        <h4 class="mb-0">@Model.EmployeeName</h4>
+                        <span class="text-muted">@Model.JobTitle</span>
+                        <div class="mt-1">
+                            <span class="badge @(isInternal ? "bg-info" : "bg-purple")">
+                                <i class="fas @(isInternal ? "fa-building" : "fa-external-link-alt") me-1"></i>
+                                @(isInternal ? "ندب داخلي" : "إعارة خارجية")
+                            </span>
+                            <span class="badge @(isActive ? "bg-success" : (Model.Status == "Ended" ? "bg-secondary" : "bg-warning text-dark")) ms-1">
+                                @(Model.Status switch
+                                {
+                                    "Active" => "فعّال",
+                                    "Ended" => "منتهي",
+                                    _ => Model.Status
+                                })
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        @if (isActive)
+                        {
+                            <div class="small text-muted mb-1">
+                                @if (remainingDays >= 0)
+                                {
+                                    <span>متبقٍ <strong>@remainingDays</strong> يوم على الانتهاء</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">تجاوز تاريخ الانتهاء بـ @(Math.Abs(remainingDays)) يوم</span>
+                                }
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar @(remainingDays < 0 ? "bg-danger" : "bg-success")" role="progressbar" style="width:@progress.ToString("0")%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span>@Model.StartDate.ToString("dd/MM/yyyy")</span>
+                                <span>@Model.EndDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">من @Model.StartDate.ToString("dd/MM/yyyy") إلى @Model.EndDate.ToString("dd/MM/yyyy")</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- بيانات الحركة -->
+            <div class="col-md-8">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title text-bold">
+                            <i class="fas fa-info-circle text-primary me-1"></i> بيانات الحركة
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <div class="text-muted small mb-1"><i class="fas fa-building me-1"></i> الجهة المنتدب إليها</div>
+                                <div class="fw-bold">@Model.HostEntityName</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <div class="text-muted small mb-1"><i class="fas fa-calendar-alt me-1"></i> تاريخ البدء</div>
+                                <div class="fw-bold">@Model.StartDate.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <div class="text-muted small mb-1"><i class="fas fa-calendar-check me-1"></i> تاريخ الانتهاء</div>
+                                <div class="fw-bold">@Model.EndDate.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <div class="text-muted small mb-1"><i class="fas fa-hourglass-half me-1"></i> إجمالي المدة</div>
+                                <div class="fw-bold">@((int)totalDays) يوم</div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <div class="text-muted small mb-1"><i class="fas fa-money-bill-wave me-1"></i> تحمل الراتب</div>
+                                <div class="fw-bold">
+                                    @(Model.SalaryBearer switch
+                                    {
+                                        "OriginalEntity" => "جهتنا (بالكامل)",
+                                        "HostEntity" => "الجهة المستعيرة",
+                                        "Unpaid" => "بدون راتب",
+                                        _ => Model.SalaryBearer
+                                    })
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <div class="text-muted small mb-1"><i class="fas fa-hand-holding-usd me-1"></i> تحمل الحوافز</div>
+                                <div class="fw-bold">
+                                    @(Model.IncentiveBearer == "HostEntity" ? "الجهة المستعيرة" : "جهتنا")
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex align-items-center">
+                            <div class="text-muted small me-2"><i class="fas fa-box-open me-1"></i> إخلاء طرف العهدة:</div>
+                            @if (Model.ClearanceCompleted)
+                            {
+                                <span class="badge bg-success">تم</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">لم يتم بعد</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إجراءات -->
+            <div class="col-md-4">
+                <div class="card card-outline card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title text-bold">
+                            <i class="fas fa-cogs text-warning me-1"></i> الإجراءات
+                        </h3>
+                    </div>
+                    <div class="card-body">
+
+                        @if (isActive)
+                        {
+                            <!-- تجديد -->
+                            <form asp-action="Renew" method="post" class="mb-3">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="secondmentId" value="@Model.Id" />
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-sync-alt me-1"></i> تجديد لتاريخ جديد
+                                </label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" name="newEndDate" required min="@Model.EndDate.ToString("yyyy-MM-dd")">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <hr />
+
+                            <!-- إخلاء طرف -->
+                            @if (!Model.ClearanceCompleted)
+                            {
+                                <form asp-action="MarkClearance" method="post" class="mb-3"
+                                      onsubmit="return confirm('تأكيد استلام إخلاء طرف العهدة الشخصية؟');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="secondmentId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-outline-dark w-100">
+                                        <i class="fas fa-box-open me-1"></i> تسجيل إخلاء طرف العهدة
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <div class="alert alert-light border mb-3 py-2">
+                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                    تم تسجيل إخلاء طرف العهدة
+                                </div>
+                            }
+
+                            <!-- إنهاء الندب -->
+                            <form asp-action="End" method="post"
+                                  onsubmit="return confirm('هل أنت متأكد من إنهاء هذا الندب/الإعارة؟');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="secondmentId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-danger w-100"
+                                        @(Model.ClearanceCompleted ? "" : "disabled")>
+                                    <i class="fas fa-stop-circle me-1"></i> إنهاء الندب / الإعارة
+                                </button>
+                            </form>
+                            @if (!Model.ClearanceCompleted)
+                            {
+                                <small class="text-muted d-block mt-2">
+                                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                                    لا يمكن إنهاء الحركة قبل إخلاء طرف العهدة.
+                                </small>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0 text-center py-3">
+                                <i class="fas fa-lock fa-2x d-block mb-2"></i>
+                                هذا السجل منتهي، لا يوجد إجراءات متاحة.
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a asp-action="Index" class="btn btn-secondary mt-3">
+            <i class="fas fa-arrow-right me-1"></i> رجوع للقائمة
+        </a>
+
+    </div>
+</section>

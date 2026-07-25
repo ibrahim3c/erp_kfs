@@ -27,6 +27,8 @@ namespace Identity.Infrastructure.Services
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
+
+        //----------------------Cookie---------------------------
         public async Task<Result<bool>> LoginAsync(LoginDto request)
         {
             // 1. البحث عن المستخدم بالإيميل أولاً
@@ -64,6 +66,40 @@ namespace Identity.Infrastructure.Services
             }
 
             return Result<bool>.Failure(IdentityErrors.InvalidCredentials);
+        }
+        public async Task<Result<bool>> RegisterAsync(RegisterDto request)
+        {
+            // التأكد أن البريد غير مستخدم
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+
+            if (existingUser != null)
+                return Result<bool>.Failure(IdentityErrors.EmailAlreadyExists);
+
+            var user = new AppUser
+            {
+                UserName = request.Email,
+                Email = request.Email,
+                FullName = request.FullName
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+
+                return Result<bool>.Failure(new Error(
+                    "Identity.Register",
+                    errors));
+            }
+
+            // إضافة الـ Role الافتراضي
+            await _userManager.AddToRoleAsync(user, "Employee");
+
+            // تسجيل الدخول مباشرة
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return Result<bool>.Success(true);
         }
 
 
