@@ -33,7 +33,9 @@ public class HRDbContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<EmployeeFile> EmployeeFiles { get; set; }
     public DbSet<EmployeeFinancial> EmployeeFinancials { get; set; }
+    public DbSet<Decision> Decisions { get; set; }
     public DbSet<DecisionType> DecisionTypes { get; set; }
+    public DbSet<DecisionAuthority> DecisionAuthorities { get; set; }
     public DbSet<EmployeeDecision> EmployeeDecisions { get; set; }
     public DbSet<Loan> Loans { get; set; }
     public DbSet<InsurancePeriodPurchase> InsurancePeriodPurchases { get; set; }
