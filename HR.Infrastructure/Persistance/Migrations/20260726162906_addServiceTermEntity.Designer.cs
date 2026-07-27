@@ -4,6 +4,7 @@ using HR.Infrastructure.Persistance.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(HRDbContext))]
-    partial class HRDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260726162906_addServiceTermEntity")]
+    partial class addServiceTermEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1461,62 +1464,87 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.ToTable("ServiceTermRecords", "HR");
                 });
 
-            modelBuilder.Entity("HR.Domain.Terminations.TerminationDecision", b =>
+            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AttachmentPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CancellationReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<string>("IssuedTo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DecisionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DecisionNumber")
+                    b.Property<string>("RequestNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LastWorkingDay")
+                    b.Property<DateTime?>("RequestStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("LegalBasis")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<Guid>("ServiceTerminationTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DecisionNumber")
-                        .IsUnique();
-
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("TerminationDecisions", "HR");
+                    b.HasIndex("ServiceTerminationTypeId");
+
+                    b.ToTable("ServiceTerminationRequests", "HR");
+                });
+
+            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("RequiresNoticePeriod")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceTerminationTypes", "HR");
                 });
 
             modelBuilder.Entity("HR.Domain.Attendance.AttendanceRecord", b =>
@@ -1815,6 +1843,21 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Navigation("SalaryRecords");
                 });
 
+            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
+                {
+                    b.HasOne("HR.Domain.Employees.Employee", null)
+                        .WithMany("ServiceTerminationRequests")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HR.Domain.Terminations.ServiceTerminationType", null)
+                        .WithMany("ServiceTerminationRequests")
+                        .HasForeignKey("ServiceTerminationTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HR.Domain.Candidates.Candidate", b =>
                 {
                     b.Navigation("NominationFiles");
@@ -1850,6 +1893,8 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Navigation("Loans");
 
                     b.Navigation("PermissionRequests");
+
+                    b.Navigation("ServiceTerminationRequests");
                 });
 
             modelBuilder.Entity("HR.Domain.Employees.EmploymentType", b =>
@@ -1875,6 +1920,11 @@ namespace HR.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("HR.Domain.Promotions.Entities.PromotionCycle", b =>
                 {
                     b.Navigation("Results");
+                });
+
+            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationType", b =>
+                {
+                    b.Navigation("ServiceTerminationRequests");
                 });
 #pragma warning restore 612, 618
         }

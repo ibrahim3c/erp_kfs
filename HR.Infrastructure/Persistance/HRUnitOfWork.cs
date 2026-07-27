@@ -11,6 +11,7 @@ using HR.Domain.Permissions;
 using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
+using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
@@ -44,6 +45,8 @@ namespace HR.Infrastructure.Persistance
 
         public ISecondmentRepository SecondmentRepository { get; private set; }
 
+        public IServiceTermRepository ServiceTermRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -64,6 +67,7 @@ namespace HR.Infrastructure.Persistance
             PromotionHistoryRepository = new PromotionHistoryRepository(_dbContext);
             RetriementRepository = new RetriementRepository(_dbContext);
             SecondmentRepository = new SecondmentRepository(_dbContext);
+            ServiceTermRepository = new ServiceTermRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
