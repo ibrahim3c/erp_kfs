@@ -4,6 +4,7 @@ using HR.Infrastructure.Persistance.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(HRDbContext))]
-    partial class HRDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727221125_AddFundTables")]
+    partial class AddFundTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -895,138 +898,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("AcademicIncentiveRequests", "HR");
-                });
-
-            modelBuilder.Entity("HR.Domain.Leaves.LeaveBalance", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CarryOverRegularDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CasualLeaveEntitled")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CasualLeaveUsed")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RegularLeaveEntitled")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RegularLeaveUsed")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId", "Year")
-                        .IsUnique();
-
-                    b.ToTable("LeaveBalances", "HR");
-                });
-
-            modelBuilder.Entity("HR.Domain.Leaves.LeaveRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ApprovedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AttachmentPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("ChildDateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ChildName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ContactInfo")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DecisionNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Diagnosis")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("DurationDays")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LeaveCategory")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<decimal?>("PayPercentage")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<Guid?>("ReplacementEmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ReportAuthority")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("SalaryStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("LeaveCategory");
-
-                    b.HasIndex("ReplacementEmployeeId");
-
-                    b.HasIndex("StartDate");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("LeaveRequests", "HR");
                 });
 
             modelBuilder.Entity("HR.Domain.Loans.InsurancePeriodPurchase", b =>
@@ -1955,35 +1826,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HR.Domain.Leaves.LeaveBalance", b =>
-                {
-                    b.HasOne("HR.Domain.Employees.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("HR.Domain.Leaves.LeaveRequest", b =>
-                {
-                    b.HasOne("HR.Domain.Employees.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HR.Domain.Employees.Employee", "ReplacementEmployee")
-                        .WithMany()
-                        .HasForeignKey("ReplacementEmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("ReplacementEmployee");
                 });
 
             modelBuilder.Entity("HR.Domain.Loans.InsurancePeriodPurchase", b =>

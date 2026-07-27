@@ -3,7 +3,9 @@ using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
 using HR.Domain.Evaluations;
+using HR.Domain.Funds;
 using HR.Domain.Incentives;
+using HR.Domain.Leaves;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -35,6 +37,8 @@ namespace HR.Domain
         IRetriementRepository RetriementRepository { get; }
         ISecondmentRepository SecondmentRepository { get; }
         IGrievanceRepository GrievanceRepository { get; }
+        IFundRepository FundRepository { get; }
+        ILeaveRepository LeaveRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         

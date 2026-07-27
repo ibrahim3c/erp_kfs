@@ -2,6 +2,8 @@
 using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
+using HR.Domain.Funds;
+using HR.Domain.Leaves;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -56,6 +58,10 @@ public class HRDbContext : DbContext
     public DbSet<RetirementSalaryRecord> RetirementSalaryRecords { get; set; }
     public DbSet<Secondment> Secondments { get; set; }
     public DbSet<Grievance> Grievances { get; set; }
+    public DbSet<FundSubscription> FundSubscriptions { get; set; }
+    public DbSet<FundClaim> FundClaims { get; set; }
+    public DbSet<LeaveRequest> LeaveRequests { get; set; }
+    public DbSet<LeaveBalance> LeaveBalances { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
