@@ -3,6 +3,7 @@ using HR.Domain.Attendance;
 using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
+using HR.Domain.Evaluations;
 using HR.Domain.Incentives;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
@@ -44,6 +45,8 @@ namespace HR.Infrastructure.Persistance
 
         public ISecondmentRepository SecondmentRepository { get; private set; }
 
+        public IGrievanceRepository GrievanceRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -64,6 +67,7 @@ namespace HR.Infrastructure.Persistance
             PromotionHistoryRepository = new PromotionHistoryRepository(_dbContext);
             RetriementRepository = new RetriementRepository(_dbContext);
             SecondmentRepository = new SecondmentRepository(_dbContext);
+            GrievanceRepository = new GrievanceRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

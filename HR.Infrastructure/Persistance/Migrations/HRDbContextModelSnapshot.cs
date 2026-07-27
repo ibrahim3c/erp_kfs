@@ -695,6 +695,61 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.ToTable("QualificationTypes", "HR");
                 });
 
+            modelBuilder.Entity("HR.Domain.Evaluations.Grievance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CommitteeNotes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("ComplainedDecisionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ComplainedDecisionNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GrievanceType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Reasons")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("ResolutionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("SubmissionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("Grievances", "HR");
+                });
+
             modelBuilder.Entity("HR.Domain.Incentives.AcademicIncentiveRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1185,7 +1240,22 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("AchievementScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("DisciplineScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("EfficiencyScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
                     b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EvaluatorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Grade")
@@ -1193,14 +1263,25 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<decimal>("Score")
                         .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EvaluatorId");
 
                     b.HasIndex("EmployeeId", "Year")
                         .IsUnique();
@@ -1596,6 +1677,17 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("HR.Domain.Evaluations.Grievance", b =>
+                {
+                    b.HasOne("HR.Domain.Employees.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("HR.Domain.Incentives.AcademicIncentiveRequest", b =>
                 {
                     b.HasOne("HR.Domain.Employees.Employee", null)
@@ -1734,7 +1826,14 @@ namespace HR.Infrastructure.Persistance.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HR.Domain.Employees.Employee", "Evaluator")
+                        .WithMany()
+                        .HasForeignKey("EvaluatorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Employee");
+
+                    b.Navigation("Evaluator");
                 });
 
             modelBuilder.Entity("HR.Domain.Promotions.Entities.PromotionHistory", b =>

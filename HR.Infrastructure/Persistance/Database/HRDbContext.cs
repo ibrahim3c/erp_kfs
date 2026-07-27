@@ -6,6 +6,7 @@ using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
+using HR.Domain.Evaluations;
 using HR.Domain.Promotions.Entities;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
@@ -54,6 +55,7 @@ public class HRDbContext : DbContext
     public DbSet<RetirementFile> RetirementFiles { get; set; }
     public DbSet<RetirementSalaryRecord> RetirementSalaryRecords { get; set; }
     public DbSet<Secondment> Secondments { get; set; }
+    public DbSet<Grievance> Grievances { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

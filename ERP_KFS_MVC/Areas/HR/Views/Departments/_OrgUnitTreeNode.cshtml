@@ -1,0 +1,24 @@
+@model ERP_KFS_MVC.Areas.HR.ViewModels.OrgUnitTreeNodeViewModel
+
+@{
+    var levelClass = Model.LevelOrder switch
+    {
+        0 => "lvl-1",
+        1 => "lvl-2",
+        2 => "lvl-3",
+        _ => "lvl-4"
+    };
+}
+
+<li>
+    <a href="#" class="@levelClass">@Model.Name</a>
+    @if (Model.Children.Any())
+    {
+        <ul>
+            @foreach (var child in Model.Children)
+            {
+                @await Html.PartialAsync("_OrgUnitTreeNode", child)
+            }
+        </ul>
+    }
+</li>

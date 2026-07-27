@@ -50,6 +50,17 @@ namespace HR.Infrastructure.Persistance.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<List<AttendanceRecord>> GetByDateRangeAndEmployeeAsync(
+            Guid employeeId, DateTime dateFrom, DateTime dateTo, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.AttendanceRecords
+                .Where(x => x.EmployeeId == employeeId
+                    && x.Date >= dateFrom.Date
+                    && x.Date <= dateTo.Date)
+                .OrderBy(x => x.Date)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<int> GetTotalWorkforceAsync(CancellationToken cancellationToken = default)
         {
             return await _dbContext.Employees.CountAsync(e => e.IsActive, cancellationToken);

@@ -1,5 +1,16 @@
-﻿@{
+@model List<ERP_KFS_MVC.Areas.HR.ViewModels.OrgUnitTreeNodeViewModel>
+@using HR.Application.Departments.GetOrgUnitTree
+@using HR.Application.Departments.GetOrgUnitTypeOptions
+@using HR.Application.Employees.GetAllEmployees
+@using HR.Application.Departments.GetDepartmentStats
+
+@{
     ViewData["Title"] = "الهيكل التنظيمي (ديوان عام المحافظة)";
+    var stats = ViewBag.Stats as GetDepartmentStatsResponse ?? new GetDepartmentStatsResponse();
+    var orgUnitTypes = ViewBag.OrgUnitTypes as List<GetOrgUnitTypeOptionsResponse> ?? new();
+    var employees = ViewBag.Employees as List<EmployeeListResponse> ?? new();
+    var flatUnits = ViewBag.FlatUnits as List<GetOrgUnitTreeResponse> ?? new();
+    var parentUnits = flatUnits.Where(u => u.IsActive).OrderBy(u => u.Name).ToList();
 }
 
 <!-- CSS مخصص لرسم الشجرة (Tree View) -->
@@ -119,6 +130,21 @@
     }
 </style>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -142,85 +168,10 @@
                     <div class="tree text-center" style="min-width: 2500px;">
                         <!-- عرض كبير عشان الشجرة تسيع -->
                         <ul>
-                            <li>
-                                <a href="#" class="lvl-1">المحافظ</a>
-                                <ul>
-                                    <li>
-                                        <a href="#" class="lvl-2">نائب المحافظ</a>
-                                        <ul>
-                                            <li><a href="#" class="lvl-3">المكتب الفني</a></li>
-
-                                            <!-- فرع السكرتير العام (العمود الفقري للهيكل في الصورة) -->
-                                            <li>
-                                                <a href="#" class="lvl-2">السكرتير العام</a>
-                                                <ul>
-                                                    <!-- 1. الموارد البشرية -->
-                                                    <li>
-                                                        <a href="#" class="lvl-3">الإدارة العامة للموارد البشرية</a>
-                                                        <ul>
-                                                            <li><a href="#" class="lvl-4">التطوير المؤسسي</a></li>
-                                                            <li><a href="#" class="lvl-4">تنمية المواهب</a></li>
-                                                            <li><a href="#" class="lvl-4">الاستحقاقات والمزايا</a></li>
-                                                            <li><a href="#" class="lvl-4">عمليات الموارد</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                    <!-- 2. نظم المعلومات -->
-                                                    <li>
-                                                        <a href="#" class="lvl-3">نظم المعلومات والتحول الرقمي</a>
-                                                        <ul>
-                                                            <li><a href="#" class="lvl-4">البنية الأساسية</a></li>
-                                                            <li><a href="#" class="lvl-4">النظم والدعم الفني</a></li>
-                                                            <li><a href="#" class="lvl-4">الإحصاء والتقارير</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                    <!-- 3. الشئون المالية -->
-                                                    <li>
-                                                        <a href="#" class="lvl-3">الشئون المالية والإدارية</a>
-                                                        <ul>
-                                                            <li><a href="#" class="lvl-4">الشئون المالية</a></li>
-                                                            <li><a href="#" class="lvl-4">الشئون الإدارية</a></li>
-                                                            <li><a href="#" class="lvl-4">المركبات</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                    <!-- 4. الشئون القانونية -->
-                                                    <li>
-                                                        <a href="#" class="lvl-3">الشئون القانونية</a>
-                                                        <ul>
-                                                            <li><a href="#" class="lvl-4">التحقيقات</a></li>
-                                                            <li><a href="#" class="lvl-4">الفتاوى والعقود</a></li>
-                                                            <li><a href="#" class="lvl-4">القضايا</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                    <!-- 5. التخطيط والتنمية العمرانية -->
-                                                    <li>
-                                                        <a href="#" class="lvl-3">التخطيط والتنمية العمرانية</a>
-                                                        <ul>
-                                                            <li><a href="#" class="lvl-4">التخطيط العمراني</a></li>
-                                                            <li><a href="#" class="lvl-4">التنسيق الحضاري</a></li>
-                                                            <li><a href="#" class="lvl-4">العشوائيات</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                    <!-- 6. مركز استدامة (على الجنب في الصورة) -->
-                                                    <li>
-                                                        <a href="#" class="lvl-3 bg-gradient-success">مركز استدامة</a>
-                                                        <ul>
-                                                            <li><a href="#" class="lvl-4">التدريب والتطوير</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                </ul>
-                                            </li> <!-- نهاية السكرتير العام -->
-
-                                            <li><a href="#" class="lvl-2">السكرتير العام المساعد</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
+                            @foreach (var node in Model)
+                            {
+                                @await Html.PartialAsync("_OrgUnitTreeNode", node)
+                            }
                         </ul>
                     </div>
                 </div>
@@ -237,9 +188,15 @@
                 <table class="table table-sm table-striped">
                     <thead><tr><th>الاسم</th><th>التبعية</th><th>المدير الحالي</th><th>العدد</th></tr></thead>
                     <tbody>
-                        <tr><td>الموارد البشرية</td><td>السكرتير العام</td><td>... </td><td>15</td></tr>
-                        <tr><td>نظم المعلومات</td><td>السكرتير العام</td><td>... </td><td>10</td></tr>
-                        <tr><td>الشئون القانونية</td><td>السكرتير العام</td><td>...</td><td>8</td></tr>
+                        @foreach (var unit in flatUnits)
+                        {
+                            <tr>
+                                <td>@unit.Name</td>
+                                <td>@(unit.ParentName ?? "—")</td>
+                                <td>@(unit.CurrentManagerName ?? "...")</td>
+                                <td>@unit.EmployeeCount</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -257,23 +214,45 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" asp-action="Save">
+                @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">اسم الإدارة / القسم</label>
-                        <input type="text" class="form-control" required>
+                        <input type="text" class="form-control" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الكود</label>
+                        <input type="text" class="form-control" name="Code" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">نوع الوحدة التنظيمية</label>
+                        <select class="form-select" name="OrgUnitTypeId" required>
+                            <option value="">-- اختر النوع --</option>
+                            @foreach (var t in orgUnitTypes)
+                            {
+                                <option value="@t.Id">@t.Name</option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">تتبع (المستوى الأعلى)</label>
-                        <select class="form-select">
-                            <option value="0">-- مستوى رئيسي --</option>
-                            <option value="1">مكتب المحافظ</option>
-                            <option value="2">السكرتير العام</option>
-                            <option value="3">الموارد البشرية</option>
+                        <select class="form-select" name="ParentId">
+                            <option value="">-- مستوى رئيسي --</option>
+                            @foreach (var p in parentUnits)
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">مدير الإدارة</label>
-                        <select class="form-select"><option>اختيار موظف...</option></select>
+                        <select class="form-select">
+                            <option value="">اختيار موظف...</option>
+                            @foreach (var e in employees)
+                            {
+                                <option value="@e.Id">@e.Name - @(e.JobTitleName ?? "")</option>
+                            }
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
