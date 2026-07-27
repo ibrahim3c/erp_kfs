@@ -1,0 +1,224 @@
+﻿@using HR.Application.Terminations.Query.Details
+@model TerminationDetailsDto
+@{
+    ViewData["Title"] = "تفاصيل قرار إنهاء الخدمة";
+
+    var reasonText = Model.Reason switch
+    {
+        "Resignation" => "استقالة مكتوبة",
+        "Dismissal" => "فصل (تأديبي / قضائي)",
+        "Absence" => "فصل (انقطاع عمل / غياب)",
+        "Death" => "الوفاة",
+        "Medical" => "عدم اللياقة الصحية (عجز كلي)",
+        "Contract" => "انتهاء مدة العقد (عدم التجديد)",
+        _ => Model.Reason
+    };
+
+    var reasonClass = Model.Reason switch
+    {
+        "Dismissal" or "Absence" => "bg-danger",
+        "Death" => "bg-dark",
+        "Medical" => "bg-info text-dark",
+        _ => "bg-warning text-dark"
+    };
+
+    bool isCancelled = Model.Status != "Executed";
+
+    string? attachSrc = !string.IsNullOrEmpty(Model.AttachmentPath)
+        ? (Model.AttachmentPath.StartsWith("/") ? Model.AttachmentPath : "/" + Model.AttachmentPath)
+        : null;
+
+    string attachExt = attachSrc != null ? System.IO.Path.GetExtension(attachSrc).ToLower() : "";
+    bool attachIsImage = attachExt is ".jpg" or ".jpeg" or ".png" or ".webp" or ".jfif" or ".gif";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">
+                    <i class="fas fa-file-contract text-danger me-2"></i> تفاصيل قرار إنهاء الخدمة
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">HR</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index">إنهاء الخدمة</a></li>
+                    <li class="breadcrumb-item active">تفاصيل القرار</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-8">
+
+                <!-- بيانات القرار -->
+                <div class="card card-outline @(isCancelled ? "card-secondary" : "card-danger")">
+                    <div class="card-header">
+                        <h3 class="card-title text-bold">
+                            <i class="fas fa-info-circle me-1"></i> بيانات القرار
+                        </h3>
+                        <div class="card-tools">
+                            @if (isCancelled)
+                            {
+                                <span class="badge bg-secondary p-2">ملغى</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger p-2">موقوف - نافذ</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small d-block">رقم القرار التنفيذي</label>
+                                <span class="fw-bold fs-5">@Model.DecisionNumber</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small d-block">اسم الموظف</label>
+                                <span class="fw-bold fs-5">@Model.EmployeeName</span>
+                                <div class="text-muted small">@Model.JobTitle</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small d-block">سبب الإنهاء</label>
+                                <span class="badge @reasonClass p-2">@reasonText</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small d-block">تاريخ صدور القرار</label>
+                                <span class="fw-bold">@Model.DecisionDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small d-block">تاريخ آخر يوم عمل</label>
+                                <span class="fw-bold text-danger">@Model.LastWorkingDay.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label class="text-muted small d-block">السند القانوني / الحيثيات</label>
+                                <p class="mb-0">
+                                    @(string.IsNullOrEmpty(Model.LegalBasis) ? "لا يوجد" : Model.LegalBasis)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (isCancelled)
+                {
+                    <!-- بيانات الإلغاء -->
+                    <div class="card card-outline card-warning">
+                        <div class="card-header">
+                            <h3 class="card-title text-bold">
+                                <i class="fas fa-undo me-1"></i> بيانات إلغاء القرار
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label class="text-muted small d-block">تاريخ الإلغاء</label>
+                                    <span class="fw-bold">
+                                        @(Model.UpdatedOn.HasValue ? Model.UpdatedOn.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                                    </span>
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <label class="text-muted small d-block">سبب الإلغاء</label>
+                                    <p class="mb-0 text-warning fw-bold">
+                                        @(string.IsNullOrEmpty(Model.CancellationReason) ? "-" : Model.CancellationReason)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <div class="col-md-4">
+                <!-- المرفق -->
+                <div class="card card-outline card-info">
+                    <div class="card-header">
+                        <h3 class="card-title text-bold"><i class="fas fa-paperclip me-1"></i> المرفق</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        @if (attachSrc != null)
+                        {
+                            if (attachIsImage)
+                            {
+                                <a href="@attachSrc" target="_blank">
+                                    <img src="@attachSrc" class="img-fluid rounded-3 shadow-sm border" alt="مرفق" />
+                                </a>
+                            }
+                            else
+                            {
+                                <i class="fas fa-file-pdf text-danger" style="font-size:64px;"></i>
+                            }
+                            <div class="mt-3">
+                                <a href="@attachSrc" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-external-link-alt me-1"></i> فتح المرفق
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-times-circle opacity-50 d-block mb-2" style="font-size:32px;"></i>
+                                لا يوجد مرفق
+                            </p>
+                        }
+                    </div>
+                </div>
+
+                <!-- إجراءات -->
+                <div class="card card-outline card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title text-bold"><i class="fas fa-tools me-1"></i> إجراءات</h3>
+                    </div>
+                    <div class="card-body d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-arrow-right me-1"></i> رجوع لقائمة القرارات
+                        </a>
+
+                        @if (!isCancelled)
+                        {
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                <i class="fas fa-undo me-1"></i> إلغاء القرار
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@if (!isCancelled)
+{
+    <!-- Modal إلغاء القرار -->
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="Cancel" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="terminationId" value="@Model.Id" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">سبب إلغاء قرار الإنهاء</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted small">سيتم إعادة تفعيل الموظف تلقائيًا في النظام.</p>
+                        <textarea class="form-control" name="cancellationReason" rows="3" required placeholder="اكتب سبب الإلغاء..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">تراجع</button>
+                        <button type="submit" class="btn btn-warning">تأكيد الإلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

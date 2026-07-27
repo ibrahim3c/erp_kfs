@@ -9,6 +9,8 @@ using HR.Domain.Permissions;
 using HR.Domain.Promotions.Entities;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
+using HR.Domain.ServiceTerms.Entities;
+using HR.Domain.Terminations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Application.Exceptions;
@@ -52,6 +54,8 @@ public class HRDbContext : DbContext
     public DbSet<RetirementFile> RetirementFiles { get; set; }
     public DbSet<RetirementSalaryRecord> RetirementSalaryRecords { get; set; }
     public DbSet<Secondment> Secondments { get; set; }
+    public DbSet<ServiceTermRecord> ServiceTermRecords { get; set; }
+    public DbSet<TerminationDecision> TerminationDecisions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

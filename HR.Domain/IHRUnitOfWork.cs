@@ -10,6 +10,7 @@ using HR.Domain.Permissions;
 using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
+using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
 
 namespace HR.Domain
@@ -33,6 +34,7 @@ namespace HR.Domain
         IPromotionHistoryRepository PromotionHistoryRepository { get; }
         IRetriementRepository RetriementRepository { get; }
         ISecondmentRepository SecondmentRepository { get; }
+        IServiceTermRepository ServiceTermRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         
