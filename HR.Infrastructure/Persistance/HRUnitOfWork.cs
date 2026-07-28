@@ -7,6 +7,7 @@ using HR.Domain.Evaluations;
 using HR.Domain.Funds;
 using HR.Domain.Incentives;
 using HR.Domain.Leaves;
+using HR.Domain.Legal;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -52,6 +53,7 @@ namespace HR.Infrastructure.Persistance
         public IFundRepository FundRepository { get; private set; }
 
         public ILeaveRepository LeaveRepository { get; private set; }
+        public ICourtRulingRepository CourtRulingRepository { get; private set; }
 
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
@@ -76,6 +78,7 @@ namespace HR.Infrastructure.Persistance
             GrievanceRepository = new GrievanceRepository(_dbContext);
             FundRepository = new FundRepository(_dbContext);
             LeaveRepository = new LeaveRepository(_dbContext);
+            CourtRulingRepository = new CourtRulingRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

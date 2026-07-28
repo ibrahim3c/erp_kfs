@@ -7,6 +7,7 @@ using HR.Domain.Employees;
 using HR.Domain.Funds;
 using HR.Domain.Incentives;
 using HR.Domain.Leaves;
+using HR.Domain.Legal;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -51,6 +52,7 @@ namespace HR.Infrastructure
             services.AddScoped<IPromotionHistoryRepository, PromotionHistoryRepository>();
             services.AddScoped<IFundRepository, FundRepository>();
             services.AddScoped<ILeaveRepository, LeaveRepository>();
+            services.AddScoped<ICourtRulingRepository, CourtRulingRepository>();
 
             services.AddScoped<IHRUnitOfWork, HRUnitOfWork>();
             services.AddScoped<IPayrollCalculationService, PayrollCalculationService>();

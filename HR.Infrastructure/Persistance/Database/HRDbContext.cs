@@ -4,6 +4,7 @@ using HR.Domain.Decisions;
 using HR.Domain.Employees;
 using HR.Domain.Funds;
 using HR.Domain.Leaves;
+using HR.Domain.Legal;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -62,6 +63,7 @@ public class HRDbContext : DbContext
     public DbSet<FundClaim> FundClaims { get; set; }
     public DbSet<LeaveRequest> LeaveRequests { get; set; }
     public DbSet<LeaveBalance> LeaveBalances { get; set; }
+    public DbSet<CourtRuling> CourtRulings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
