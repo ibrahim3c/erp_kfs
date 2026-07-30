@@ -15,8 +15,14 @@ namespace Geography.Infrastructure
     {
         public static IServiceCollection AddGeographyInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new ArgumentNullException(nameof(configuration));
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine("==========================================");
+            Console.WriteLine($"Connection String: {connectionString}");
+            Console.WriteLine("==========================================");
+
+                if(connectionString is null )
+                    throw new InvalidOperationException($"Connection string '{connectionString}' not found.");
+
 
             services.AddDbContext<GeographyDbContext>(options =>
                 options.UseSqlServer(connectionString));
