@@ -12,6 +12,7 @@ using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
 using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
+using HR.Domain.Transfers.Entities;
 
 namespace HR.Domain
 {
@@ -35,6 +36,7 @@ namespace HR.Domain
         IRetriementRepository RetriementRepository { get; }
         ISecondmentRepository SecondmentRepository { get; }
         IServiceTermRepository ServiceTermRepository { get; }
+        ITranseferRepository TranseferRepository { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         

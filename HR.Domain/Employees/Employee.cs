@@ -389,6 +389,12 @@ namespace HR.Domain.Employees
             _employeeQualifications.Add(result.Value);
             return Result.Success();
         }
+        public Result UpdateJobTitleAndOrgUnit(Guid? jobTitleId, Guid? orgUnitId)
+        {
+            JobTitleId = jobTitleId;
+            OrgUnitId = orgUnitId;
+            return Result.Success();
+        }
         public void Active()
         {
             IsActive = true;

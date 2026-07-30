@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace HR.Application.Secondments.Query.GetEmployeesForSelect
 {
-    public record EmployeeSelectDto(Guid Id, string Name, string JobTitle);
+    public record EmployeeSelectDto(Guid Id, string Name, string JobTitle, string DepartmentName);
 }

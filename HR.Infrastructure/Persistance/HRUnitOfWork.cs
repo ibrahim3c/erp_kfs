@@ -13,6 +13,7 @@ using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
 using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
+using HR.Domain.Transfers.Entities;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
 
@@ -47,6 +48,8 @@ namespace HR.Infrastructure.Persistance
 
         public IServiceTermRepository ServiceTermRepository { get; private set; }
 
+        public ITranseferRepository TranseferRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -68,6 +71,7 @@ namespace HR.Infrastructure.Persistance
             RetriementRepository = new RetriementRepository(_dbContext);
             SecondmentRepository = new SecondmentRepository(_dbContext);
             ServiceTermRepository = new ServiceTermRepository(_dbContext);
+            TranseferRepository = new TranseferRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,0 +1,28 @@
+﻿using HR.Domain.Transfers.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Modules.Shared.Infrastructure.Database;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HR.Infrastructure.Persistance.Configurations.Transefers
+{
+    public class InternalTransferConfiguration : IEntityTypeConfiguration<InternalTransfer>
+    {
+        public void Configure(EntityTypeBuilder<InternalTransfer> builder)
+        {
+            builder.ToTable("InternalTransfers", Schemas.HR);
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Reason).HasMaxLength(500).IsRequired();
+            builder.Property(x => x.NewJobTitleId).IsRequired(false);
+            builder.Property(x => x.AttachmentPath).HasMaxLength(500);
+            builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(30);
+
+            builder.HasIndex(x => x.EmployeeId);
+        }
+    }
+}
