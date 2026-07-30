@@ -26,5 +26,8 @@ namespace HR.Domain.Promotions.Entities
 
         public static readonly Error InvalidGradeChange =
             new("Promotion.InvalidGradeChange", "التغيير المقترح غير صالح، يجب أن يكون أعلى من الدرجة الحالية");
+
+        public static readonly Error InvalidSubScore =
+            new("Promotion.InvalidSubScore", "الدرجة الفرعية خارج النطاق المسموح");
     }
 }

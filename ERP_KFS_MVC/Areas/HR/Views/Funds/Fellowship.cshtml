@@ -1,4 +1,5 @@
-﻿@{
+@model ERP_KFS_MVC.Areas.HR.ViewModels.FundPageViewModel
+@{
     ViewData["Title"] = "صناديق الزمالة والتكافل الاجتماعي";
 }
 
@@ -24,6 +25,21 @@
     </div>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <section class="content">
     <div class="container-fluid">
 
@@ -34,7 +50,7 @@
                     <span class="info-box-icon"><i class="fas fa-users"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">إجمالي المشتركين</span>
-                        <span class="info-box-number">85 موظف</span>
+                        <span class="info-box-number">@Model.Stats.TotalSubscribers موظف</span>
                     </div>
                 </div>
             </div>
@@ -42,8 +58,8 @@
                 <div class="info-box bg-success">
                     <span class="info-box-icon"><i class="fas fa-money-check-alt"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">قيمة الاشتراك الشهري (يونيو)</span>
-                        <span class="info-box-number">8,500 جم</span>
+                        <span class="info-box-text">قيمة الاشتراك الشهري</span>
+                        <span class="info-box-number">@Model.Stats.MonthlySubscriptionTotal.ToString("N0") جم</span>
                         <span class="progress-description text-sm">يتم تحويله لحساب الصندوق</span>
                     </div>
                 </div>
@@ -53,7 +69,7 @@
                     <span class="info-box-icon"><i class="fas fa-hand-holding-usd"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">طلبات صرف مستحقات (واردة)</span>
-                        <span class="info-box-number">2 حالات</span>
+                        <span class="info-box-number">@Model.Stats.PendingClaimsCount حالات</span>
                     </div>
                 </div>
             </div>
@@ -108,36 +124,45 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
-                                    <td>01/01/2020</td>
-                                    <td>زمالة (فقط)</td>
-                                    <td>100 جم / شهر</td>
-                                    <td class="text-success fw-bold">4,800 جم</td>
-                                    <td><span class="badge bg-success">نشط</span></td>
-                                    <td><button class="btn btn-sm btn-default" title="كشف حساب"><i class="fas fa-list-alt"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td class="text-end fw-bold">رانيا ابو النصر</td>
-                                    <td>01/03/2024</td>
-                                    <td>زمالة + تكافل</td>
-                                    <td>150 جم / شهر</td>
-                                    <td>450 جم</td>
-                                    <td><span class="badge bg-success">نشط</span></td>
-                                    <td><button class="btn btn-sm btn-default"><i class="fas fa-list-alt"></i></button></td>
-                                </tr>
-                                <tr class="text-muted">
-                                    <td>3</td>
-                                    <td class="text-end text-decoration-line-through">بهجت ابراهيم</td>
-                                    <td>--</td>
-                                    <td>انسحاب</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td><span class="badge bg-danger">غير مشترك</span></td>
-                                    <td><button class="btn btn-sm btn-default border" title="إعادة اشتراك"><i class="fas fa-undo"></i></button></td>
-                                </tr>
+                                @{ var memberIndex = 0; }
+                                @foreach (var sub in Model.Subscriptions)
+                                {
+                                    memberIndex++;
+                                    var rowClass = sub.Status == "غير مشترك" ? "text-muted" : "";
+                                    var nameStyle = sub.Status == "غير مشترك" ? "text-decoration-line-through" : "";
+                                    <tr class="@rowClass">
+                                        <td>@memberIndex</td>
+                                        <td class="text-end fw-bold @nameStyle">@sub.EmployeeName</td>
+                                        <td>@sub.SubscriptionDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@sub.FundTypeName</td>
+                                        <td>@sub.DeductionAmount.ToString("N0") جم / شهر</td>
+                                        <td>@sub.TotalPaid.ToString("N0") جم</td>
+                                        <td>
+                                            @if (sub.Status == "نشط")
+                                            {
+                                                <span class="badge bg-success">@sub.Status</span>
+                                            }
+                                            else if (sub.Status == "معلق")
+                                            {
+                                                <span class="badge bg-warning text-dark">@sub.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">@sub.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (sub.Status == "غير مشترك")
+                                            {
+                                                <button class="btn btn-sm btn-default border" title="إعادة اشتراك"><i class="fas fa-undo"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-sm btn-default" title="كشف حساب"><i class="fas fa-list-alt"></i></button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -168,26 +193,56 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
-                                    <td>منحة زواج</td>
-                                    <td>01/06/2024</td>
-                                    <td class="fw-bold">5,000 جم</td>
-                                    <td><a href="#">وثيقة الزواج.pdf</a></td>
-                                    <td><span class="badge bg-success">تمت الموافقة</span></td>
-                                    <td><button class="btn btn-sm btn-outline-success"><i class="fas fa-money-check"></i> إصدار شيك</button></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td class="text-end fw-bold">ورثة/ موظف متوفي</td>
-                                    <td>مصاريف جنازة (عاجلة)</td>
-                                    <td>15/06/2024</td>
-                                    <td class="fw-bold">2,000 جم</td>
-                                    <td><a href="#" class="text-danger">شهادة الوفاة</a></td>
-                                    <td><span class="badge bg-warning text-dark">تحت المراجعة</span></td>
-                                    <td>--</td>
-                                </tr>
+                                @{ var claimIndex = 0; }
+                                @foreach (var claim in Model.Claims)
+                                {
+                                    claimIndex++;
+                                    <tr>
+                                        <td>@claimIndex</td>
+                                        <td class="text-end fw-bold">@claim.EmployeeName</td>
+                                        <td>@claim.ClaimTypeName</td>
+                                        <td>@claim.EventDate.ToString("dd/MM/yyyy")</td>
+                                        <td class="fw-bold">@(claim.Amount?.ToString("N0") ?? "--") جم</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(claim.AttachmentPath))
+                                            {
+                                                <a href="~/@claim.AttachmentPath" target="_blank">مرفق</a>
+                                            }
+                                            else
+                                            {
+                                                <span>--</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (claim.Status == "تمت الموافقة")
+                                            {
+                                                <span class="badge bg-success">@claim.Status</span>
+                                            }
+                                            else if (claim.Status == "مرفوض")
+                                            {
+                                                <span class="badge bg-danger">@claim.Status</span>
+                                            }
+                                            else if (claim.Status == "تم الصرف")
+                                            {
+                                                <span class="badge bg-info">@claim.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">@claim.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (claim.Status == "تمت الموافقة")
+                                            {
+                                                <button class="btn btn-sm btn-outline-success"><i class="fas fa-money-check"></i> إصدار شيك</button>
+                                            }
+                                            else
+                                            {
+                                                <span>--</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -203,7 +258,7 @@
 <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" asp-action="AddMember">
+            <form method="post" asp-action="AddMember" asp-antiforgery="true">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">اشتراك جديد في الصناديق</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -211,28 +266,34 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">الموظف</label>
-                        <select class="form-select select2 select2-modal" style="width:100%">
-                            <option>بحث...</option>
-                            <option>بهجت ابراهيم</option>
+                        <select name="employeeId" class="form-select select2 select2-modal" style="width:100%" required>
+                            <option value="">بحث...</option>
+                            @if (ViewBag.Employees is IEnumerable<HR.Application.Employees.GetAllEmployees.EmployeeListResponse> employees)
+                            {
+                                @foreach (var emp in employees)
+                                {
+                                    <option value="@emp.Id">@emp.Name (@emp.Code)</option>
+                                }
+                            }
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">تاريخ بدء الخصم</label>
-                        <input type="month" class="form-control" value="@DateTime.Now.ToString("yyyy-MM")">
+                        <input type="month" name="subscriptionDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM")" required>
                     </div>
                     <div class="card p-2 bg-light mb-3">
                         <label class="form-label text-primary fw-bold">حدد الصناديق:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="check1" checked>
+                            <input class="form-check-input" type="checkbox" name="isFellowship" id="check1" value="true" checked>
                             <label class="form-check-label" for="check1">صندوق الزمالة (خصم 1% من الأساسي)</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="check2">
+                            <input class="form-check-input" type="checkbox" name="isSolidarity" id="check2" value="true">
                             <label class="form-check-label" for="check2">التكافل الاجتماعي (خصم مبلغ ثابت 50ج)</label>
                         </div>
                     </div>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="agreement" required>
+                        <input class="form-check-input" type="checkbox" name="bankAgreement" id="agreement" value="true" required>
                         <label class="form-check-label small" for="agreement">الموظف وافق كتابياً على الخصم من الراتب (تفويض بنكي).</label>
                     </div>
                 </div>
@@ -249,47 +310,55 @@
 <div class="modal fade" id="claimModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-warning">
-                <h5 class="modal-title">طلب صرف منحة / تعويض</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">الموظف</label>
-                    <select class="form-select select2 select2-modal" style="width:100%">
-                        <option>بحث...</option>
-                        <option>محمد فؤاد ابراهيم</option>
-                    </select>
+            <form method="post" asp-action="AddClaim" asp-antiforgery="true" enctype="multipart/form-data">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">طلب صرف منحة / تعويض</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">نوع المطالبة</label>
-                    <select class="form-select">
-                        <option>مكافأة نهاية خدمة (بلوغ السن)</option>
-                        <option>منحة زواج</option>
-                        <option>منحة مولود</option>
-                        <option>عملية جراحية (حالة مرضية)</option>
-                        <option>مصاريف جنازة</option>
-                    </select>
-                </div>
-                <div class="row">
-                    <div class="col-6 mb-3">
-                        <label class="form-label">تاريخ الحدث</label>
-                        <input type="date" class="form-control">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الموظف</label>
+                        <select name="employeeId" class="form-select select2 select2-modal" style="width:100%" required>
+                            <option value="">بحث...</option>
+                            @if (ViewBag.Employees is IEnumerable<HR.Application.Employees.GetAllEmployees.EmployeeListResponse> claimEmployees)
+                            {
+                                @foreach (var emp in claimEmployees)
+                                {
+                                    <option value="@emp.Id">@emp.Name (@emp.Code)</option>
+                                }
+                            }
+                        </select>
                     </div>
-                    <div class="col-6 mb-3">
-                        <label class="form-label">المبلغ المطلوب (إن وجد)</label>
-                        <input type="number" class="form-control" placeholder="اختياري">
+                    <div class="mb-3">
+                        <label class="form-label">نوع المطالبة</label>
+                        <select name="claimType" class="form-select" required>
+                            <option value="RetirementBonus">مكافأة نهاية خدمة (بلوغ السن)</option>
+                            <option value="MarriageGrant">منحة زواج</option>
+                            <option value="NewbornGrant">منحة مولود</option>
+                            <option value="Surgery">عملية جراحية (حالة مرضية)</option>
+                            <option value="FuneralExpenses">مصاريف جنازة</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">تاريخ الحدث</label>
+                            <input type="date" name="eventDate" class="form-control" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">المبلغ المطلوب (إن وجد)</label>
+                            <input type="number" name="amount" class="form-control" placeholder="اختياري">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">مستند الإثبات</label>
+                        <input type="file" name="attachment" class="form-control">
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">مستند الإثبات</label>
-                    <input type="file" class="form-control">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-warning text-dark"><i class="fas fa-check"></i> تسجيل الطلب</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                <button type="submit" class="btn btn-warning text-dark"><i class="fas fa-check"></i> تسجيل الطلب</button>
-            </div>
+            </form>
         </div>
     </div>
 </div>

@@ -1,7 +1,13 @@
-﻿@{
+@model ERP_KFS_MVC.Areas.HR.ViewModels.LeavePageViewModel
+@{
     ViewData["Title"] = "الأجازات المرضية واللجان الطبية";
 }
 
+<!-- DataTables & Select2 CSS -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
 <div class="content-header">
     <div class="container-fluid">
@@ -19,10 +25,25 @@
     </div>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <section class="content">
     <div class="container-fluid">
 
-        <!-- 1. نموذج تسجيل أجازة مرضية (قرار قومسيون) -->
+        <!-- 1. نموذج تسجيل أجازة مرضية -->
         <div class="card card-danger card-outline collapsed-card">
             <div class="card-header">
                 <h3 class="card-title text-danger"><i class="fas fa-file-medical-alt me-2"></i> تسجيل قرار لجنة طبية / تقرير مستشفى</h3>
@@ -31,48 +52,54 @@
                 </div>
             </div>
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" asp-action="CreateMedicalRequest" asp-antiforgery="true" enctype="multipart/form-data">
                     <div class="row">
                         <!-- بيانات الموظف -->
                         <div class="col-md-4 mb-3">
                             <label class="form-label">الموظف المريض</label>
-                            <select class="form-select select2">
-                                <option>بهجت إبراهيم</option>
-                                <option>رانيا أبو النصر</option>
+                            <select name="employeeId" class="form-select select2-medical" style="width:100%" required>
+                                <option value="">-- اختر موظف --</option>
+                                @if (ViewBag.Employees is IEnumerable<HR.Application.Employees.GetAllEmployees.EmployeeListResponse> employees)
+                                {
+                                    @foreach (var emp in employees)
+                                    {
+                                        <option value="@emp.Id">@emp.Name (@emp.Code)</option>
+                                    }
+                                }
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">جهة التقرير الطبي</label>
-                            <select class="form-select">
-                                <option>اللجنة الطبية العامة (القومسيون)</option>
-                                <option>التأمين الصحي</option>
-                                <option>مستشفى حكومي (دخول طوارئ)</option>
-                                <option>عيادة خاصة (تحتاج اعتماد)</option>
+                            <select name="reportAuthority" class="form-select" required>
+                                <option value="اللجنة الطبية العامة (القومسيون)">اللجنة الطبية العامة (القومسيون)</option>
+                                <option value="التأمين الصحي">التأمين الصحي</option>
+                                <option value="مستشفى حكومي (دخول طوارئ)">مستشفى حكومي (دخول طوارئ)</option>
+                                <option value="عيادة خاصة (تحتاج اعتماد)">عيادة خاصة (تحتاج اعتماد)</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">رقم قرار اللجنة</label>
-                            <input type="text" class="form-control" placeholder="رقم وتاريخ...">
+                            <input type="text" name="decisionNumber" class="form-control" placeholder="رقم وتاريخ...">
                         </div>
 
                         <!-- التواريخ -->
                         <div class="col-md-3 mb-3">
                             <label class="form-label">تاريخ الكشف (البدء)</label>
-                            <input type="date" class="form-control" id="startMedicalDate" onchange="calcMedical()">
+                            <input type="date" name="startDate" class="form-control" id="startMedicalDate" onchange="calcMedical()" required>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">حتى تاريخ</label>
-                            <input type="date" class="form-control" id="endMedicalDate" onchange="calcMedical()">
+                            <input type="date" name="endDate" class="form-control" id="endMedicalDate" onchange="calcMedical()" required>
                         </div>
                         <div class="col-md-2 mb-3">
                             <label class="form-label">عدد الأيام</label>
                             <input type="text" class="form-control bg-light" id="medicalDays" readonly>
                         </div>
 
-                        <!-- نوع الاستحقاق (هل تخصم من الراتب؟) -->
+                        <!-- نسبة استحقاق الراتب -->
                         <div class="col-md-4 mb-3">
                             <label class="form-label">نسبة استحقاق الراتب</label>
-                            <select class="form-select text-danger fw-bold">
+                            <select name="payPercentage" class="form-select text-danger fw-bold" required>
                                 <option value="100">أجر كامل (مرض عادي / عمليات)</option>
                                 <option value="100">أجر كامل (مرض مزمن)</option>
                                 <option value="75">75% من الأجر</option>
@@ -81,18 +108,18 @@
                             <small class="text-muted">تحدد وفقاً لقرار اللجنة وقانون الخدمة المدنية.</small>
                         </div>
 
-                        <!-- التشخيص (سري) -->
+                        <!-- التشخيص -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">التشخيص المبدئي</label>
-                            <input type="text" class="form-control" placeholder="مثال: إجراء عملية جراحية...">
+                            <input type="text" name="diagnosis" class="form-control" placeholder="مثال: إجراء عملية جراحية...">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">مرفق التقرير / صورة قرار اللجنة</label>
-                            <input type="file" class="form-control">
+                            <input type="file" name="attachment" class="form-control">
                         </div>
 
                         <div class="col-12 border-top pt-2">
-                            <button class="btn btn-danger"><i class="fas fa-save me-1"></i> حفظ وتسكين الأجازة</button>
+                            <button type="submit" class="btn btn-danger"><i class="fas fa-save me-1"></i> حفظ وتسكين الأجازة</button>
                         </div>
                     </div>
                 </form>
@@ -120,44 +147,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- حالة 1: جارية -->
-                        <tr>
-                            <td>1</td>
-                            <td class="text-end font-weight-bold">فاطمة الشرباني</td>
-                            <td>مرض مزمن (قرار 102)</td>
-                            <td>01/01/2024</td>
-                            <td>31/12/2026</td>
-                            <td><span class="badge bg-purple">3 سنوات</span></td>
-                            <td><span class="badge bg-success">100% (أجر كامل)</span></td>
-                            <td><i class="fas fa-file-medical text-danger"></i></td>
-                            <td><span class="badge bg-warning text-dark">سارية (مرض مزمن)</span></td>
-                        </tr>
-
-                        <!-- حالة 2: عملية جراحية -->
-                        <tr>
-                            <td>2</td>
-                            <td class="text-end font-weight-bold">رانيا ابو النصر</td>
-                            <td>أجازة وضع (3 شهور)</td>
-                            <td>01/02/2024</td>
-                            <td>01/05/2024</td>
-                            <td><span class="badge bg-info text-dark">90 يوم</span></td>
-                            <td><span class="badge bg-success">100%</span></td>
-                            <td><i class="fas fa-baby-carriage text-info"></i></td>
-                            <td><span class="badge bg-secondary">منتهية</span></td>
-                        </tr>
-
-                        <!-- حالة 3: خصم من الراتب -->
-                        <tr>
-                            <td>3</td>
-                            <td class="text-end font-weight-bold">بهجت إبراهيم</td>
-                            <td>عملية رمد</td>
-                            <td>15/06/2024</td>
-                            <td>20/06/2024</td>
-                            <td>5 أيام</td>
-                            <td><span class="badge bg-success">100%</span></td>
-                            <td><i class="fas fa-paperclip text-secondary"></i></td>
-                            <td><span class="badge bg-primary">جديدة</span></td>
-                        </tr>
+                        @{ var medIndex = 0; }
+                        @foreach (var req in Model.MedicalRequests)
+                        {
+                            medIndex++;
+                            <tr>
+                                <td>@medIndex</td>
+                                <td class="text-end font-weight-bold">@req.EmployeeName</td>
+                                <td>@(req.Diagnosis ?? "--")</td>
+                                <td>@req.StartDate.ToString("dd/MM/yyyy")</td>
+                                <td>@req.EndDate.ToString("dd/MM/yyyy")</td>
+                                <td><span class="badge bg-info text-dark">@req.DurationDays يوم</span></td>
+                                @if (req.PayPercentage >= 100)
+                                {
+                                    <td><span class="badge bg-success">100% (أجر كامل)</span></td>
+                                }
+                                else if (req.PayPercentage > 0)
+                                {
+                                    <td><span class="badge bg-warning text-dark">@req.PayPercentage%</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge bg-danger">بدون أجر</span></td>
+                                }
+                                <td>
+                                    @if (!string.IsNullOrEmpty(req.AttachmentPath))
+                                    {
+                                        <a href="~/@req.AttachmentPath" target="_blank"><i class="fas fa-file-medical text-danger"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-paperclip text-secondary"></i>
+                                    }
+                                </td>
+                                @if (req.Status == "Approved" || req.Status == "معتمدة")
+                                {
+                                    <td><span class="badge bg-success">معتمدة</span></td>
+                                }
+                                else if (req.Status == "Pending" || req.Status == "قيد الموافقة")
+                                {
+                                    <td><span class="badge bg-primary">جديدة</span></td>
+                                }
+                                else if (req.Status == "Rejected" || req.Status == "مرفوضة")
+                                {
+                                    <td><span class="badge bg-danger">مرفوضة</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge bg-secondary">@req.Status</span></td>
+                                }
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -166,21 +206,28 @@
     </div>
 </section>
 
-    <script>
-        $(function () {
-             $("#medicalTable").DataTable({
-                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
-                 "autoWidth": false
-             });
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+<script>
+    $(function () {
+        $('.select2-medical').select2({
+            theme: 'bootstrap4'
         });
 
-        // حساب عدد أيام المرضي
-        function calcMedical() {
-            var d1 = new Date(document.getElementById("startMedicalDate").value);
-            var d2 = new Date(document.getElementById("endMedicalDate").value);
-            if(d1 && d2){
-                var diff = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
-                document.getElementById("medicalDays").value = (diff + 1) + " يوم";
-            }
+        $("#medicalTable").DataTable({
+            "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+            "autoWidth": false
+        });
+    });
+
+    function calcMedical() {
+        var d1 = new Date(document.getElementById("startMedicalDate").value);
+        var d2 = new Date(document.getElementById("endMedicalDate").value);
+        if(d1 && d2){
+            var diff = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
+            document.getElementById("medicalDays").value = (diff + 1) + " يوم";
         }
-    </script>
+    }
+</script>

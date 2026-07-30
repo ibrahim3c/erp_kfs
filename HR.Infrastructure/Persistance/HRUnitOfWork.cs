@@ -1,9 +1,13 @@
-﻿using HR.Domain;
+using HR.Domain;
 using HR.Domain.Attendance;
 using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
+using HR.Domain.Evaluations;
+using HR.Domain.Funds;
 using HR.Domain.Incentives;
+using HR.Domain.Leaves;
+using HR.Domain.Legal;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
@@ -50,6 +54,13 @@ namespace HR.Infrastructure.Persistance
 
         public ITranseferRepository TranseferRepository { get; private set; }
 
+        public IGrievanceRepository GrievanceRepository { get; private set; }
+
+        public IFundRepository FundRepository { get; private set; }
+
+        public ILeaveRepository LeaveRepository { get; private set; }
+        public ICourtRulingRepository CourtRulingRepository { get; private set; }
+
         public HRUnitOfWork(HRDbContext dbContext, ICandidateRepository candidateRepository)
         {
             _dbContext = dbContext;
@@ -72,6 +83,10 @@ namespace HR.Infrastructure.Persistance
             SecondmentRepository = new SecondmentRepository(_dbContext);
             ServiceTermRepository = new ServiceTermRepository(_dbContext);
             TranseferRepository = new TranseferRepository(_dbContext);
+            GrievanceRepository = new GrievanceRepository(_dbContext);
+            FundRepository = new FundRepository(_dbContext);
+            LeaveRepository = new LeaveRepository(_dbContext);
+            CourtRulingRepository = new CourtRulingRepository(_dbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

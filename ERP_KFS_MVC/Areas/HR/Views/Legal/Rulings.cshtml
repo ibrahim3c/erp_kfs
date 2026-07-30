@@ -1,8 +1,8 @@
-﻿@{
+@model ERP_KFS_MVC.Areas.HR.ViewModels.RulingsPageViewModel
+@{
     ViewData["Title"] = "تنفيذ الأحكام القضائية النهائية";
 }
 
-<!-- CSS Links -->
 <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
@@ -25,14 +25,31 @@
     </div>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <section class="content">
     <div class="container-fluid">
 
-        <!-- تنبيه بالأحكام الجديدة -->
-        <div class="callout callout-danger">
-            <h5 class="text-danger"><i class="fas fa-bell me-1"></i> تنبيه هام:</h5>
-            <p>يوجد عدد <b>(2)</b> حكم قضائي جديد (وارد من الشئون القانونية) لم يتم تنفيذه بعد. التأخير في التنفيذ يعرض المسئول للمسائلة (عزل وحبس - مادة 123).</p>
-        </div>
+        @if (Model.Stats.PendingCount > 0)
+        {
+            <div class="callout callout-danger">
+                <h5 class="text-danger"><i class="fas fa-bell me-1"></i> تنبيه هام:</h5>
+                <p>يوجد عدد <b>(@Model.Stats.PendingCount)</b> حكم قضائي جديد (وارد من الشئون القانونية) لم يتم تنفيذه بعد. التأخير في التنفيذ يعرض المسئول للمسائلة (عزل وحبس - مادة 123).</p>
+            </div>
+        }
 
         <div class="card card-outline card-primary">
             <div class="card-header border-0">
@@ -48,7 +65,7 @@
             </div>
 
             <div class="card-body p-0">
-                <table class="table table-hover table-striped text-center align-middle">
+                <table class="table table-hover table-striped text-center align-middle" id="rulingsTable">
                     <thead class="bg-secondary text-white">
                         <tr>
                             <th>رقم الدعوى</th>
@@ -62,65 +79,90 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach (var ruling in Model.Rulings)
+                        {
+                            var rowClass = ruling.Status == "NotExecuted" ? "bg-white border-left-danger" : "";
+                            var borderStyle = ruling.Status == "NotExecuted" ? "border-left: 5px solid #dc3545;" : "";
 
-                        <!-- حالة 1: لم تنفذ (خطر) -->
-                        <tr class="bg-white border-left-danger" style="border-left: 5px solid #dc3545;">
-                            <td>5642</td>
-                            <td>68 ق</td>
-                            <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
-                            <td class="text-start">
-                                قبول الدعوى شكلاً، وإلغاء القرار الإداري رقم 50 فيما تضمنه من تخطي المذكور في الترقية...
-                            </td>
-                            <td><span class="badge bg-purple">تعديل ترقية</span></td>
-                            <td><a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-file-pdf"></i> PDF</a></td>
-                            <td><span class="badge bg-danger p-2">لم ينفذ</span></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="confirmExec('5642', 'ترقية بأثر رجعي')">
-                                    <i class="fas fa-play me-1"></i> تنفيذ الحكم
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- حالة 2: تم التنفيذ -->
-                        <tr>
-                            <td>1020</td>
-                            <td>70 ق</td>
-                            <td class="text-end fw-bold">رانيا أبو النصر</td>
-                            <td class="text-start">
-                                أحقية المدعية في صرف مقابل رصيد الأجازات الاعتيادية بواقع 400 يوم...
-                            </td>
-                            <td><span class="badge bg-success">صرف مالي</span></td>
-                            <td><a href="#" class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i></a></td>
-                            <td><span class="badge bg-success p-2">تم التنفيذ</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-default border" title="أرشيف المستندات"><i class="fas fa-box-open text-warning"></i></button>
-                            </td>
-                        </tr>
-
-                        <!-- حالة 3: تحت الإجراء -->
-                        <tr>
-                            <td>880</td>
-                            <td>2024</td>
-                            <td class="text-end fw-bold">موظف مفصول</td>
-                            <td class="text-start text-danger">
-                                وقف تنفيذ قرار إنهاء الخدمة وعودة المذكور للعمل مؤقتاً لحين الفصل في الموضوع...
-                            </td>
-                            <td><span class="badge bg-danger">عودة للعمل</span></td>
-                            <td><a href="#" class="btn btn-sm btn-outline-danger"><i class="fas fa-file-image"></i> Scan</a></td>
-                            <td><span class="badge bg-warning text-dark">جاري استلام العمل</span></td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-plus text-primary me-2"></i> تفعيل الملف</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-contract text-dark me-2"></i> قرار تنفيذي</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
+                            <tr class="@rowClass" style="@borderStyle">
+                                <td>@ruling.CaseNumber</td>
+                                <td>@ruling.Year</td>
+                                <td class="text-end fw-bold">@ruling.EmployeeName</td>
+                                <td class="text-start">@ruling.Summary</td>
+                                <td>
+                                    @switch (ruling.ExecutionType)
+                                    {
+                                        case "PromotionModification":
+                                            <span class="badge bg-purple">تعديل ترقية</span>
+                                            break;
+                                        case "FinancialPayment":
+                                            <span class="badge bg-success">صرف مالي</span>
+                                            break;
+                                        case "ReturnToWork":
+                                            <span class="badge bg-danger">عودة للعمل</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@ruling.ExecutionType</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(ruling.AttachmentPath))
+                                    {
+                                        <a href="@ruling.AttachmentPath" class="btn btn-sm btn-outline-danger" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">--</span>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (ruling.Status)
+                                    {
+                                        case "NotExecuted":
+                                            <span class="badge bg-danger p-2">لم ينفذ</span>
+                                            break;
+                                        case "Executed":
+                                            <span class="badge bg-success p-2">تم التنفيذ</span>
+                                            break;
+                                        case "InProgress":
+                                            <span class="badge bg-warning text-dark p-2">جاري استلام العمل</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@ruling.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (ruling.Status == "NotExecuted")
+                                    {
+                                        <form method="post" asp-action="ExecuteRuling" asp-antiforgery="true" class="d-inline">
+                                            <input type="hidden" name="rulingId" value="@ruling.Id" />
+                                            <input type="hidden" name="decisionId" value="@Guid.NewGuid()" />
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-play me-1"></i> تنفيذ الحكم
+                                            </button>
+                                        </form>
+                                    }
+                                    else if (ruling.Status == "Executed")
+                                    {
+                                        <button class="btn btn-sm btn-default border" title="أرشيف المستندات"><i class="fas fa-box-open text-warning"></i></button>
+                                    }
+                                    else if (ruling.Status == "InProgress")
+                                    {
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-plus text-primary me-2"></i> تفعيل الملف</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-file-contract text-dark me-2"></i> قرار تنفيذي</a></li>
+                                            </ul>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -129,28 +171,34 @@
     </div>
 </section>
 
-    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
-    <script>
-        // دالة تأكيد التنفيذ (محاكاة لإجراء رسمي)
-        function confirmExec(caseNo, actionType) {
-            Swal.fire({
-                title: 'تأكيد تنفيذ الحكم رقم ' + caseNo,
-                html: "الإجراء المطلوب: <b>" + actionType + "</b><br>سيتم إنشاء قرار تنفيذي وتعديل ملف الموظف فوراً.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'نعم، نفذ وسجل القرار',
-                cancelButtonText: 'إلغاء'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire(
-                        'تم التنفيذ!',
-                        'تم إصدار القرار التنفيذي وتعديل البيانات بنجاح.',
-                        'success'
-                    )
-                    // هنا المفروض نعمل Ajax Request للسيرفر
-                }
-            })
-        }
-    </script>
+<script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#rulingsTable').DataTable({
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json'
+            },
+            order: []
+        });
+    });
+
+    function confirmExec(caseNo, actionType) {
+        Swal.fire({
+            title: 'تأكيد تنفيذ الحكم رقم ' + caseNo,
+            html: "الإجراء المطلوب: <b>" + actionType + "</b><br>سيتم إنشاء قرار تنفيذي وتعديل ملف الموظف فوراً.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'نعم، نفذ وسجل القرار',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the corresponding form
+                var form = document.getElementById('execForm-' + caseNo);
+                if (form) form.submit();
+            }
+        })
+    }
+</script>

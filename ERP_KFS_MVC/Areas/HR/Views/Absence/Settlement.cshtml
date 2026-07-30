@@ -1,5 +1,10 @@
-﻿@{
+﻿@model List<HR.Application.Absence.GetUnsettledAbsences.UnsettledAbsenceResponse>
+
+@{
     ViewData["Title"] = "تصفية الغياب والانقطاع";
+    var stats = ViewBag.Stats as HR.Application.Absence.GetAbsenceSettlementStats.AbsenceSettlementStatsResponse
+                ?? new HR.Application.Absence.GetAbsenceSettlementStats.AbsenceSettlementStatsResponse();
+    var now = DateTime.Now;
 }
 
 <!-- DataTables CSS -->
@@ -27,6 +32,21 @@
 <section class="content">
     <div class="container-fluid">
 
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        }
+
         <!-- 1. تنبيهات قانونية وإحصائيات -->
         <div class="row">
             <div class="col-md-12">
@@ -44,7 +64,7 @@
                     <span class="info-box-icon"><i class="fas fa-question"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">غياب بدون تسوية</span>
-                        <span class="info-box-number">23 حالة</span>
+                        <span class="info-box-number">@stats.UnsettledCount حالة</span>
                     </div>
                 </div>
             </div>
@@ -53,7 +73,7 @@
                     <span class="info-box-icon"><i class="fas fa-user-times"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">تجاوز المدة القانونية</span>
-                        <span class="info-box-number">2 موظف</span>
+                        <span class="info-box-number">@stats.OverLegalLimitCount موظف</span>
                     </div>
                 </div>
             </div>
@@ -83,51 +103,49 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- حالة 1: غياب عادي -->
-                        <tr>
-                            <td>1</td>
-                            <td class="text-end fw-bold">رانيا أبو النصر</td>
-                            <td>12, 13, 14 يونيو</td>
-                            <td><span class="badge bg-purple" style="font-size:14px">3 أيام</span></td>
-                            <td>منقطع (متصل)</td>
-                            <td class="text-success fw-bold">18 يوم</td>
-                            <td><span class="badge bg-secondary">معلق</span></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="openSettlementModal('رانيا أبو النصر', 3, 18)" title="تسوية الحالة">
-                                    <i class="fas fa-gavel"></i> اتخاذ قرار
-                                </button>
-                            </td>
-                        </tr>
+                        @if (Model != null && Model.Any())
+                        {
+                            var idx = 0;
+                            @foreach (var item in Model)
+                            {
+                                idx++;
+                                var rowClass = item.IsOverLegalLimit ? "" : "";
+                                var nameClass = item.IsOverLegalLimit ? "text-danger" : "";
+                                var badgeClass = item.IsOverLegalLimit ? "bg-danger" : "bg-purple";
+                                var actionBadgeClass = item.IsOverLegalLimit ? "bg-warning text-dark" : "bg-secondary";
+                                var actionText = item.IsOverLegalLimit ? "يجب الإنذار" : "معلق";
+                                var btnClass = item.IsOverLegalLimit ? "btn-danger" : "btn-primary";
+                                var btnIcon = item.IsOverLegalLimit ? "fa-balance-scale" : "fa-gavel";
+                                var btnTitle = item.IsOverLegalLimit ? "تحويل للشئون القانونية" : "تسوية الحالة";
+                                var btnAction = item.IsOverLegalLimit
+                                    ? $"alertLegalAction('{item.EmployeeId}')"
+                                    : $"openSettlementModal('{item.EmployeeId}', '{item.EmployeeName}', {item.AbsenceDays}, {item.RegularBalance})";
 
-                        <!-- حالة 2: تجاوز المدة (خطر) -->
-                        <tr>
-                            <td>2</td>
-                            <td class="text-end fw-bold text-danger">محمد فؤاد ابراهيم</td>
-                            <td>01/06 إلي 10/06</td>
-                            <td><span class="badge bg-danger" style="font-size:14px">10 أيام</span></td>
-                            <td>منقطع (متصل)</td>
-                            <td class="text-success fw-bold">5 أيام</td>
-                            <td><span class="badge bg-warning text-dark">يجب الإنذار</span></td>
-                            <td>
-                                <button class="btn btn-danger btn-sm" onclick="alertLegalAction()" title="تحويل للشئون القانونية">
-                                    <i class="fas fa-balance-scale"></i> تحقيق قانوني
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- حالة 3: تمت التسوية -->
-                        <tr class="bg-light text-muted">
-                            <td>3</td>
-                            <td class="text-end">فاطمة الشرباني</td>
-                            <td>05/06</td>
-                            <td>1 يوم</td>
-                            <td>عارضة</td>
-                            <td>-</td>
-                            <td><span class="badge bg-success">تم الخصم من الرصيد</span></td>
-                            <td>
-                                <button class="btn btn-default btn-sm border" disabled><i class="fas fa-check"></i></button>
-                            </td>
-                        </tr>
+                                <tr class="@(item.CurrentAction == "تم الخصم من الرصيد" ? "bg-light text-muted" : "")">
+                                    <td>@idx</td>
+                                    <td class="text-end fw-bold @nameClass">@item.EmployeeName</td>
+                                    <td>@item.AbsentDates</td>
+                                    <td><span class="badge @badgeClass" style="font-size:14px">@item.AbsenceDays أيام</span></td>
+                                    <td>@item.AbsenceType</td>
+                                    <td class="text-success fw-bold">@item.RegularBalance يوم</td>
+                                    <td><span class="badge @actionBadgeClass">@actionText</span></td>
+                                    <td>
+                                        <button class="btn @btnClass btn-sm" onclick="@btnAction" title="@btnTitle">
+                                            <i class="fas @btnIcon"></i> @(item.IsOverLegalLimit ? "تحقيق قانوني" : "اتخاذ قرار")
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="fas fa-check-circle fa-2x mb-2 d-block text-success"></i>
+                                    لا توجد حالات غياب معلقة هذا الشهر
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -144,7 +162,9 @@
                 <h5 class="modal-title"><i class="fas fa-tasks me-2"></i> قرار تسوية غياب</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" asp-action="Settle">
+            <form method="post" asp-area="HR" asp-controller="Absence" asp-action="Settle">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="employeeId" id="modalEmployeeId" value="" />
                 <div class="modal-body">
                     <!-- ملخص الحالة -->
                     <div class="callout callout-info">
@@ -192,7 +212,7 @@
 
                     <div class="form-group mt-3">
                         <label>ملاحظات القرار / سبب الرفض</label>
-                        <textarea class="form-control" rows="2" placeholder="اكتب مبررات القرار هنا..."></textarea>
+                        <textarea class="form-control" name="notes" rows="2" placeholder="اكتب مبررات القرار هنا..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -215,8 +235,8 @@
             });
         });
 
-        // فتح المودال وتعبئة البيانات (Dynamic)
-        function openSettlementModal(name, days, balance) {
+        function openSettlementModal(empId, name, days, balance) {
+            document.getElementById("modalEmployeeId").value = empId;
             document.getElementById("modalEmpName").innerText = name;
             document.getElementById("modalDays").innerText = days + " يوم";
             document.getElementById("modalBalance").innerText = balance + " يوم";
@@ -225,8 +245,7 @@
             myModal.show();
         }
 
-        // تنبيه التحويل للشئون القانونية
-        function alertLegalAction() {
+        function alertLegalAction(empId) {
             Swal.fire({
                 title: 'هل أنت متأكد؟',
                 text: "سيتم تحويل الموظف للشئون القانونية وإصدار خطاب إنذار بالفصل!",
@@ -238,11 +257,39 @@
                 cancelButtonText: 'إلغاء'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire(
-                        'تم التحويل!',
-                        'تم إنشاء ملف في موديول الشئون القانونية بنجاح.',
-                        'success'
-                    )
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '@Url.Action("Settle", "Absence", new { area = "HR" })';
+
+                    var tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                    if (tokenInput) {
+                        var hiddenToken = document.createElement('input');
+                        hiddenToken.type = 'hidden';
+                        hiddenToken.name = '__RequestVerificationToken';
+                        hiddenToken.value = tokenInput.value;
+                        form.appendChild(hiddenToken);
+                    }
+
+                    var empInput = document.createElement('input');
+                    empInput.type = 'hidden';
+                    empInput.name = 'employeeId';
+                    empInput.value = empId;
+                    form.appendChild(empInput);
+
+                    var actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'actionType';
+                    actionInput.value = 'SalaryPenalty';
+                    form.appendChild(actionInput);
+
+                    var notesInput = document.createElement('input');
+                    notesInput.type = 'hidden';
+                    notesInput.name = 'notes';
+                    notesInput.value = 'تحويل للشئون القانونية — تجاوز المدة القانونية للغياب';
+                    form.appendChild(notesInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             })
         }
