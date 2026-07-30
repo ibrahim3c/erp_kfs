@@ -1783,87 +1783,226 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.ToTable("Secondments", "HR");
                 });
 
-            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
+            modelBuilder.Entity("HR.Domain.ServiceTerms.Entities.ServiceTermRecord", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("AdjustedSeniorityDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CommitteeDecisionNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("FilePath")
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PreviousEntityName")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<string>("IssuedTo")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RequestDate")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("RequestNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("RequestStartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ServiceTerminationTypeId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
-                    b.HasIndex("ServiceTerminationTypeId");
+                    b.HasIndex("Status");
 
-                    b.ToTable("ServiceTerminationRequests", "HR");
+                    b.ToTable("ServiceTermRecords", "HR");
                 });
 
-            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationType", b =>
+            modelBuilder.Entity("HR.Domain.Terminations.TerminationDecision", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
+                    b.Property<string>("AttachmentPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DecisionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DecisionNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Description")
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LastWorkingDay")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LegalBasis")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DecisionNumber")
+                        .IsUnique();
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("TerminationDecisions", "HR");
+                });
+
+            modelBuilder.Entity("HR.Domain.Transfers.Entities.ExternalMovement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Direction")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OtherEntityName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("SalaryBearer")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("ExternalMovements", "HR");
+                });
+
+            modelBuilder.Entity("HR.Domain.Transfers.Entities.InternalTransfer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExecutionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("FromDepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("NewJobTitleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
-                    b.Property<bool>("RequiresNoticePeriod")
-                        .HasColumnType("bit");
+                    b.Property<Guid>("ToDepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceTerminationTypes", "HR");
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("InternalTransfers", "HR");
                 });
 
             modelBuilder.Entity("HR.Domain.Attendance.AttendanceRecord", b =>
@@ -2231,21 +2370,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Navigation("SalaryRecords");
                 });
 
-            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationRequest", b =>
-                {
-                    b.HasOne("HR.Domain.Employees.Employee", null)
-                        .WithMany("ServiceTerminationRequests")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HR.Domain.Terminations.ServiceTerminationType", null)
-                        .WithMany("ServiceTerminationRequests")
-                        .HasForeignKey("ServiceTerminationTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HR.Domain.Candidates.Candidate", b =>
                 {
                     b.Navigation("NominationFiles");
@@ -2281,8 +2405,6 @@ namespace HR.Infrastructure.Persistance.Migrations
                     b.Navigation("Loans");
 
                     b.Navigation("PermissionRequests");
-
-                    b.Navigation("ServiceTerminationRequests");
                 });
 
             modelBuilder.Entity("HR.Domain.Employees.EmploymentType", b =>
@@ -2308,11 +2430,6 @@ namespace HR.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("HR.Domain.Promotions.Entities.PromotionCycle", b =>
                 {
                     b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("HR.Domain.Terminations.ServiceTerminationType", b =>
-                {
-                    b.Navigation("ServiceTerminationRequests");
                 });
 #pragma warning restore 612, 618
         }

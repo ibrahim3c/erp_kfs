@@ -13,6 +13,9 @@ using HR.Domain.Evaluations;
 using HR.Domain.Promotions.Entities;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
+using HR.Domain.ServiceTerms.Entities;
+using HR.Domain.Terminations;
+using HR.Domain.Transfers.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Application.Exceptions;
@@ -58,6 +61,10 @@ public class HRDbContext : DbContext
     public DbSet<RetirementFile> RetirementFiles { get; set; }
     public DbSet<RetirementSalaryRecord> RetirementSalaryRecords { get; set; }
     public DbSet<Secondment> Secondments { get; set; }
+    public DbSet<ServiceTermRecord> ServiceTermRecords { get; set; }
+    public DbSet<TerminationDecision> TerminationDecisions { get; set; }
+    public DbSet<InternalTransfer> InternalTransfers { get; set; }
+    public DbSet<ExternalMovement> ExternalMovements { get; set; }
     public DbSet<Grievance> Grievances { get; set; }
     public DbSet<FundSubscription> FundSubscriptions { get; set; }
     public DbSet<FundClaim> FundClaims { get; set; }

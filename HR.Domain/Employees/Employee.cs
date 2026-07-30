@@ -50,9 +50,6 @@ namespace HR.Domain.Employees
         private readonly List<EmployeeDecision> _employeeDecisions = new();
         public IReadOnlyCollection<EmployeeDecision> EmployeeDecisions => _employeeDecisions.AsReadOnly();
 
-        private readonly List<ServiceTerminationRequest> _serviceTerminationRequests = new();
-        public IReadOnlyCollection<ServiceTerminationRequest> ServiceTerminationRequests => _serviceTerminationRequests.AsReadOnly();
-
         private readonly List<AcademicIncentiveRequest> _academicIncentiveRequests = new();
         public IReadOnlyCollection<AcademicIncentiveRequest> AcademicIncentiveRequests => _academicIncentiveRequests.AsReadOnly();
 
@@ -114,7 +111,7 @@ namespace HR.Domain.Employees
                     string email = null,
                     string address = null,
                     string maritalStatus = null,
-                    bool isDisabled=false,
+                    bool isDisabled = false,
                     Guid? cityCenterId = null,
                     Guid? villageId = null,
                     Guid? employmentTypeId = null,
@@ -286,32 +283,16 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
 
-        public Result SubmitServiceTerminationRequest(
-            Guid serviceTerminationTypeId,
-            string requestNumber,
-            string issuedTo,
-            DateTime requestDate,
-            DateTime? requestStartDate,
-            string reason,
-            string filePath)
 
-        {
-            var result = ServiceTerminationRequest.Create(Id, serviceTerminationTypeId, requestNumber, issuedTo, requestDate, requestStartDate, reason, filePath);
-            if (result.IsFailure)
-                return Result.Failure(result.Error);
-            _serviceTerminationRequests.Add(result.Value);
-            return Result.Success();
-        }
-
-    public Result AddFinancialInformation(
-        decimal? basicSalary2019,
-        decimal? grossSalary,
-        decimal? incentives,
-        string insuranceNumber,
-        string bankName,
-        string bankAccount,
-        bool hasFellowshipFund,
-        bool hasMedicalFund)
+        public Result AddFinancialInformation(
+            decimal? basicSalary2019,
+            decimal? grossSalary,
+            decimal? incentives,
+            string insuranceNumber,
+            string bankName,
+            string bankAccount,
+            bool hasFellowshipFund,
+            bool hasMedicalFund)
         {
             var financialResult = EmployeeFinancial.Create(
                 Id, // نمرر الـ ID الخاص بالموظف الحالي
@@ -333,7 +314,7 @@ namespace HR.Domain.Employees
         public Result UpdateFinancialInformation(
                 decimal? basicSalary2019,
                 decimal? grossSalary,
-                decimal? incentives,    
+                decimal? incentives,
                 string? insuranceNumber,
                 string? bankName,
                 string? bankAccount,
@@ -347,7 +328,7 @@ namespace HR.Domain.Employees
                     hasFellowshipFund, hasMedicalFund);
 
             FinancialInfo.Update(
-                basicSalary2019, grossSalary,incentives,
+                basicSalary2019, grossSalary, incentives,
                 insuranceNumber, bankName, bankAccount,
                 hasFellowshipFund, hasMedicalFund);
 
@@ -380,7 +361,7 @@ namespace HR.Domain.Employees
             return Result.Success();
         }
 
-        public Result  RemoveLeadershipPosition()
+        public Result RemoveLeadershipPosition()
         {
             RaiseDomainEvent(new LeadershipPositionRemovedDomainEvent(DateTime.UtcNow, Id));
             return Result.Success();
@@ -407,6 +388,20 @@ namespace HR.Domain.Employees
                 return Result.Failure(result.Error);
             _employeeQualifications.Add(result.Value);
             return Result.Success();
+        }
+        public Result UpdateJobTitleAndOrgUnit(Guid? jobTitleId, Guid? orgUnitId)
+        {
+            JobTitleId = jobTitleId;
+            OrgUnitId = orgUnitId;
+            return Result.Success();
+        }
+        public void Active()
+        {
+            IsActive = true;
+        }
+        public void Deactivate()
+        {
+            IsActive = false;
         }
     }
 

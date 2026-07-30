@@ -1,0 +1,131 @@
+﻿@using HR.Application.ServiceTerms.Query.GetServiceTermDetails
+@model ServiceTermDetailsDto
+@{
+    ViewData["Title"] = "تفاصيل طلب ضم المدة - " + Model.EmployeeName;
+
+    var typeText = Model.Type switch
+    {
+        "Government" => "مدة حكومية (ضم كامل)",
+        "PrivateSector" => "قطاع خاص (خاضع للتأمينات)",
+        "Conscription" => "مدة تجنيد / خدمة عامة",
+        _ => Model.Type
+    };
+
+    var statusBadge = Model.Status switch
+    {
+        "Approved" => ("hr-badge-success", "تم الضم"),
+        "Rejected" => ("hr-badge-danger", "مرفوض"),
+        _ => ("hr-badge-warning text-warning", "تحت المراجعة")
+    };
+
+    void FileRow(string label, string? path)
+    {
+        <div class="col-md-6 mb-2">
+            <label class="hr-form-label text-muted small">@label</label>
+            @if (!string.IsNullOrEmpty(path))
+            {
+                string src = path.StartsWith("/") ? path : "/" + path;
+                string ext = System.IO.Path.GetExtension(path).ToLower();
+                bool isImage = ext is ".jpg" or ".jpeg" or ".png" or ".webp" or ".jfif" or ".gif";
+
+                <div class="d-flex align-items-center gap-3 mt-1">
+                    @if (isImage)
+                    {
+                        <a href="@src" target="_blank">
+                            <img src="@src" class="img-fluid rounded-3 shadow-sm border" style="height:60px; width:60px; object-fit:cover;" />
+                        </a>
+                    }
+                    <a href="@src" target="_blank" class="hr-btn hr-btn-outline btn-sm">
+                        <i class="fas @(isImage ? "fa-image text-info" : "fa-file-pdf text-danger")"></i> عرض الملف
+                    </a>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0 small mt-1">
+                    <i class="fas fa-times-circle opacity-50"></i> لم يُرفع بعد
+                </p>
+            }
+        </div>
+    }
+}
+
+<link rel="stylesheet" href="~/css/global/hr-custom.css" asp-append-version="true">
+
+<div class="hr-page-container animate__animated animate__fadeIn">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h5 font-weight-bold text-dark mb-1">تفاصيل طلب ضم المدة</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 small mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index">ضم الخدمة</a></li>
+                    <li class="breadcrumb-item active">تفاصيل</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="hr-card">
+        <div class="hr-card-header">
+            <h3 class="hr-card-title"><i class="fas fa-user"></i> بيانات الطلب</h3>
+            <span class="hr-badge @statusBadge.Item1">@statusBadge.Item2</span>
+        </div>
+        <div class="hr-filter-section bg-white p-4">
+            <div class="row mb-3">
+                <div class="col-md-4 mb-2"><strong>الموظف:</strong> @Model.EmployeeName</div>
+                <div class="col-md-4 mb-2"><strong>الجهة السابقة:</strong> @Model.PreviousEntityName</div>
+                <div class="col-md-4 mb-2"><strong>نوع المدة:</strong> @typeText</div>
+
+                <div class="col-md-4 mb-2"><strong>من تاريخ:</strong> @Model.StartDate.ToString("dd-MM-yyyy")</div>
+                <div class="col-md-4 mb-2"><strong>إلى تاريخ:</strong> @Model.EndDate.ToString("dd-MM-yyyy")</div>
+                <div class="col-md-4 mb-2">
+                    <strong>رقم قرار اللجنة:</strong> @(string.IsNullOrEmpty(Model.CommitteeDecisionNumber) ? "لا يوجد" : Model.CommitteeDecisionNumber)
+                </div>
+
+                @if (Model.Status == "Approved")
+                {
+                    <div class="col-md-4 mb-2">
+                        <strong class="text-success">الأقدمية المعدلة:</strong>
+                        <span class="text-success font-weight-bold">@Model.AdjustedSeniorityDate?.ToString("dd-MM-yyyy")</span>
+                    </div>
+                }
+
+                @if (Model.Status == "Rejected" && !string.IsNullOrEmpty(Model.RejectionReason))
+                {
+                    <div class="col-md-12 mb-2">
+                        <strong class="text-danger">سبب الرفض:</strong>
+                        <p class="mb-0">@Model.RejectionReason</p>
+                    </div>
+                }
+            </div>
+
+            <hr />
+            <h6 class="text-primary mb-3">المستند المرفق</h6>
+            <div class="row">
+                @{
+                    FileRow("المستند المؤيد", Model.AttachmentPath);
+                }
+            </div>
+        </div>
+    </div>
+
+    <a asp-action="Index" class="hr-btn hr-btn-outline mt-3">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة
+    </a>
+</div>

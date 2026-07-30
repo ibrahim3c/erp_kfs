@@ -15,7 +15,9 @@ using HR.Domain.Permissions;
 using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
+using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
+using HR.Domain.Transfers.Entities;
 using HR.Infrastructure.Persistance.Database;
 using HR.Infrastructure.Persistance.Repositories;
 
@@ -48,6 +50,10 @@ namespace HR.Infrastructure.Persistance
 
         public ISecondmentRepository SecondmentRepository { get; private set; }
 
+        public IServiceTermRepository ServiceTermRepository { get; private set; }
+
+        public ITranseferRepository TranseferRepository { get; private set; }
+
         public IGrievanceRepository GrievanceRepository { get; private set; }
 
         public IFundRepository FundRepository { get; private set; }
@@ -75,6 +81,8 @@ namespace HR.Infrastructure.Persistance
             PromotionHistoryRepository = new PromotionHistoryRepository(_dbContext);
             RetriementRepository = new RetriementRepository(_dbContext);
             SecondmentRepository = new SecondmentRepository(_dbContext);
+            ServiceTermRepository = new ServiceTermRepository(_dbContext);
+            TranseferRepository = new TranseferRepository(_dbContext);
             GrievanceRepository = new GrievanceRepository(_dbContext);
             FundRepository = new FundRepository(_dbContext);
             LeaveRepository = new LeaveRepository(_dbContext);

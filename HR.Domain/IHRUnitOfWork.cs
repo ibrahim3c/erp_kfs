@@ -14,7 +14,9 @@ using HR.Domain.Permissions;
 using HR.Domain.Promotions.Interfaces;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
+using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
+using HR.Domain.Transfers.Entities;
 
 namespace HR.Domain
 {
@@ -37,6 +39,8 @@ namespace HR.Domain
         IPromotionHistoryRepository PromotionHistoryRepository { get; }
         IRetriementRepository RetriementRepository { get; }
         ISecondmentRepository SecondmentRepository { get; }
+        IServiceTermRepository ServiceTermRepository { get; }
+        ITranseferRepository TranseferRepository { get; }
         IGrievanceRepository GrievanceRepository { get; }
         IFundRepository FundRepository { get; }
         ILeaveRepository LeaveRepository { get; }

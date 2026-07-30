@@ -1,12 +1,20 @@
-﻿@{
+﻿@using HR.Application.Secondments.Query.GetEmployeesForSelect
+@using HR.Application.Transefers.Query.GetDepartmentsForSelect
+@using HR.Application.Transefers.Query.GetExternalMovements
+@using HR.Application.Transefers.Query.GetInternalTransefers
+@{
     ViewData["Title"] = "حركة النقل والندب (الداخلي والخارجي)";
+
+    var employees = ViewBag.Employees as List<EmployeeSelectDto> ?? new();
+    var departments = ViewBag.Departments as List<DepartmentSelectDto> ?? new();
+    var jobTitles = ViewBag.JobTitles as List<JobTitleDto> ?? new();
+
+    var internalTransfers = ViewBag.InternalTransfers as List<InternalTransferListItemDto> ?? new();
+    var externalMovements = ViewBag.ExternalMovements as List<ExternalMovementListItemDto> ?? new();
 }
 
-<!-- DataTables & Plugins -->
 <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
-<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 <link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
 
 <div class="content-header">
@@ -27,6 +35,21 @@
 
 <section class="content">
     <div class="container-fluid">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-1"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
 
         <div class="card card-primary card-outline card-tabs">
             <div class="card-header p-0 pt-1 border-bottom-0">
@@ -76,26 +99,47 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
-                                    <td>المخازن</td>
-                                    <td class="text-primary fw-bold">التخطيط العمراني</td>
-                                    <td>حاجة العمل</td>
-                                    <td>01/01/2024</td>
-                                    <td><span class="badge bg-success">تم النقل</span></td>
-                                    <td><button class="btn btn-sm btn-default" title="عرض القرار"><i class="fas fa-file-alt"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td class="text-end fw-bold">أمنة جمعة</td>
-                                    <td>خدمة المواطنين</td>
-                                    <td class="text-primary fw-bold">الشئون الإدارية</td>
-                                    <td>طلب شخصي</td>
-                                    <td>15/06/2024</td>
-                                    <td><span class="badge bg-warning text-dark">بانتظار المدير</span></td>
-                                    <td><button class="btn btn-sm btn-success" title="اعتماد"><i class="fas fa-check"></i></button></td>
-                                </tr>
+                                @{
+                                    int i = 1;
+                                }
+                                @foreach (var t in internalTransfers)
+                                {
+                                    <tr>
+                                        <td>@i</td>
+                                        <td class="text-end fw-bold">@t.EmployeeName</td>
+                                        <td>@t.FromDepartmentName</td>
+                                        <td class="text-primary fw-bold">@t.ToDepartmentName</td>
+                                        <td>@t.Reason</td>
+                                        <td>@t.ExecutionDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (t.Status == "Approved")
+                                            {
+                                                <span class="badge bg-success">تم النقل</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">بانتظار المدير</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (t.Status == "PendingApproval")
+                                            {
+                                                <form asp-action="ApproveInternal" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="transferId" value="@t.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-success" title="اعتماد">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">-</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -124,37 +168,126 @@
                                     <th>الجهة (من / إلى)</th>
                                     <th>المدة (للندب)</th>
                                     <th>حالة الموافقات</th>
-                                    <th>المرفقات</th>
+                                    <th>المرفق</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- حالة ندب -->
-                                <tr>
-                                    <td>1</td>
-                                    <td class="text-end fw-bold">رانيا أبو النصر</td>
-                                    <td><span class="badge bg-info">ندب خارجي (صادر)</span></td>
-                                    <td>إلى: وزارة العدل</td>
-                                    <td>1 سنة</td>
-                                    <td><span class="badge bg-success">سارية</span></td>
-                                    <td><i class="fas fa-paperclip"></i></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-danger" title="إنهاء الندب"><i class="fas fa-stop-circle"></i></button>
-                                        <button class="btn btn-sm btn-outline-success" title="تجديد"><i class="fas fa-sync-alt"></i></button>
-                                    </td>
-                                </tr>
+                                @{
+                                    int j = 1;
+                                }
+                                @foreach (var m in externalMovements)
+                                {
+                                    var typeText = m.Type == "Transfer" ? "نقل نهائي" : "ندب / إعارة";
+                                    var typeClass = m.Type == "Transfer" ? "bg-purple" : "bg-info";
+                                    var directionText = m.Direction == "Outgoing" ? "صادر" : "وارد";
+                                    var directionLabel = m.Direction == "Outgoing" ? "إلى" : "من";
 
-                                <!-- حالة نقل نهائي -->
-                                <tr>
-                                    <td>2</td>
-                                    <td class="text-end fw-bold">موظف جديد</td>
-                                    <td><span class="badge bg-purple">نقل (وارد)</span></td>
-                                    <td>من: مديرية الصحة</td>
-                                    <td>-</td>
-                                    <td><span class="badge bg-primary">تم الاستلام</span></td>
-                                    <td><i class="fas fa-paperclip"></i></td>
-                                    <td><button class="btn btn-sm btn-default"><i class="fas fa-print"></i> خطاب استلام</button></td>
-                                </tr>
+                                    <tr>
+                                        <td>@j</td>
+                                        <td class="text-end fw-bold">@m.EmployeeName</td>
+                                        <td><span class="badge @typeClass">@typeText (@directionText)</span></td>
+                                        <td>@directionLabel: @m.OtherEntityName</td>
+                                        <td>
+                                            @if (m.Type == "Secondment" && m.StartDate.HasValue && m.EndDate.HasValue)
+                                            {
+                                                var years = (m.EndDate.Value - m.StartDate.Value).Days / 365;
+                                                <span>@(years > 0 ? $"{years} سنة" : $"{(m.EndDate.Value - m.StartDate.Value).Days} يوم")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (m.Status == "Active")
+                                            {
+                                                <span class="badge bg-success">@(m.Type == "Transfer" ? "تم الاستلام" : "سارية")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">منتهية</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(m.AttachmentPath))
+                                            {
+                                                string src = m.AttachmentPath.StartsWith("/") ? m.AttachmentPath : "/" + m.AttachmentPath;
+                                                <a href="@src" target="_blank"><i class="fas fa-paperclip"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (m.Type == "Secondment" && m.Status == "Active")
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-danger" title="إنهاء الندب"
+                                                        data-bs-toggle="modal" data-bs-target="#endModal-@m.Id">
+                                                    <i class="fas fa-stop-circle"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-success" title="تجديد"
+                                                        data-bs-toggle="modal" data-bs-target="#renewModal-@m.Id">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+
+                                                <!-- Modal إنهاء -->
+                                                <div class="modal fade" id="endModal-@m.Id" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form asp-action="EndExternal" method="post">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="movementId" value="@m.Id" />
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">تأكيد إنهاء الندب</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    هل أنت متأكد من إنهاء ندب <strong>@m.EmployeeName</strong>؟
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">تراجع</button>
+                                                                    <button type="submit" class="btn btn-danger">تأكيد الإنهاء</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Modal تجديد -->
+                                                <div class="modal fade" id="renewModal-@m.Id" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form asp-action="RenewExternal" method="post">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="movementId" value="@m.Id" />
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">تجديد الندب</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <label class="form-label">تاريخ الانتهاء الجديد</label>
+                                                                    <input type="date" class="form-control" name="newEndDate"
+                                                                           min="@m.EndDate?.ToString("yyyy-MM-dd")" required>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                                    <button type="submit" class="btn btn-success">تجديد</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">-</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    j++;
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -170,7 +303,8 @@
 <div class="modal fade" id="internalModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="CreateInternal" method="post">
+            <form asp-action="CreateInternal" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">تسجيل حركة تنقلات داخلية</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -178,32 +312,57 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">الموظف</label>
-                        <select class="form-select select2 select2-modal" style="width:100%">
-                            <option>ابحث بالاسم...</option>
-                            <option>محمد فؤاد ابراهيم</option>
+                        <select class="form-select" name="employeeId" required>
+                            <option value="">-- اختر الموظف --</option>
+                            @foreach (var emp in employees)
+                            {
+                                <option value="@emp.Id">@emp.Name — @emp.JobTitle — @emp.DepartmentName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">من إدارة (الحالية)</label>
+                        <select class="form-select" name="fromDepartmentId" required>
+                            <option value="">-- اختر --</option>
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept.Id">@dept.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">منقول إلى إدارة (الجهة المستهدفة)</label>
-                        <select class="form-select">
-                            <option>التخطيط العمراني</option>
-                            <option>مركز استدامة</option>
-                            <option>الحسابات</option>
+                        <select class="form-select" name="toDepartmentId" required>
+                            <option value="">-- اختر --</option>
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept.Id">@dept.Name</option>
+                            }
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">سبب النقل</label>
+                        <input type="text" class="form-control" name="reason" placeholder="حاجة العمل / طلب شخصي..." required>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">تاريخ التنفيذ</label>
-                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            <input type="date" class="form-control" name="executionDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">المسمي الوظيفي الجديد</label>
-                            <input type="text" class="form-control" placeholder="(اختياري)">
+                            <select class="form-select" name="newJobTitleId" required>
+                                <option value="">-- اختر --</option>
+                                @foreach (var job in jobTitles)
+                                {
+                                    <option value="@job.Id">@job.Name</option>
+                                }
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">مرفق (طلب النقل / التأشيرة)</label>
-                        <input type="file" class="form-control">
+                        <input type="file" class="form-control" name="attachmentFile" accept=".pdf,.jpg,.jpeg,.png">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -219,7 +378,8 @@
 <div class="modal fade" id="externalModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form asp-action="CreateExternal" method="post">
+            <form asp-action="CreateExternal" method="post" enctype="multipart/form-data" id="externalForm">
+                @Html.AntiForgeryToken()
                 <div class="modal-header bg-warning">
                     <h5 class="modal-title">تسجيل حركة خارجية (ندب / نقل)</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -228,53 +388,56 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">نوع الحركة</label>
-                            <select class="form-select" id="moveType" onchange="toggleDuration()">
+                            <select class="form-select" name="type" id="moveType" onchange="toggleDuration()" required>
                                 <option value="Transfer">نقل نهائي (Transfer)</option>
                                 <option value="Secondment">ندب / إعارة (Secondment)</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">الاتجاه</label>
-                            <select class="form-select">
-                                <option>صادر (خارج من عندنا)</option>
-                                <option>وارد (جاي من برة)</option>
+                            <select class="form-select" name="direction" required>
+                                <option value="Outgoing">صادر (خارج من عندنا)</option>
+                                <option value="Incoming">وارد (جاي من برة)</option>
                             </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">الموظف</label>
-                            <select class="form-select select2 select2-modal" style="width:100%">
-                                <option>أمنة جمعة</option>
-                                <option>موظف جديد (غير مسجل)</option>
+                            <select class="form-select" name="employeeId" required>
+                                <option value="">-- اختر الموظف --</option>
+                                @foreach (var emp in employees)
+                                {
+                                    <option value="@emp.Id">@emp.Name — @emp.JobTitle</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">اسم الجهة الأخرى</label>
-                            <input type="text" class="form-control" placeholder="مثال: مديرية التنظيم والإدارة">
+                            <input type="text" class="form-control" name="otherEntityName" placeholder="مثال: مديرية التنظيم والإدارة" required>
                         </div>
 
                         <!-- الحقول الخاصة بالندب -->
                         <div class="col-md-4 mb-3 secondment-only" style="display:none">
                             <label class="form-label">تاريخ البداية</label>
-                            <input type="date" class="form-control">
+                            <input type="date" class="form-control" name="startDate">
                         </div>
                         <div class="col-md-4 mb-3 secondment-only" style="display:none">
                             <label class="form-label">تاريخ النهاية</label>
-                            <input type="date" class="form-control">
+                            <input type="date" class="form-control" name="endDate">
                         </div>
                         <div class="col-md-4 mb-3 secondment-only" style="display:none">
                             <label class="form-label">من يتحمل الراتب؟</label>
-                            <select class="form-select">
-                                <option>جهتنا (نحن)</option>
-                                <option>الجهة المستعيرة</option>
+                            <select class="form-select" name="salaryBearer">
+                                <option value="OriginalEntity">جهتنا (نحن)</option>
+                                <option value="HostEntity">الجهة المستعيرة</option>
                             </select>
                         </div>
 
                         <div class="col-12"><hr /></div>
 
                         <div class="col-md-12 mb-3">
-                            <label class="form-label">المرفقات المطلوبة (موافقة الجهتين)</label>
-                            <input type="file" class="form-control" multiple>
+                            <label class="form-label">المرفق (موافقة الجهتين)</label>
+                            <input type="file" class="form-control" name="attachmentFile" accept=".pdf,.jpg,.jpeg,.png">
                         </div>
                     </div>
                 </div>
@@ -287,35 +450,25 @@
     </div>
 </div>
 
-    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="~/plugins/select2/js/select2.full.min.js"></script>
-    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
 
-    <script>
-        $(function () {
-            // تفعيل الجداول
-            $('#tableInternal').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
-            $('#tableExternal').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+<script>
+    $(function() {
+        $('#tableInternal').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+        $('#tableExternal').DataTable({ "lengthChange": false, "autoWidth": false, "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" } });
+    });
 
-            // Select2 Fix in Modal
-            $('.select2-modal').select2({
-                theme: 'bootstrap4',
-                dropdownParent: $('.modal') // Generic for any modal
+    function toggleDuration() {
+        var type = document.getElementById("moveType").value;
+        var fields = document.querySelectorAll(".secondment-only");
+
+        fields.forEach(el => {
+            el.style.display = type === "Secondment" ? "block" : "none";
+            el.querySelectorAll("input, select").forEach(input => {
+                input.required = type === "Secondment";
             });
         });
-
-        // إظهار حقول الندب فقط عند اختيار "ندب"
-        function toggleDuration() {
-            var type = document.getElementById("moveType").value;
-            var fields = document.querySelectorAll(".secondment-only");
-
-            fields.forEach(el => {
-                if (type === "Secondment") {
-                    el.style.display = "block";
-                } else {
-                    el.style.display = "none";
-                }
-            });
-        }
-    </script>
+    }
+</script>
