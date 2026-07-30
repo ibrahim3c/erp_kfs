@@ -1,5 +1,12 @@
-﻿@{
+@model List<HR.Application.Evaluations.GetGrievanceList.GetGrievanceListResponse>
+@using HR.Application.Evaluations.GetGrievanceStats
+@using HR.Application.Evaluations.GetGrievanceList
+@using HR.Application.Employees.GetAllEmployees
+
+@{
     ViewData["Title"] = "سجل التظلمات والشكاوى الإدارية";
+    var stats = ViewBag.Stats as GetGrievanceStatsResponse ?? new GetGrievanceStatsResponse();
+    var employees = ViewBag.Employees as List<EmployeeListResponse> ?? new List<EmployeeListResponse>();
 }
 
 <!-- CSS Plugins -->
@@ -25,6 +32,21 @@
     </div>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <section class="content">
     <div class="container-fluid">
 
@@ -35,7 +57,7 @@
                     <span class="info-box-icon"><i class="far fa-copy"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">إجمالي التظلمات</span>
-                        <span class="info-box-number">45</span>
+                        <span class="info-box-number">@stats.TotalGrievances</span>
                     </div>
                 </div>
             </div>
@@ -44,7 +66,7 @@
                     <span class="info-box-icon"><i class="fas fa-hourglass-half"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">قيد البحث (لجنة)</span>
-                        <span class="info-box-number">5</span>
+                        <span class="info-box-number">@stats.PendingCount</span>
                     </div>
                 </div>
             </div>
@@ -53,7 +75,7 @@
                     <span class="info-box-icon"><i class="fas fa-check"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">تم قبول التظلم</span>
-                        <span class="info-box-number">12</span>
+                        <span class="info-box-number">@stats.AcceptedCount</span>
                     </div>
                 </div>
             </div>
@@ -62,7 +84,7 @@
                     <span class="info-box-icon"><i class="fas fa-times"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">مرفوض شكلاً/موضوعاً</span>
-                        <span class="info-box-number">28</span>
+                        <span class="info-box-number">@stats.RejectedCount</span>
                     </div>
                 </div>
             </div>
@@ -94,59 +116,86 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- مثال 1: قيد البحث -->
-                        <tr>
-                            <td>1</td>
-                            <td>15/07/2024</td>
-                            <td class="text-end fw-bold">محمد فؤاد ابراهيم</td>
-                            <td>
-                                <span class="badge bg-warning text-dark">تقرير الكفاءة</span>
-                                <br><small>تقدير "كفء" بدلاً من "ممتاز"</small>
-                            </td>
-                            <td>01/07/2024</td>
-                            <td><i class="fas fa-paperclip text-secondary"></i></td>
-                            <td><span class="badge bg-warning text-dark p-2">جاري العرض على اللجنة</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#decisionModal"><i class="fas fa-gavel me-1"></i> البت في التظلم</button>
-                            </td>
-                        </tr>
+                        @{ var idx = 1; }
+                        @foreach (var item in Model)
+                        {
+                            var typeBadgeClass = item.GrievanceTypeName switch
+                            {
+                                "PerformanceReport" => "bg-warning text-dark",
+                                "PenaltyDecision" => "bg-danger",
+                                "TransferDecision" => "bg-purple",
+                                "PromotionSkip" => "bg-info",
+                                _ => "bg-secondary"
+                            };
+                            var typeNameAr = item.GrievanceTypeName switch
+                            {
+                                "PerformanceReport" => "تقرير الكفاءة",
+                                "PenaltyDecision" => "قرار جزاء",
+                                "TransferDecision" => "قرار نقل",
+                                "PromotionSkip" => "تخطي في الترقية",
+                                _ => "أخرى"
+                            };
 
-                        <!-- مثال 2: تم القبول -->
-                        <tr>
-                            <td>2</td>
-                            <td>10/06/2024</td>
-                            <td class="text-end fw-bold">فاطمة الشرباني</td>
-                            <td>
-                                <span class="badge bg-danger">قرار جزاء (خصم)</span>
-                                <br><small>خصم 3 أيام (القرار 102)</small>
-                            </td>
-                            <td>01/06/2024</td>
-                            <td><i class="fas fa-file-pdf text-danger"></i></td>
-                            <td>
-                                <span class="badge bg-success p-2">تم القبول (إلغاء الجزاء)</span>
-                                <div class="text-muted small mt-1">تاريخ البت: 20/06/2024</div>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-dark" onclick="printDecision()"><i class="fas fa-print"></i> قرار اللجنة</button>
-                            </td>
-                        </tr>
+                            var statusBadge = item.StatusName switch
+                            {
+                                "Pending" => "bg-warning text-dark",
+                                "UnderReview" => "bg-warning text-dark",
+                                "Accepted" => "bg-success",
+                                "Rejected" => "bg-danger",
+                                "PartiallyAccepted" => "bg-info",
+                                _ => "bg-secondary"
+                            };
+                            var statusText = item.StatusName switch
+                            {
+                                "Pending" => "قيد الانتظار",
+                                "UnderReview" => "جاري العرض على اللجنة",
+                                "Accepted" => "تم القبول",
+                                "Rejected" => "رفض التظلم",
+                                "PartiallyAccepted" => "قبول جزئي",
+                                _ => item.StatusName
+                            };
 
-                        <!-- مثال 3: مرفوض -->
-                        <tr>
-                            <td>3</td>
-                            <td>05/01/2024</td>
-                            <td class="text-end fw-bold">بهجت إبراهيم</td>
-                            <td>
-                                <span class="badge bg-purple">نقل تعسفي</span>
-                                <br><small>نقل لفرع مطوبس</small>
-                            </td>
-                            <td>01/01/2024</td>
-                            <td>-</td>
-                            <td><span class="badge bg-danger p-2">رفض التظلم (صحة القرار)</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i> التفاصيل</button>
-                            </td>
-                        </tr>
+                            var attachmentIcon = item.HasAttachment
+                                ? "<i class='fas fa-paperclip text-secondary'></i>"
+                                : "-";
+
+                            <tr>
+                                <td>@idx</td>
+                                <td>@item.SubmissionDate.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end fw-bold">@item.EmployeeName</td>
+                                <td>
+                                    <span class="badge @typeBadgeClass">@typeNameAr</span>
+                                    <br><small>@item.ComplainedDecisionNumber</small>
+                                </td>
+                                <td>@item.ComplainedDecisionDate.ToString("dd/MM/yyyy")</td>
+                                <td>@Html.Raw(attachmentIcon)</td>
+                                <td>
+                                    @if (item.StatusName == "Accepted" || item.StatusName == "Rejected" || item.StatusName == "PartiallyAccepted")
+                                    {
+                                        <span class="badge @statusBadge p-2">@statusText</span>
+                                        if (item.ResolutionDate.HasValue)
+                                        {
+                                            <div class="text-muted small mt-1">تاريخ البت: @item.ResolutionDate.Value.ToString("dd/MM/yyyy")</div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge @statusBadge p-2">@statusText</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.StatusName == "Pending" || item.StatusName == "UnderReview")
+                                    {
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#decisionModal_@item.Id"><i class="fas fa-gavel me-1"></i> البت في التظلم</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i> التفاصيل</button>
+                                    }
+                                </td>
+                            </tr>
+                            idx++;
+                        }
                     </tbody>
                 </table>
             </div>
@@ -155,7 +204,53 @@
     </div>
 </section>
 
-<!-- Modal 1: تسجيل تظلم (استلام الطلب من الموظف) -->
+<!-- Modals: قرار اللجنة لكل تظلم معلق -->
+@foreach (var item in Model.Where(m => m.StatusName == "Pending" || m.StatusName == "UnderReview"))
+{
+    <div class="modal fade" id="decisionModal_@item.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="fas fa-gavel me-2"></i> قرار لجنة التظلمات</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="post" asp-action="ResolveGrievance">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="GrievanceId" value="@item.Id" />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">الموظف: <span class="text-primary">@item.EmployeeName</span></label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">منطوق قرار اللجنة:</label>
+                            <select name="NewStatus" class="form-select form-control-lg" required>
+                                <option value="Rejected">رفض التظلم (تأييد القرار الأصلي)</option>
+                                <option value="Accepted">قبول التظلم (سحب القرار)</option>
+                                <option value="PartiallyAccepted">قبول جزئي (تعديل القرار)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">حيثيات القرار / النتيجة النهائية</label>
+                            <textarea name="CommitteeNotes" class="form-control" rows="3" placeholder="مثال: تم التأكد من عدم ارتكاب المخالفة وقبول التظلم..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">تاريخ البت</label>
+                            <input type="date" name="ResolutionDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check-double me-1"></i> اعتماد وتغيير الحالة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal: تسجيل تظلم -->
 <div class="modal fade" id="grievanceModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -163,50 +258,49 @@
                 <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i> استلام طلب تظلم</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post">
+            <form method="post" asp-action="CreateGrievance">
+                @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="row">
                         <!-- البيانات الأساسية -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">الموظف المتظلم</label>
-                            <select class="form-select select2 select2-modal" style="width:100%">
-                                <option>بحث...</option>
-                                <option>محمد فؤاد ابراهيم</option>
+                            <select name="EmployeeId" class="form-select select2 select2-modal" style="width:100%" required>
+                                <option value="">بحث...</option>
+                                @foreach (var emp in employees)
+                                {
+                                    <option value="@emp.Id">@emp.Name (@emp.JobTitleName)</option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">نوع التظلم</label>
-                            <select class="form-select" id="grievanceType">
-                                <option>من تقرير تقويم الأداء</option>
-                                <option>من قرار جزاء / تأديب</option>
-                                <option>من قرار نقل / ندب</option>
-                                <option>تخطي في الترقية</option>
-                                <option>أخرى</option>
+                            <select name="GrievanceType" class="form-select" id="grievanceType" required>
+                                <option value="PerformanceReport">من تقرير تقويم الأداء</option>
+                                <option value="PenaltyDecision">من قرار جزاء / تأديب</option>
+                                <option value="TransferDecision">من قرار نقل / ندب</option>
+                                <option value="PromotionSkip">تخطي في الترقية</option>
+                                <option value="Other">أخرى</option>
                             </select>
                         </div>
 
                         <!-- تفاصيل القرار المشكو في حقه -->
                         <div class="col-md-4 mb-3">
                             <label class="form-label">رقم القرار / التقرير</label>
-                            <input type="text" class="form-control" placeholder="مثال: جزاء رقم 55">
+                            <input type="text" name="ComplainedDecisionNumber" class="form-control" placeholder="مثال: جزاء رقم 55" required />
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">تاريخ صدور القرار</label>
-                            <input type="date" class="form-control">
+                            <input type="date" name="ComplainedDecisionDate" class="form-control" required />
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">تاريخ استلام التظلم (اليوم)</label>
-                            <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            <input type="date" name="SubmissionDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
                         </div>
 
                         <div class="col-md-12 mb-3">
                             <label class="form-label">أسباب التظلم (موجز الشكوى)</label>
-                            <textarea class="form-control" rows="3" placeholder="أذكر الأسباب التي يستند عليها الموظف..."></textarea>
-                        </div>
-
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label">مرفقات (صورة التظلم موقعة / مستندات مؤيدة)</label>
-                            <input type="file" class="form-control" multiple>
+                            <textarea name="Reasons" class="form-control" rows="3" placeholder="أذكر الأسباب التي يستند عليها الموظف..." required></textarea>
                         </div>
                     </div>
                 </div>
@@ -219,75 +313,23 @@
     </div>
 </div>
 
-<!-- Modal 2: قرار اللجنة (البت في التظلم) -->
-<div class="modal fade" id="decisionModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title"><i class="fas fa-gavel me-2"></i> قرار لجنة التظلمات</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">منطوق قرار اللجنة:</label>
-                        <select class="form-select form-control-lg" id="decisionStatus">
-                            <option value="Rejected">رفض التظلم (تأييد القرار الأصلي)</option>
-                            <option value="Accepted">قبول التظلم (سحب القرار)</option>
-                            <option value="Modified">قبول جزئي (تعديل القرار)</option>
-                        </select>
-                    </div>
+<!-- JS Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
 
-                    <div class="mb-3">
-                        <label class="form-label">حيثيات القرار / النتيجة النهائية</label>
-                        <textarea class="form-control" rows="3" placeholder="مثال: تم التأكد من عدم ارتكاب المخالفة وقبول التظلم..."></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">تاريخ البت</label>
-                        <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check-double me-1"></i> اعتماد وتغيير الحالة</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-    <!-- JS Plugins -->
-    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="~/plugins/select2/js/select2.full.min.js"></script>
-    <script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
-
-    <script>
-        $(function () {
-            // الجدول
-            $("#grievanceTable").DataTable({
-                "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
-                "autoWidth": false,
-                "lengthChange": false
-            });
-
-            // السليكت 2 داخل المودال
-            $('.select2-modal').select2({
-                theme: 'bootstrap4',
-                dropdownParent: $('#grievanceModal')
-            });
+<script>
+    $(function () {
+        $("#grievanceTable").DataTable({
+            "language": { "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json" },
+            "autoWidth": false,
+            "lengthChange": false
         });
 
-        // رسالة عند الطباعة
-        function printDecision() {
-            Swal.fire({
-                icon: 'success',
-                title: 'جاري الطباعة',
-                text: 'يتم تجهيز خطاب قرار اللجنة للطباعة...',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-    </script>
+        $('.select2-modal').select2({
+            theme: 'bootstrap4',
+            dropdownParent: $('#grievanceModal')
+        });
+    });
+</script>

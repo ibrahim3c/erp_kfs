@@ -2,10 +2,14 @@
 using HR.Domain.Candidates;
 using HR.Domain.Decisions;
 using HR.Domain.Employees;
+using HR.Domain.Funds;
+using HR.Domain.Leaves;
+using HR.Domain.Legal;
 using HR.Domain.Loans;
 using HR.Domain.Payrolls;
 using HR.Domain.Penalties;
 using HR.Domain.Permissions;
+using HR.Domain.Evaluations;
 using HR.Domain.Promotions.Entities;
 using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
@@ -36,7 +40,9 @@ public class HRDbContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<EmployeeFile> EmployeeFiles { get; set; }
     public DbSet<EmployeeFinancial> EmployeeFinancials { get; set; }
+    public DbSet<Decision> Decisions { get; set; }
     public DbSet<DecisionType> DecisionTypes { get; set; }
+    public DbSet<DecisionAuthority> DecisionAuthorities { get; set; }
     public DbSet<EmployeeDecision> EmployeeDecisions { get; set; }
     public DbSet<Loan> Loans { get; set; }
     public DbSet<InsurancePeriodPurchase> InsurancePeriodPurchases { get; set; }
@@ -59,6 +65,12 @@ public class HRDbContext : DbContext
     public DbSet<TerminationDecision> TerminationDecisions { get; set; }
     public DbSet<InternalTransfer> InternalTransfers { get; set; }
     public DbSet<ExternalMovement> ExternalMovements { get; set; }
+    public DbSet<Grievance> Grievances { get; set; }
+    public DbSet<FundSubscription> FundSubscriptions { get; set; }
+    public DbSet<FundClaim> FundClaims { get; set; }
+    public DbSet<LeaveRequest> LeaveRequests { get; set; }
+    public DbSet<LeaveBalance> LeaveBalances { get; set; }
+    public DbSet<CourtRuling> CourtRulings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

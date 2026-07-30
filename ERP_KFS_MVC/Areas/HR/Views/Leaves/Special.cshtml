@@ -1,6 +1,11 @@
-﻿@{
+@model ERP_KFS_MVC.Areas.HR.ViewModels.LeavePageViewModel
+@{
     ViewData["Title"] = "الأجازات الخاصة (وضع / حج / رعاية طفل)";
 }
+
+<!-- Select2 CSS -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 
 <div class="content-header">
     <div class="container-fluid">
@@ -18,11 +23,26 @@
     </div>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <section class="content">
     <div class="container-fluid">
 
         <div class="row">
-            <!-- كارت رصيد أجازات الحج (إحصائية سريعة) -->
+            <!-- تنويه قانوني -->
             <div class="col-md-12 mb-3">
                 <div class="callout callout-info">
                     <h5><i class="fas fa-info"></i> تنويه قانوني:</h5>
@@ -38,30 +58,34 @@
                         <h3 class="card-title text-purple">طلب أجازة خاصة جديدة</h3>
                     </div>
                     <div class="card-body">
-                        <form method="post">
+                        <form method="post" asp-action="CreateSpecialRequest" asp-antiforgery="true" enctype="multipart/form-data">
                             <div class="row">
                                 <!-- اختيار الموظف ونوع الاجازة -->
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">اسم الموظف/ة</label>
-                                    <select class="form-select select2">
-                                        <option>-- بحث بالاسم --</option>
-                                        <option>رانيا ابو النصر (إناث)</option>
-                                        <option>فاطمة الشرباني (إناث)</option>
-                                        <option>محمد فؤاد (ذكور)</option>
+                                    <select name="employeeId" class="form-select select2-special" style="width:100%" required>
+                                        <option value="">-- بحث بالاسم --</option>
+                                        @if (ViewBag.Employees is IEnumerable<HR.Application.Employees.GetAllEmployees.EmployeeListResponse> employees)
+                                        {
+                                            @foreach (var emp in employees)
+                                            {
+                                                <option value="@emp.Id">@emp.Name (@emp.Code)</option>
+                                            }
+                                        }
                                     </select>
                                 </div>
 
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">نوع الأجازة الخاصة</label>
-                                    <select class="form-select" id="leaveTypeSelect" onchange="toggleSpecialOptions()">
-                                        <option value="Maternity">أجازة وضع (Maternity)</option>
+                                    <select name="leaveCategory" class="form-select" id="leaveTypeSelect" onchange="toggleSpecialOptions()" required>
+                                        <option value="Maternity">أجازة وضع</option>
                                         <option value="ChildCare">أجازة رعاية طفل</option>
                                         <option value="Hajj">أجازة حج / زيارة مقدسة</option>
-                                        <option value="Exams">أجازة أداء امتحانات</option>
+                                        <option value="Exam">أجازة أداء امتحانات</option>
                                     </select>
                                 </div>
 
-                                <!-- الحساب المالي (هام جداً) -->
+                                <!-- الحساب المالي -->
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">الموقف المالي (الراتب)</label>
                                     <input type="text" class="form-control is-valid fw-bold" id="salaryStatus" value="أجر كامل (مدفوعة)" readonly>
@@ -70,28 +94,28 @@
 
                                 <div class="w-100"><hr /></div>
 
-                                <!-- خيارات التاريخ (حسب النوع) -->
+                                <!-- خيارات التاريخ -->
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">تاريخ البداية</label>
-                                    <input type="date" class="form-control">
+                                    <input type="date" name="startDate" class="form-control" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">المدة المطلوبة</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" placeholder="أيام">
+                                        <input type="number" name="duration" class="form-control" placeholder="أيام" min="1" required>
                                         <span class="input-group-text" id="unitLabel">يوم</span>
                                     </div>
                                 </div>
 
-                                <!-- خيارات إضافية ديناميكية -->
+                                <!-- خيارات المولود -->
                                 <div class="col-md-6 mb-3" id="babySection">
                                     <label class="form-label text-purple"><i class="fas fa-baby me-1"></i> بيانات المولود / الطفل</label>
                                     <div class="row">
                                         <div class="col-8">
-                                            <input type="text" class="form-control" placeholder="اسم الطفل (كما في الشهادة)">
+                                            <input type="text" name="childName" class="form-control" placeholder="اسم الطفل (كما في الشهادة)">
                                         </div>
                                         <div class="col-4">
-                                            <input type="date" class="form-control" title="تاريخ الميلاد">
+                                            <input type="date" name="childDateOfBirth" class="form-control" title="تاريخ الميلاد">
                                         </div>
                                     </div>
                                 </div>
@@ -101,12 +125,18 @@
                                     <div class="input-group">
                                         <span class="input-group-text">سنة الخدمة:</span>
                                         <input type="text" class="form-control" value="15 سنة (مستوفي)" readonly>
-                                        <input type="file" class="form-control" title="ارفق صورة التأشيرة/جواز السفر">
+                                        <input type="file" name="attachment" class="form-control" title="ارفق صورة التأشيرة/جواز السفر">
                                     </div>
                                 </div>
 
+                                <!-- مرفق عام للأنواع الأخرى -->
+                                <div class="col-md-6 mb-3" id="generalAttachmentSection" style="display:none">
+                                    <label class="form-label"><i class="fas fa-paperclip me-1"></i> مرفق (إن وجد)</label>
+                                    <input type="file" name="attachment" class="form-control">
+                                </div>
+
                                 <div class="col-12 text-center mt-3">
-                                    <button class="btn btn-purple w-25"><i class="fas fa-save me-2"></i> إصدار القرار</button>
+                                    <button type="submit" class="btn btn-purple w-25"><i class="fas fa-save me-2"></i> تقديم الطلب</button>
                                 </div>
                             </div>
                         </form>
@@ -135,36 +165,45 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td class="text-end fw-bold">فاطمة الشرباني</td>
-                                    <td><span class="badge bg-danger p-2">أجازة وضع</span></td>
-                                    <td>01/01/2023</td>
-                                    <td>30/04/2023</td>
-                                    <td><span class="badge bg-success">أجر كامل</span></td>
-                                    <td><i class="fas fa-file-pdf"></i> شهادة</td>
-                                    <td><span class="badge bg-secondary">منتهية</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td class="text-end fw-bold">رانيا ابو النصر</td>
-                                    <td><span class="badge bg-warning text-dark p-2">رعاية طفل (عام 1)</span></td>
-                                    <td>01/06/2023</td>
-                                    <td>01/06/2024</td>
-                                    <td><span class="badge bg-dark">بدون أجر</span></td>
-                                    <td><i class="fas fa-file-image"></i> الميلاد</td>
-                                    <td><span class="badge bg-success">سارية</span></td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td class="text-end fw-bold">بهجت إبراهيم</td>
-                                    <td><span class="badge bg-info text-dark p-2">أداء فريضة الحج</span></td>
-                                    <td>--</td>
-                                    <td>--</td>
-                                    <td>--</td>
-                                    <td>--</td>
-                                    <td><span class="badge bg-primary">قيد المراجعة</span></td>
-                                </tr>
+                                @{ var specIndex = 0; }
+                                @foreach (var req in Model.SpecialRequests)
+                                {
+                                    specIndex++;
+                                    <tr>
+                                        <td>@specIndex</td>
+                                        <td class="text-end fw-bold">@req.EmployeeName</td>
+                                        <td><span class="badge bg-danger p-2">@req.LeaveCategoryName</span></td>
+                                        <td>@req.StartDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@req.EndDate.ToString("dd/MM/yyyy")</td>
+                                        <td><span class="badge bg-success">@req.SalaryStatusName</span></td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(req.AttachmentPath))
+                                            {
+                                                <a href="~/@req.AttachmentPath" target="_blank"><i class="fas fa-file"></i> مرفق</a>
+                                            }
+                                            else
+                                            {
+                                                <span>--</span>
+                                            }
+                                        </td>
+                                        @if (req.Status == "Approved" || req.Status == "معتمدة")
+                                        {
+                                            <td><span class="badge bg-success">معتمدة</span></td>
+                                        }
+                                        else if (req.Status == "Pending" || req.Status == "قيد الموافقة")
+                                        {
+                                            <td><span class="badge bg-primary">قيد المراجعة</span></td>
+                                        }
+                                        else if (req.Status == "Rejected" || req.Status == "مرفوضة")
+                                        {
+                                            <td><span class="badge bg-danger">مرفوضة</span></td>
+                                        }
+                                        else
+                                        {
+                                            <td><span class="badge bg-secondary">@req.Status</span></td>
+                                        }
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -175,38 +214,45 @@
     </div>
 </section>
 
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
 
-    <script>
-        // دالة تغيير الفورم حسب نوع الأجازة
-        function toggleSpecialOptions() {
-            var type = document.getElementById("leaveTypeSelect").value;
-            var babySec = document.getElementById("babySection");
-            var hajjSec = document.getElementById("hajjSection");
-            var salary = document.getElementById("salaryStatus");
+<script>
+    $(function () {
+        $('.select2-special').select2({
+            theme: 'bootstrap4'
+        });
+    });
 
-            if (type === "Maternity") {
-                babySec.style.display = "block";
-                hajjSec.style.display = "none";
-                salary.value = "أجر كامل (إجبارية)";
-                salary.className = "form-control is-valid fw-bold";
-            }
-            else if (type === "ChildCare") {
-                babySec.style.display = "block";
-                hajjSec.style.display = "none";
-                salary.value = "بدون أجر (الموظفة تتحمل التأمينات)";
-                salary.className = "form-control is-invalid fw-bold";
-            }
-            else if (type === "Hajj") {
-                babySec.style.display = "none";
-                hajjSec.style.display = "block";
-                salary.value = "أجر كامل (مرة بالعمر)";
-                salary.className = "form-control is-valid fw-bold";
-            }
-             else {
-                babySec.style.display = "none";
-                hajjSec.style.display = "none";
-                salary.value = "حسب اللائحة";
-                 salary.className = "form-control";
-            }
+    function toggleSpecialOptions() {
+        var type = document.getElementById("leaveTypeSelect").value;
+        var babySec = document.getElementById("babySection");
+        var hajjSec = document.getElementById("hajjSection");
+        var generalSec = document.getElementById("generalAttachmentSection");
+        var salary = document.getElementById("salaryStatus");
+
+        babySec.style.display = "none";
+        hajjSec.style.display = "none";
+        generalSec.style.display = "none";
+
+        if (type === "Maternity") {
+            babySec.style.display = "block";
+            salary.value = "أجر كامل (إجبارية)";
+            salary.className = "form-control is-valid fw-bold";
         }
-    </script>
+        else if (type === "ChildCare") {
+            babySec.style.display = "block";
+            salary.value = "بدون أجر (الموظفة تتحمل التأمينات)";
+            salary.className = "form-control is-invalid fw-bold";
+        }
+        else if (type === "Hajj") {
+            hajjSec.style.display = "block";
+            salary.value = "أجر كامل (مرة بالعمر)";
+            salary.className = "form-control is-valid fw-bold";
+        }
+        else {
+            generalSec.style.display = "block";
+            salary.value = "حسب اللائحة";
+            salary.className = "form-control";
+        }
+    }
+</script>
