@@ -20,9 +20,10 @@ namespace HR.Application.Secondments.Query.GetEmployeesForSelect
             using var connection = _sqlConnectionFactory.CreateConnection();
 
             const string sql = """
-            SELECT e.Id, e.Name, jt.Name AS JobTitle
+            SELECT e.Id, e.Name, jt.Name AS JobTitle, d.Name AS DepartmentName
             FROM HR.Employees e
             LEFT JOIN Organization.JobTitles jt ON jt.Id = e.JobTitleId
+            LEFT JOIN Organization.OrgUnits d ON d.Id = e.OrgUnitId
             WHERE e.IsActive = 1
               AND (@Search IS NULL OR e.Name LIKE '%' + @Search + '%')
             ORDER BY e.Name

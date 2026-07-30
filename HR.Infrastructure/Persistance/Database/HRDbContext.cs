@@ -11,6 +11,7 @@ using HR.Domain.Retirement.Entities;
 using HR.Domain.Secondments;
 using HR.Domain.ServiceTerms.Entities;
 using HR.Domain.Terminations;
+using HR.Domain.Transfers.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Application.Exceptions;
@@ -56,6 +57,8 @@ public class HRDbContext : DbContext
     public DbSet<Secondment> Secondments { get; set; }
     public DbSet<ServiceTermRecord> ServiceTermRecords { get; set; }
     public DbSet<TerminationDecision> TerminationDecisions { get; set; }
+    public DbSet<InternalTransfer> InternalTransfers { get; set; }
+    public DbSet<ExternalMovement> ExternalMovements { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
