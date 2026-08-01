@@ -63,10 +63,11 @@ namespace Identity.Infrastructure
             services.ConfigureApplicationCookie(options =>
             {
                 // مسار صفحة تسجيل الدخول إذا حاول المستخدم الدخول لصفحة محمية (Authorize)
-                options.LoginPath = "/Accounts/Login";
+                options.LoginPath = "/Admin/Accounts/Login";
+                options.LogoutPath = "/Admin/Accounts/Logout";
 
                 // مسار صفحة "غير مصرح لك" إذا كان لديه حساب لكن ليس لديه الصلاحية (Role)
-                options.AccessDeniedPath = "/Accounts/AccessDenied";
+                options.AccessDeniedPath = "/Admin/Accounts/AccessDenied";
 
                 options.Cookie.Name = "ErpGovernorateAuthCookie";
                 options.Cookie.HttpOnly = true; // حماية من هجمات XSS
